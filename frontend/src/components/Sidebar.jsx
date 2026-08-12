@@ -11,7 +11,7 @@ const Sidebar = ({ activeTab, setActiveTab, onLogout }) => {
 
   return (
     <div className="sidebar">
-      <div className="sidebar-brand">🙏 ભજન કીર્તન</div>
+      <div className="sidebar-brand">🙏Bhajan Kirtan</div>
       <ul className="sidebar-menu">
         {navItems.map((item) => (
           <li

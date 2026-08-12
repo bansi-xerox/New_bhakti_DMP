@@ -6,17 +6,21 @@ const ForgotPassword = () => {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setMessage('');
+    setLoading(true);
 
     try {
       const res = await forgotPassword(email);
       setMessage(res.data.message || 'Password reset link sent to your email address!');
     } catch (err) {
-      setError(err.response?.data?.message || 'Email not found in system.');
+      setError(err.response?.data?.message || 'Email address not found in system.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -42,11 +46,15 @@ const ForgotPassword = () => {
               required
             />
           </div>
-          <button type="submit" className="btn-primary">Send Reset Link</button>
+          <button type="submit" className="btn-primary" disabled={loading}>
+            {loading ? 'Sending...' : 'Send Reset Link'}
+          </button>
         </form>
 
         <div style={{ textAlign: 'center', marginTop: '15px' }}>
-          <Link to="/" style={{ color: '#e65100', textDecoration: 'none' }}>Back to Login</Link>
+          <Link to="/" style={{ color: '#e65100', textDecoration: 'none' }}>
+            Back to Login
+          </Link>
         </div>
       </div>
     </div>

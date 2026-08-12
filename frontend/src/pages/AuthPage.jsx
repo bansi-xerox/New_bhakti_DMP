@@ -1,20 +1,28 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { checkAdminExists, registerUser, loginUser } from '../services/api';
+import { checkAuthStatus, registerUser, loginUser } from '../services/api';
 import { AuthContext } from '../context/AuthContext';
 
 const AuthPage = () => {
   const [isRegistered, setIsRegistered] = useState(true);
   const [formData, setFormData] = useState({ email_address: '', password: '' });
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
+
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if first record exists in system
-    checkAdminExists()
-      .then((res) => setIsRegistered(res.data.exists))
-      .catch(() => setIsRegistered(true));
+    // Check if system has a registered user
+    checkAuthStatus()
+      .then((res) => {
+        setIsRegistered(res.data.hasRegisteredUser);
+      })
+      .catch((err) => {
+        console.error('Status Check Error:', err);
+        setIsRegistered(true); // Fallback to login form on error
+      })
+      .finally(() => setLoading(false));
   }, []);
 
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -26,8 +34,9 @@ const AuthPage = () => {
     try {
       if (!isRegistered) {
         // Register First User/Admin
-        await registerUser(formData);
-        setIsRegistered(true);
+        const res = await registerUser(formData);
+        login(res.data.user, res.data.token);
+        navigate('/dashboard');
       } else {
         // Login Flow
         const res = await loginUser(formData);
@@ -35,16 +44,20 @@ const AuthPage = () => {
         navigate('/dashboard');
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Authentication failed. Please check backend.');
+      setError(err.response?.data?.message || 'Authentication failed. Please check your credentials.');
     }
   };
+
+  if (loading) {
+    return <div className="auth-container">Loading...</div>;
+  }
 
   return (
     <div className="auth-container">
       <div className="auth-card">
         <div className="auth-header">
-          <h2>Bhajan Kirtan Portal</h2>
-          <p>{isRegistered ? 'Login to System ' : 'First Admin Setup'}</p>
+          <h2> Bhajan Kirtan Portal</h2>
+          <p>{isRegistered ? 'Login to System' : 'First Admin Setup'}</p>
         </div>
 
         {error && <div className="alert-error">{error}</div>}

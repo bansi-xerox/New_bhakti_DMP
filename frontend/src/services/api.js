@@ -1,11 +1,11 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: 'http://localhost:5000/api', //  backend API URL 
+  baseURL: process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api',
   headers: { 'Content-Type': 'application/json' },
 });
 
-// Protected Requests માટે Auth Header જોડવું
+// Protected Requests - Bearer Token 
 API.interceptors.request.use((req) => {
   const token = localStorage.getItem('authToken');
   if (token) {
@@ -14,11 +14,22 @@ API.interceptors.request.use((req) => {
   return req;
 });
 
-export const checkAdminExists = () => API.get('/auth/check-admin');
+// 1. Auth Status (Check if registered user exists)
+export const checkAuthStatus = () => API.get('/auth/status');
+
+// 2. Register First User
 export const registerUser = (data) => API.post('/auth/register', data);
+
+// 3. Login User
 export const loginUser = (data) => API.post('/auth/login', data);
-export const forgotPassword = (email) => API.post('/auth/forgot-password', { email_address: email });
-export const validateResetToken = (token) => API.get(`/auth/validate-token/${token}`);
-export const resetPassword = (data) => API.post('/auth/reset-password', data);
+
+// 4. Forgot Password (Request Reset Link)
+export const forgotPassword = (email_address) => API.post('/auth/forgot-password', { email_address });
+
+// 5. Activate Reset Link (Triggers 5-min window)
+export const activateResetLink = (token) => API.get(`/auth/activate-reset/${token}`);
+
+// 6. Perform Password Reset
+export const resetPassword = (token, passwords) => API.post(`/auth/reset-password/${token}`, passwords);
 
 export default API;

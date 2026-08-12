@@ -9,11 +9,11 @@ const Dashboard = () => {
   const renderContent = () => {
     switch (activeTab) {
       case 'bhajan-mala':
-        return <h2>🎵 ભજન માળા મોડ્યુલ</h2>;
+        return <h2>🎵 Bhajan Mala Module</h2>;
       case 'aakhyan-mala':
-        return <h2>📖 આખ્યાન માળા મોડ્યુલ</h2>;
+        return <h2>📖 Aakhyan Mala Module</h2>;
       case 'gallery':
-        return <h2>🖼️ ગેલેરી મોડ્યુલ</h2>;
+        return <h2>🖼️ Gallary Module</h2>;
       default:
         return <h2>Welcome to Bhajan Kirtan Portal</h2>;
     }

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { validateResetToken, resetPassword } from '../services/api';
+import { activateResetLink, resetPassword } from '../services/api';
 import CountdownTimer from '../components/CountdownTimer';
 
 const ResetPassword = () => {
@@ -8,41 +8,57 @@ const ResetPassword = () => {
   const navigate = useNavigate();
 
   const [isValidToken, setIsValidToken] = useState(null);
-  const [passwords, setPasswords] = useState({ newPassword: '', confirmPassword: '' });
+  const [passwords, setPasswords] = useState({ new_password: '', confirm_password: '' });
   const [error, setError] = useState('');
   const [isExpired, setIsExpired] = useState(false);
+  const [remainingSeconds, setRemainingSeconds] = useState(300);
 
   useEffect(() => {
-    // Trigger link activation (converts token validity to 5 mins on backend)
-    validateResetToken(token)
-      .then(() => setIsValidToken(true))
-      .catch(() => setIsValidToken(false));
+    // Activates the reset link (converts validity to 5 mins on backend)
+    activateResetLink(token)
+      .then((res) => {
+        setIsValidToken(true);
+        if (res.data.remaining_seconds) {
+          setRemainingSeconds(res.data.remaining_seconds);
+        }
+      })
+      .catch((err) => {
+        console.error('Activation Error:', err);
+        setIsValidToken(false);
+      });
   }, [token]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
-    if (passwords.newPassword !== passwords.confirmPassword) {
+    if (passwords.new_password !== passwords.confirm_password) {
       setError('Passwords do not match.');
       return;
     }
 
     try {
-      await resetPassword({ token, password: passwords.newPassword });
-      alert('Password updated successfully! Please login with your new password.');
+      await resetPassword(token, {
+        new_password: passwords.new_password,
+        confirm_password: passwords.confirm_password,
+      });
+      alert('Password updated successfully! Please log in with your new password.');
       navigate('/');
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to update password.');
     }
   };
 
+  if (isValidToken === null) {
+    return <div className="auth-container">Activating reset link...</div>;
+  }
+
   if (isValidToken === false || isExpired) {
     return (
       <div className="auth-container">
         <div className="auth-card" style={{ textAlign: 'center' }}>
           <h3 style={{ color: '#c62828' }}>Reset Link Invalid or Expired</h3>
-          <p>This reset link has expired or the link is invalid.</p>
+          <p>This reset link has expired or is invalid.</p>
           <button className="btn-primary" onClick={() => navigate('/forgot-password')}>
             Request New Link
           </button>
@@ -58,7 +74,12 @@ const ResetPassword = () => {
           <h2>Set New Password</h2>
         </div>
 
-        {isValidToken && <CountdownTimer initialMinutes={5} onExpire={() => setIsExpired(true)} />}
+        {isValidToken && (
+          <CountdownTimer
+            initialMinutes={Math.ceil(remainingSeconds / 60)}
+            onExpire={() => setIsExpired(true)}
+          />
+        )}
 
         {error && <div className="alert-error">{error}</div>}
 
@@ -68,8 +89,8 @@ const ResetPassword = () => {
             <input
               type="password"
               className="form-control"
-              value={passwords.newPassword}
-              onChange={(e) => setPasswords({ ...passwords, newPassword: e.target.value })}
+              value={passwords.new_password}
+              onChange={(e) => setPasswords({ ...passwords, new_password: e.target.value })}
               required
             />
           </div>
@@ -79,13 +100,15 @@ const ResetPassword = () => {
             <input
               type="password"
               className="form-control"
-              value={passwords.confirmPassword}
-              onChange={(e) => setPasswords({ ...passwords, confirmPassword: e.target.value })}
+              value={passwords.confirm_password}
+              onChange={(e) => setPasswords({ ...passwords, confirm_password: e.target.value })}
               required
             />
           </div>
 
-          <button type="submit" className="btn-primary">Update Password</button>
+          <button type="submit" className="btn-primary">
+            Update Password
+          </button>
         </form>
       </div>
     </div>
