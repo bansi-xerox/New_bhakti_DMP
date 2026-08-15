@@ -1,19 +1,27 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
-import AuthPage from './pages/AuthPage';
-import ForgotPassword from './pages/ForgotPassword';
-import ResetPassword from './pages/ResetPassword';
-import Dashboard from './pages/Dashboard';
+
+// Auth Pages
+import AuthPage from './pages/auth/AuthPage';
+import ForgotPassword from './pages/auth/ForgotPassword';
+import ResetPassword from './pages/auth/ResetPassword';
+
+// Dashboard Hub Layout
+import DashboardLayout from './pages/dashboard/DashboardLayout';
+
 import PrivateRoute from './components/PrivateRoute';
-import './assets/styles.css';
+import './assets/global.css';
+import './assets/auth.css';
+import './assets/dashboard.css';
+
 
 function App() {
   return (
     <AuthProvider>
       <Router>
         <Routes>
-          {/* Public Auth Routes */}
+          {/* Public Authentication Routes */}
           <Route path="/" element={<AuthPage />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
@@ -23,7 +31,7 @@ function App() {
             path="/dashboard"
             element={
               <PrivateRoute>
-                <Dashboard />
+                <DashboardLayout />
               </PrivateRoute>
             }
           />
