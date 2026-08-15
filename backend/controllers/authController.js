@@ -2,6 +2,8 @@ const crypto = require('crypto');
 const User = require('../models/User');
 const generateToken = require('../utils/generateToken');
 const sendEmail = require('../utils/sendEmail');
+const passwordRegex =
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&^#()_+\-=\[\]{};':"\\|,.<>\/?])[A-Za-z\d@$!%*?&^#()_+\-=\[\]{};':"\\|,.<>\/?]{8,}$/;
 
 // Check if registration or login should be displayed on the frontend
 exports.getAuthStatus = async (req, res) => {
@@ -20,6 +22,7 @@ exports.getAuthStatus = async (req, res) => {
 exports.registerUser = async (req, res) => {
   try {
     const userCount = await User.countDocuments();
+
     if (userCount > 0) {
       return res.status(403).json({
         success: false,
@@ -30,7 +33,18 @@ exports.registerUser = async (req, res) => {
     const { email_address, password } = req.body;
 
     if (!email_address || !password) {
-      return res.status(400).json({ success: false, message: 'Please provide email and password' });
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide email and password',
+      });
+    }
+
+    if (!passwordRegex.test(password)) {
+      return res.status(400).json({
+        success: false,
+        message:
+          'Password must be at least 8 characters long and contain uppercase, lowercase, number, and special character.',
+      });
     }
 
     const user = await User.create({
@@ -44,13 +58,18 @@ exports.registerUser = async (req, res) => {
       success: true,
       message: 'Registration successful',
       token,
-      user: { id: user._id, email_address: user.email_address },
+      user: {
+        id: user._id,
+        email_address: user.email_address,
+      },
     });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
-
 // Login user logic
 exports.loginUser = async (req, res) => {
   try {
@@ -160,14 +179,31 @@ exports.resetPassword = async (req, res) => {
     const { new_password, confirm_password } = req.body;
 
     if (!new_password || !confirm_password) {
-      return res.status(400).json({ success: false, message: 'Please provide both new password and confirm password' });
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide both new password and confirm password',
+      });
     }
 
     if (new_password !== confirm_password) {
-      return res.status(400).json({ success: false, message: 'Passwords do not match' });
+      return res.status(400).json({
+        success: false,
+        message: 'Passwords do not match',
+      });
     }
 
-    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+    if (!passwordRegex.test(new_password)) {
+      return res.status(400).json({
+        success: false,
+        message:
+          'Password must be at least 8 characters long and contain uppercase, lowercase, number, and special character.',
+      });
+    }
+
+    const hashedToken = crypto
+      .createHash('sha256')
+      .update(token)
+      .digest('hex');
 
     const user = await User.findOne({
       reset_token: hashedToken,
@@ -177,22 +213,37 @@ exports.resetPassword = async (req, res) => {
     if (!user) {
       return res.status(400).json({
         success: false,
-        message: 'Invalid reset token or the 5-minute countdown period has expired',
+        message:
+          'Invalid reset token or the 5-minute countdown period has expired',
       });
     }
 
-    // Set new password, updated time, and clear reset token fields
     user.password = new_password;
     user.password_updated_at = new Date();
+
     user.reset_token = null;
     user.reset_expiry_at = null;
+
     await user.save();
+
+    await User.updateOne(
+      { _id: user._id },
+      {
+        $set: {
+          updated_at: null,
+        },
+      }
+    );
 
     return res.status(200).json({
       success: true,
-      message: 'Password reset successfully. You can now log in with your new password.',
+      message:
+        'Password reset successfully. You can now log in with your new password.',
     });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 };

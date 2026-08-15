@@ -13,7 +13,16 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: [true, 'Password is required'],
-      minlength: [6, 'Password must be at least 6 characters long'],
+      minlength: [8, 'Password must be at least 8 characters long'],
+      validate: {
+        validator: function (value) {
+          return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&^#()_+\-=\[\]{};':"\\|,.<>\/?])[A-Za-z\d@$!%*?&^#()_+\-=\[\]{};':"\\|,.<>\/?]{8,}$/.test(
+            value
+          );
+        },
+        message:
+          'Password must contain uppercase, lowercase, number and special character.',
+      },
     },
     reset_token: {
       type: String,
@@ -27,9 +36,17 @@ const userSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+       created_at: {
+      type: Date,
+      default: Date.now,
+    },
+
+    updated_at: {
+      type: Date,
+      default: null,
+    },
   },
   {
-    timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
   }
