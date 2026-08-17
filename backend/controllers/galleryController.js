@@ -1,28 +1,57 @@
 const fs = require('fs');
 const path = require('path');
-const Gallery = require('../models/galleryModel'); // Mongoose Model
+const Gallery = require('../models/galleryModel');
 const { sanitizeName, getNextSequenceNumber } = require('../utils/fileHelper');
 
-// 1. Upload Media
 exports.uploadMedia = async (req, res) => {
   try {
-    const { sub_folder_name, media_type } = req.body;
+    const { main_folder_name, sub_folder_name, media_type } = req.body;
     const files = req.files;
 
-    const currentYear = new Date().getFullYear().toString();
-    const main_folder_name = currentYear;
-
-    if (!sub_folder_name || !media_type) {
-      return res.status(400).json({ success: false, message: 'Sub folder name and media type are required.' });
+    if (!main_folder_name || !sub_folder_name || !media_type) {
+      return res.status(400).json({
+        success: false,
+        message: 'Main folder name, sub folder name, and media type are required.'
+      });
     }
 
     if (!files || files.length === 0) {
-      return res.status(400).json({ success: false, message: 'Please upload at least one file.' });
+      return res.status(400).json({
+        success: false,
+        message: 'Please upload at least one file.'
+      });
+    }
+
+    const typeLower = media_type.toLowerCase();
+    if (typeLower !== 'photos' && typeLower !== 'videos') {
+      return res.status(400).json({
+        success: false,
+        message: 'Media type must be either "Photos" or "Videos".'
+      });
     }
 
     const safeMain = sanitizeName(main_folder_name);
     const safeSub = sanitizeName(sub_folder_name);
-    const typeFolder = media_type.toLowerCase() === 'photos' ? 'photos' : 'videos';
+    const typeFolder = typeLower === 'photos' ? 'photos' : 'videos';
+
+    const photoExts = ['.jpg', '.jpeg', '.png'];
+    const videoExts = ['.mp4'];
+
+    for (const file of files) {
+      const ext = path.extname(file.originalname).toLowerCase();
+      if (typeFolder === 'photos' && !photoExts.includes(ext)) {
+        return res.status(400).json({
+          success: false,
+          message: `Invalid format in ${file.originalname}. Photos must be .jpg, .jpeg, or .png.`
+        });
+      }
+      if (typeFolder === 'videos' && !videoExts.includes(ext)) {
+        return res.status(400).json({
+          success: false,
+          message: `Invalid format in ${file.originalname}. Videos must be .mp4.`
+        });
+      }
+    }
 
     const targetDir = path.join(__dirname, '..', 'uploads', safeMain, safeSub, typeFolder);
     const savedRecords = [];
@@ -34,14 +63,12 @@ exports.uploadMedia = async (req, res) => {
       const fileName = `${safeMain}-${safeSub}-${seqNumber}${ext}`;
       const fullFilePath = path.join(targetDir, fileName);
 
-      // Save physical file
       fs.writeFileSync(fullFilePath, file.buffer);
 
       const relativePath = `${safeMain}/${safeSub}/${typeFolder}/${fileName}`;
       const photoPath = typeFolder === 'photos' ? relativePath : null;
       const videoPath = typeFolder === 'videos' ? relativePath : null;
 
-      // Create new Mongoose document
       const newRecord = new Gallery({
         main_folder_name,
         sub_folder_name,
@@ -49,15 +76,14 @@ exports.uploadMedia = async (req, res) => {
         video_path: videoPath
       });
 
-      // Save to MongoDB
       const savedDoc = await newRecord.save();
-      
-      // Mongoose uses _id instead of id
       savedRecords.push({ id: savedDoc._id, relativePath });
     }
 
     const count = savedRecords.length;
-    const itemLabel = count === 1 ? (typeFolder === 'photos' ? 'photo' : 'video') : typeFolder;
+    const itemLabel = typeFolder === 'photos'
+      ? (count === 1 ? 'photo' : 'photos')
+      : (count === 1 ? 'video' : 'videos');
 
     return res.status(200).json({
       success: true,
@@ -69,14 +95,11 @@ exports.uploadMedia = async (req, res) => {
   }
 };
 
-// 2. Fetch Gallery Items
 exports.getGalleryItems = async (req, res) => {
   try {
-    // Mongoose .find() to get all, sorted by newest first
     const items = await Gallery.find().sort({ created_at: -1 });
-    
-    // Map Mongoose _id to id for frontend consistency
-    const formattedItems = items.map(item => ({
+
+    const formattedItems = items.map((item) => ({
       id: item._id,
       main_folder_name: item.main_folder_name,
       sub_folder_name: item.sub_folder_name,
@@ -91,16 +114,76 @@ exports.getGalleryItems = async (req, res) => {
   }
 };
 
-// 3. Delete Media
+// 4. Update Media / Move Folder
+exports.updateMedia = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { new_main_folder_name, new_sub_folder_name } = req.body;
+
+    if (!new_main_folder_name || !new_sub_folder_name) {
+      return res.status(400).json({
+        success: false,
+        message: 'New main folder and sub folder names are required.'
+      });
+    }
+
+    const item = await Gallery.findById(id);
+    if (!item) {
+      return res.status(404).json({ success: false, message: 'Media item not found.' });
+    }
+
+    const isPhoto = Boolean(item.photo_path);
+    const oldRelPath = isPhoto ? item.photo_path : item.video_path;
+    const oldFullPath = path.join(__dirname, '..', 'uploads', oldRelPath);
+
+    const safeNewMain = sanitizeName(new_main_folder_name);
+    const safeNewSub = sanitizeName(new_sub_folder_name);
+    const typeFolder = isPhoto ? 'photos' : 'videos';
+
+    const newTargetDir = path.join(__dirname, '..', 'uploads', safeNewMain, safeNewSub, typeFolder);
+    const ext = path.extname(oldRelPath);
+    const seqNumber = getNextSequenceNumber(newTargetDir, safeNewMain, safeNewSub);
+
+    const newFileName = `${safeNewMain}-${safeNewSub}-${seqNumber}${ext}`;
+    const newFullPath = path.join(newTargetDir, newFileName);
+    const newRelPath = `${safeNewMain}/${safeNewSub}/${typeFolder}/${newFileName}`;
+
+    // Move physical file on server
+    if (fs.existsSync(oldFullPath)) {
+      fs.renameSync(oldFullPath, newFullPath);
+    }
+
+    // Update in MongoDB
+    item.main_folder_name = new_main_folder_name;
+    item.sub_folder_name = new_sub_folder_name;
+    if (isPhoto) {
+      item.photo_path = newRelPath;
+    } else {
+      item.video_path = newRelPath;
+    }
+
+    await item.save();
+
+    return res.status(200).json({
+      success: true,
+      message: 'Media updated successfully',
+      data: item
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
 exports.deleteMedia = async (req, res) => {
   try {
     const { ids } = req.body;
 
     if (!ids || !Array.isArray(ids) || ids.length === 0) {
-      return res.status(400).json({ success: false, message: 'Please provide an array of IDs to delete.' });
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide an array of IDs to delete.'
+      });
     }
 
-    // Find records in MongoDB using $in operator
     const records = await Gallery.find({ _id: { $in: ids } });
 
     if (records.length === 0) {
@@ -123,14 +206,13 @@ exports.deleteMedia = async (req, res) => {
       if (record.video_path) deletedVideosCount++;
     });
 
-    // Delete records from MongoDB
     await Gallery.deleteMany({ _id: { $in: ids } });
 
     const isPhoto = deletedPhotosCount > 0;
     const count = isPhoto ? deletedPhotosCount : deletedVideosCount;
     const mediaTypeLabel = isPhoto
-      ? count === 1 ? 'photo' : 'photos'
-      : count === 1 ? 'video' : 'videos';
+      ? (count === 1 ? 'photo' : 'photos')
+      : (count === 1 ? 'video' : 'videos');
 
     return res.status(200).json({
       success: true,

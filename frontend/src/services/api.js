@@ -32,4 +32,15 @@ export const activateResetLink = (token) => API.get(`/auth/activate-reset/${toke
 // 6. Perform Password Reset
 export const resetPassword = (token, passwords) => API.post(`/auth/reset-password/${token}`, passwords);
 
+export const uploadGalleryMedia = (formData) =>
+  API.post('/gallery/upload', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+
+export const getGalleryItems = () => API.get('/gallery');
+
+export const deleteGalleryMedia = (ids) =>
+  API.delete('/gallery/delete', { data: { ids } });
+
+
 export default API;
