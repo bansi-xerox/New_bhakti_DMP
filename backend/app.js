@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const authRoutes = require('./routes/authRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
-
+const galleryRoutes = require('./routes/galleryRoutes')
 const app = express();
 
 // Middlewares
@@ -13,6 +13,7 @@ app.use(express.urlencoded({ extended: true }));
 // API Endpoints
 app.use('/api/auth', authRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/gallery', galleryRoutes);
 
 // Root Check
 app.get('/', (req, res) => {
