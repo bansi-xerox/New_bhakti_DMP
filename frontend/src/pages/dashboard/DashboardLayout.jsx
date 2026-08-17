@@ -6,7 +6,7 @@ import { AuthContext } from '../../context/AuthContext';
 // Import Separated Module Pages
 import BhajanMala from './BhajanMala';
 import AakhyanMala from './AakhyanMala';
-import Gallery from './Gallery';
+import Gallery from './gallery/Gallery';
 
 const DashboardLayout = () => {
   const [activeTab, setActiveTab] = useState('bhajan-mala');
