@@ -24,6 +24,9 @@ const Gallery = () => {
   const [selectedSubFolder, setSelectedSubFolder] = useState('All');
   const [filterType, setFilterType] = useState('ALL');
   const [selectedIds, setSelectedIds] = useState([]);
+  
+  // State to track hovered media
+  const [hoveredMediaId, setHoveredMediaId] = useState(null);
 
   useEffect(() => {
     loadGallery();
@@ -118,23 +121,70 @@ const Gallery = () => {
   };
 
   return (
-    <div className="container-fluid p-4 bg-light min-vh-100">
+    <div className="container-fluid p-4 min-vh-100" style={{ backgroundColor: '#f4f6f9' }}>
+      
+      {/* 
+        PREMIUM THEME STYLES: 
+        Added gradients, soft drop-shadows (shading), and smooth hover lift effects 
+      */}
+      <style>{`
+        .theme-orange-gradient { 
+          background: linear-gradient(135deg, #f97316 0%, #ea580c 100%) !important; 
+          color: white !important; 
+          border: none !important;
+          box-shadow: 0 4px 12px rgba(234, 88, 12, 0.25) !important;
+          transition: all 0.3s ease !important;
+        }
+        .theme-orange-gradient:hover { 
+          background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%) !important; 
+          box-shadow: 0 6px 16px rgba(234, 88, 12, 0.4) !important;
+          transform: translateY(-2px);
+        }
+        .theme-orange-outline { 
+          border: 1.5px solid #ea580c !important; 
+          color: #ea580c !important; 
+          background-color: transparent !important; 
+          transition: all 0.3s ease !important;
+        }
+        .theme-orange-outline:hover { 
+          background: linear-gradient(135deg, #f97316 0%, #ea580c 100%) !important; 
+          color: white !important; 
+          border-color: transparent !important;
+          box-shadow: 0 4px 10px rgba(234, 88, 12, 0.25) !important;
+        }
+        .theme-orange-text { color: #ea580c !important; }
+        .theme-orange-light-bg { background-color: #fff7ed !important; }
+        .theme-orange-border-light { border-color: #fdba74 !important; }
+        .premium-card {
+          background-color: white;
+          border: 1px solid rgba(0,0,0,0.04) !important;
+          box-shadow: 0 4px 18px rgba(0,0,0,0.04) !important;
+          transition: all 0.3s ease !important;
+        }
+        .premium-card:hover {
+          box-shadow: 0 8px 24px rgba(0,0,0,0.08) !important;
+          transform: translateY(-4px);
+        }
+        .custom-checkbox:checked { background-color: #ea580c !important; border-color: #ea580c !important; }
+        .custom-select:focus { border-color: #fdba74 !important; box-shadow: 0 0 0 0.25rem rgba(234, 88, 12, 0.25) !important; }
+      `}</style>
+
       {/* Header Banner */}
-      <div className="card shadow-sm border-0 rounded-4 mb-4">
+      <div className="premium-card rounded-4 mb-4 overflow-hidden">
         <div className="card-body p-4 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
           <div>
-            <span className="badge bg-success-subtle text-success border border-success-subtle px-3 py-1 rounded-pill fw-semibold text-uppercase mb-2">
+            <span className="badge theme-orange-light-bg theme-orange-text border theme-orange-border-light px-3 py-1 rounded-pill fw-bold text-uppercase mb-2 shadow-sm">
               Bhajan & Satsang Library
             </span>
-            <h3 className="fw-bold text-dark mb-1">Gallery Media Manager</h3>
-            <p className="text-secondary mb-0 small">Organize albums, events, photos, and video archives</p>
+            <h3 className="fw-bolder text-dark mb-1">Gallery Media Manager</h3>
+            <p className="text-secondary mb-0 small fw-medium">Organize albums, events, photos, and video archives effortlessly.</p>
           </div>
 
           <div className="d-flex gap-2">
             {selectedIds.length > 0 && (
               <button
                 type="button"
-                className="btn btn-outline-danger fw-semibold px-3 py-2 rounded-3 shadow-sm d-flex align-items-center gap-1"
+                className="btn btn-outline-danger fw-bold px-3 py-2 rounded-3 shadow-sm d-flex align-items-center gap-1 transition"
                 onClick={handleBulkDelete}
               >
                 <span>🗑️</span> Delete Selected ({selectedIds.length})
@@ -142,7 +192,7 @@ const Gallery = () => {
             )}
             <button
               type="button"
-              className="btn btn-success fw-semibold px-4 py-2 rounded-3 shadow-sm d-flex align-items-center gap-2"
+              className="btn theme-orange-gradient fw-bold px-4 py-2 rounded-3 d-flex align-items-center gap-2"
               onClick={() => {
                 setSelectedForEdit(null);
                 setIsModalOpen(true);
@@ -155,17 +205,17 @@ const Gallery = () => {
       </div>
 
       {/* Filter Bar */}
-      <div className="card shadow-sm border-0 rounded-4 mb-4">
+      <div className="premium-card rounded-4 mb-4">
         <div className="card-body p-3 d-flex flex-wrap justify-content-between align-items-center gap-3">
           {/* Main Folder Pills */}
           <div className="d-flex flex-wrap gap-2 align-items-center">
-            <span className="text-secondary small fw-bold me-1">YEAR / FOLDER:</span>
+            <span className="text-secondary small fw-bold me-2">YEAR / FOLDER:</span>
             {folders.map((folder) => (
               <button
                 key={folder}
                 type="button"
-                className={`btn btn-sm rounded-pill fw-semibold px-3 ${
-                  selectedFolder === folder ? 'btn-success text-white shadow-sm' : 'btn-light text-secondary border'
+                className={`btn btn-sm rounded-pill fw-bold px-4 transition ${
+                  selectedFolder === folder ? 'theme-orange-gradient' : 'btn-light text-secondary border'
                 }`}
                 onClick={() => {
                   setSelectedFolder(folder);
@@ -178,11 +228,11 @@ const Gallery = () => {
           </div>
 
           {/* Sub Folder & Type Filters */}
-          <div className="d-flex flex-wrap align-items-center gap-2">
+          <div className="d-flex flex-wrap align-items-center gap-3">
             {selectedFolder !== 'All' && subFolders.length > 1 && (
               <select
-                className="form-select form-select-sm rounded-3 border-secondary-subtle"
-                style={{ width: 'auto' }}
+                className="form-select form-select-sm rounded-3 custom-select text-secondary fw-bold border-light-subtle shadow-sm"
+                style={{ width: 'auto', paddingRight: '2.5rem' }}
                 value={selectedSubFolder}
                 onChange={(e) => setSelectedSubFolder(e.target.value)}
               >
@@ -194,13 +244,13 @@ const Gallery = () => {
               </select>
             )}
 
-            <div className="btn-group btn-group-sm bg-light border rounded-3 p-1">
+            <div className="btn-group btn-group-sm bg-light border rounded-3 p-1 shadow-sm">
               {['ALL', 'Photos', 'Videos'].map((t) => (
                 <button
                   key={t}
                   type="button"
-                  className={`btn btn-sm rounded-2 fw-semibold px-3 ${
-                    filterType === t ? 'btn-white bg-white text-dark shadow-sm' : 'btn-light text-secondary border-0'
+                  className={`btn btn-sm rounded-2 fw-bold px-3 transition ${
+                    filterType === t ? 'btn-white bg-white theme-orange-text shadow-sm' : 'btn-light text-secondary border-0'
                   }`}
                   onClick={() => setFilterType(t)}
                 >
@@ -214,19 +264,19 @@ const Gallery = () => {
 
       {/* Media Grid Display */}
       {loading ? (
-        <div className="card shadow-sm border-0 rounded-4 p-5 text-center my-4">
-          <div className="spinner-border text-success mx-auto" role="status"></div>
-          <p className="text-secondary mt-3 mb-0 fw-semibold">Loading media library...</p>
+        <div className="premium-card rounded-4 p-5 text-center my-4">
+          <div className="spinner-border theme-orange-text mx-auto" role="status"></div>
+          <p className="theme-orange-text mt-3 mb-0 fw-bold">Loading media library...</p>
         </div>
       ) : filteredItems.length === 0 ? (
-        <div className="card shadow-sm border-0 rounded-4 p-5 text-center my-4">
+        <div className="premium-card rounded-4 p-5 text-center my-4">
           <div className="display-4 text-secondary opacity-50 mb-3">📁</div>
-          <h5 className="fw-bold text-dark">No Media Found</h5>
-          <p className="text-secondary small mb-3">No files found in this selection.</p>
+          <h5 className="fw-bolder text-dark">No Media Found</h5>
+          <p className="text-secondary small mb-4">No files found in this selection.</p>
           <div>
             <button
               type="button"
-              className="btn btn-success fw-semibold px-4 rounded-3"
+              className="btn theme-orange-gradient fw-bold px-4 py-2 rounded-3"
               onClick={() => {
                 setSelectedForEdit(null);
                 setIsModalOpen(true);
@@ -247,31 +297,62 @@ const Gallery = () => {
             return (
               <div key={item.id} className="col-12 col-sm-6 col-md-4 col-lg-3">
                 <div
-                  className={`card h-100 shadow-sm rounded-4 overflow-hidden border ${
-                    isSelected ? 'border-success border-2 shadow' : 'border-light-subtle'
+                  className={`card h-100 premium-card rounded-4 overflow-hidden ${
+                    isSelected ? 'border-2 border-warning shadow-lg' : ''
                   }`}
+                  style={{ borderColor: isSelected ? '#ea580c' : '' }}
                 >
                   {/* Thumbnail Box */}
                   <div
                     className="position-relative bg-dark overflow-hidden"
-                    style={{ height: '190px', cursor: 'pointer' }}
+                    style={{ height: '200px', cursor: 'pointer' }}
+                    onMouseEnter={() => setHoveredMediaId(item.id)}
+                    onMouseLeave={() => setHoveredMediaId(null)}
                     onClick={() => setPreviewMedia({ ...item, mediaUrl, isPhoto })}
                   >
+                    {/* Dark Overlay Effect on Hover */}
+                    <div
+                      className="position-absolute top-0 start-0 w-100 h-100"
+                      style={{
+                        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                        opacity: hoveredMediaId === item.id ? 1 : 0,
+                        transition: 'opacity 0.2s ease-in-out',
+                        zIndex: 1,
+                        pointerEvents: 'none' // Prevents overlay from blocking clicks
+                      }}
+                    ></div>
+
                     {/* Checkbox */}
-                    <div className="position-absolute top-0 start-0 m-2 z-2" onClick={(e) => e.stopPropagation()}>
+                    <div className="position-absolute top-0 start-0 m-2" style={{ zIndex: 2 }} onClick={(e) => e.stopPropagation()}>
                       <input
                         type="checkbox"
-                        className="form-check-input border-2 cursor-pointer shadow"
+                        className="form-check-input custom-checkbox border-2 cursor-pointer shadow"
                         checked={isSelected}
                         onChange={(e) => toggleSelectId(e, item.id)}
                         style={{ width: '1.2rem', height: '1.2rem' }}
                       />
                     </div>
 
-                    {/* Type Badge */}
-                    <span className="position-absolute top-0 end-0 m-2 badge bg-dark bg-opacity-75 rounded-pill px-2 py-1 small fw-bold z-2">
-                      {isPhoto ? '📷 Photo' : '🎥 Video'}
-                    </span>
+                    {/* Top Right Action: Delete Button OR Type Badge */}
+                    {hoveredMediaId === item.id ? (
+                      // Show Delete Button on Hover
+                      <div className="position-absolute top-0 end-0 m-2" style={{ zIndex: 2 }} onClick={(e) => e.stopPropagation()}>
+                        <button
+                          type="button"
+                          className="btn btn-danger btn-sm rounded-circle shadow-lg d-flex align-items-center justify-content-center p-0"
+                          style={{ width: '32px', height: '32px', transition: 'all 0.2s' }}
+                          onClick={(e) => handleDeleteSingle(e, item)}
+                          title="Delete Media"
+                        >
+                          🗑️
+                        </button>
+                      </div>
+                    ) : (
+                      // Show Type Badge when not hovered
+                      <span className="position-absolute top-0 end-0 m-2 badge bg-dark bg-opacity-75 rounded-pill px-3 py-1 small fw-bold shadow-sm" style={{ zIndex: 2 }}>
+                        {isPhoto ? '📷 Photo' : '🎥 Video'}
+                      </span>
+                    )}
 
                     {/* Media Render */}
                     {isPhoto ? (
@@ -287,45 +368,53 @@ const Gallery = () => {
                       />
                     ) : (
                       <div className="w-100 h-100 d-flex align-items-center justify-content-center bg-black position-relative">
-                        <video src={mediaUrl} className="w-100 h-100 object-fit-cover" preload="metadata" />
-                        <span className="position-absolute text-white fs-2 opacity-75">▶</span>
+                        <video 
+                          src={mediaUrl} 
+                          className="w-100 h-100 object-fit-cover" 
+                          muted 
+                          loop
+                          preload="metadata" 
+                          onMouseEnter={(e) => e.target.play()}
+                          onMouseLeave={(e) => {
+                            e.target.pause();
+                            e.target.currentTime = 0;
+                          }}
+                        />
+                        {hoveredMediaId !== item.id && (
+                          <span className="position-absolute text-white fs-2 opacity-75" style={{ zIndex: 0 }}>▶</span>
+                        )}
                       </div>
                     )}
                   </div>
 
                   {/* Body & Actions */}
                   <div className="card-body p-3 d-flex flex-column justify-content-between">
-                    <div>
-                      <h6 className="fw-bold text-dark text-truncate mb-1" title={item.sub_folder_name}>
+                    <div className="mb-3">
+                      <h6 className="fw-bolder text-dark text-truncate mb-2" title={item.sub_folder_name}>
                         {item.sub_folder_name || 'General Event'}
                       </h6>
-                      <div className="d-flex justify-content-between align-items-center small text-secondary mb-3">
-                        <span className="badge bg-light text-secondary border">📁 {item.main_folder_name}</span>
-                        <span className="small">
+                      <div className="d-flex justify-content-between align-items-center small text-secondary">
+                        <span className="badge theme-orange-light-bg theme-orange-text border theme-orange-border-light fw-bold">
+                          📁 {item.main_folder_name}
+                        </span>
+                        <span className="small fw-medium">
                           {item.created_at ? new Date(item.created_at).toLocaleDateString() : ''}
                         </span>
                       </div>
                     </div>
 
                     {/* Action Buttons */}
-                    <div className="d-flex gap-2 pt-2 border-top">
+                    <div className="d-flex pt-2 border-top">
                       <button
                         type="button"
-                        className="btn btn-outline-primary btn-sm w-50 rounded-2 fw-semibold d-flex align-items-center justify-content-center gap-1"
+                        className="btn theme-orange-outline btn-sm w-100 rounded-3 fw-bold d-flex align-items-center justify-content-center gap-1"
                         onClick={(e) => {
                           e.stopPropagation();
                           setSelectedForEdit(item);
                           setIsModalOpen(true);
                         }}
                       >
-                        ✏️ Edit
-                      </button>
-                      <button
-                        type="button"
-                        className="btn btn-outline-danger btn-sm w-50 rounded-2 fw-semibold d-flex align-items-center justify-content-center gap-1"
-                        onClick={(e) => handleDeleteSingle(e, item)}
-                      >
-                        🗑️ Delete
+                        ✏️ Edit Media
                       </button>
                     </div>
                   </div>
@@ -353,7 +442,7 @@ const Gallery = () => {
                 </div>
                 <button
                   type="button"
-                  className="btn btn-light btn-sm rounded-circle fw-bold px-2 py-1"
+                  className="btn btn-light btn-sm rounded-circle fw-bold px-2 py-1 shadow"
                   onClick={() => setPreviewMedia(null)}
                 >
                   ✕
