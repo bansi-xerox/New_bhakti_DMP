@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Mail, Lock, Eye, EyeOff, Sparkles, ArrowRight } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react';
 import { checkAuthStatus, registerUser, loginUser } from '../../services/api';
 import { AuthContext } from '../../context/AuthContext';
 import Input from '../../components/common/Input';
