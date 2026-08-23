@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Lock, Eye, EyeOff, KeyRound, Sparkles } from 'lucide-react';
+import { Lock, Eye, EyeOff, KeyRound } from 'lucide-react';
 import { activateResetLink, resetPassword } from '../../services/api';
 import CountdownTimer from '../../components/CountdownTimer';
 import Input from '../../components/common/Input';
