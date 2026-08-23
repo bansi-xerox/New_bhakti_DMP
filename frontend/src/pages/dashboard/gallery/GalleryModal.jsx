@@ -144,7 +144,7 @@ const GalleryModal = ({ isOpen, onClose, onSuccess, initialData = null }) => {
       setLoading(false);
     }
   };
-
+/*chnages*/ 
   return (
     <Modal
       isOpen={isOpen}
