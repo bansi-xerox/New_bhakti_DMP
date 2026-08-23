@@ -29,24 +29,19 @@ export const resetPassword = (token, passwords) => API.post(`/auth/reset-passwor
 // 2. GALLERY MODULE
 // ==========================================
 export const uploadGalleryMedia = (formData) =>
-  API.post('/gallery/upload', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  });
-export const getGalleryItems = () => API.get('/gallery');
-export const deleteGalleryMedia = (ids) =>
-  API.delete('/gallery/delete', { data: { ids } });
+  API.post('/gallery/upload', formData, {headers: { 'Content-Type': 'multipart/form-data' },});
+export const getGalleryItems = (params) => API.get('/gallery', { params });
+export const deleteGalleryMedia = (ids) =>API.delete('/gallery/delete', { data: { ids } });
 export const updateGalleryMedia = (id, formData) =>
   API.put(`/gallery/update/${id}`, formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
   });
 
-// ==========================================
-// 3. BHAJAN SAHITYA MODULE
-// ==========================================
-export const getAllBhajans = () => API.get('/bhajanSahitya');
 export const getBhajanById = (id) => API.get(`/bhajanSahitya/${id}`);
 export const createBhajan = (data) => API.post('/bhajanSahitya', data);
 export const updateBhajan = (id, data) => API.put(`/bhajanSahitya/${id}`, data);
+export const getAllBhajans = (params) => API.get('/bhajanSahitya', { params });
 export const deleteBhajan = (id) => API.delete(`/bhajanSahitya/${id}`);
+export const searchBhajans = (query, params) => API.get('/bhajanSahitya/search', { params: { q: query, ...params } });
 
 export default API;

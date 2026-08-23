@@ -95,9 +95,89 @@ exports.uploadMedia = async (req, res) => {
   }
 };
 
+//     const items = await Gallery.find().sort({ created_at: -1 });
+
+//     const formattedItems = items.map((item) => ({
+//       id: item._id,
+//       main_folder_name: item.main_folder_name,
+//       sub_folder_name: item.sub_folder_name,
+//       photo_path: item.photo_path,
+//       video_path: item.video_path,
+//       created_at: item.created_at
+//     }));
+
+//     return res.status(200).json({ success: true, data: formattedItems });
+//   } catch (error) {
+//     return res.status(500).json({ success: false, message: error.message });
+//   }
+// };
 exports.getGalleryItems = async (req, res) => {
   try {
-    const items = await Gallery.find().sort({ created_at: -1 });
+    const {  page, limit,  search,  main_folder_name, sub_folder_name,  media_type   } = req.query;
+    const query = {};
+
+    if (main_folder_name) {
+      query.main_folder_name = main_folder_name;
+    }
+    if (sub_folder_name) {
+      query.sub_folder_name = sub_folder_name;
+    }
+
+    if (media_type) {
+      if (media_type.toLowerCase() === 'photos') {
+        query.photo_path = { $ne: null };
+      } else if (media_type.toLowerCase() === 'videos') {
+        query.video_path = { $ne: null };
+      }
+    }
+
+    if (search && search.trim() !== '') {
+      const searchRegex = new RegExp(search.trim(), 'i');
+      query.$or = [
+        { main_folder_name: searchRegex },
+        { sub_folder_name: searchRegex },
+        { photo_path: searchRegex },
+        { video_path: searchRegex }
+      ];
+    }
+
+    if (page && limit) {
+      const pageNumber = parseInt(page, 10) || 1;
+      const pageSize = parseInt(limit, 10) || 10;
+      const skip = (pageNumber - 1) * pageSize;
+
+      const totalItems = await Gallery.countDocuments(query);
+      const items = await Gallery.find(query)
+        .sort({ created_at: -1 })
+        .skip(skip)
+        .limit(pageSize);
+
+      const formattedItems = items.map((item) => ({
+        id: item._id,
+        main_folder_name: item.main_folder_name,
+        sub_folder_name: item.sub_folder_name,
+        photo_path: item.photo_path,
+        video_path: item.video_path,
+        created_at: item.created_at
+      }));
+
+      const totalPages = Math.ceil(totalItems / pageSize);
+
+      return res.status(200).json({
+        success: true,
+        data: formattedItems,
+        pagination: {
+          totalItems,
+          totalPages,
+          currentPage: pageNumber,
+          pageSize,
+          hasNextPage: pageNumber < totalPages,
+          hasPrevPage: pageNumber > 1
+        }
+      });
+    }
+
+    const items = await Gallery.find(query).sort({ created_at: -1 });
 
     const formattedItems = items.map((item) => ({
       id: item._id,
@@ -108,22 +188,28 @@ exports.getGalleryItems = async (req, res) => {
       created_at: item.created_at
     }));
 
-    return res.status(200).json({ success: true, data: formattedItems });
+    return res.status(200).json({
+      success: true,
+      data: formattedItems,
+      totalCount: formattedItems.length
+    });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
-
-// 4. Update Media / Move Folder
+// controllers/galleryController.js
 exports.updateMedia = async (req, res) => {
   try {
     const { id } = req.params;
-    const { new_main_folder_name, new_sub_folder_name } = req.body;
+    
+    // Check both key formats (new_main_folder_name OR main_folder_name)
+    const new_main_folder_name = req.body.new_main_folder_name || req.body.main_folder_name;
+    const new_sub_folder_name = req.body.new_sub_folder_name || req.body.sub_folder_name;
 
     if (!new_main_folder_name || !new_sub_folder_name) {
       return res.status(400).json({
         success: false,
-        message: 'New main folder and sub folder names are required.'
+        message: 'Main folder and sub folder names are required.'
       });
     }
 
@@ -148,18 +234,38 @@ exports.updateMedia = async (req, res) => {
     const newFullPath = path.join(newTargetDir, newFileName);
     const newRelPath = `${safeNewMain}/${safeNewSub}/${typeFolder}/${newFileName}`;
 
-    // Move physical file on server
-    if (fs.existsSync(oldFullPath)) {
-      fs.renameSync(oldFullPath, newFullPath);
-    }
+    if (req.files && req.files.length > 0) {
+      const uploadedFile = req.files[0];
+      const newExt = path.extname(uploadedFile.originalname).toLowerCase();
+      const updatedFileName = `${safeNewMain}-${safeNewSub}-${seqNumber}${newExt}`;
+      const updatedFullPath = path.join(newTargetDir, updatedFileName);
+      const updatedRelPath = `${safeNewMain}/${safeNewSub}/${typeFolder}/${updatedFileName}`;
 
-    // Update in MongoDB
-    item.main_folder_name = new_main_folder_name;
-    item.sub_folder_name = new_sub_folder_name;
-    if (isPhoto) {
-      item.photo_path = newRelPath;
+      if (fs.existsSync(oldFullPath)) {
+        fs.unlinkSync(oldFullPath);
+      }
+
+      fs.writeFileSync(updatedFullPath, uploadedFile.buffer);
+
+      item.main_folder_name = new_main_folder_name;
+      item.sub_folder_name = new_sub_folder_name;
+      if (isPhoto) {
+        item.photo_path = updatedRelPath;
+      } else {
+        item.video_path = updatedRelPath;
+      }
     } else {
-      item.video_path = newRelPath;
+      if (fs.existsSync(oldFullPath)) {
+        fs.renameSync(oldFullPath, newFullPath);
+      }
+
+      item.main_folder_name = new_main_folder_name;
+      item.sub_folder_name = new_sub_folder_name;
+      if (isPhoto) {
+        item.photo_path = newRelPath;
+      } else {
+        item.video_path = newRelPath;
+      }
     }
 
     await item.save();
@@ -217,6 +323,61 @@ exports.deleteMedia = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: `${count} ${mediaTypeLabel} deleted successfully`
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+exports.searchMedia = async (req, res) => {
+  try {
+    const { q, page = 1, limit = 10 } = req.query;
+
+    if (!q || q.trim() === '') {
+      return res.status(400).json({
+        success: false,
+        message: 'Search query parameter (q) is required.'
+      });
+    }
+
+    const searchRegex = new RegExp(q.trim(), 'i');
+    const query = {
+      $or: [
+        { main_folder_name: searchRegex },
+        { sub_folder_name: searchRegex },
+        { photo_path: searchRegex },
+        { video_path: searchRegex }
+      ]
+    };
+
+    const pageNumber = parseInt(page, 10);
+    const pageSize = parseInt(limit, 10);
+    const skip = (pageNumber - 1) * pageSize;
+
+    const totalItems = await Gallery.countDocuments(query);
+    const items = await Gallery.find(query)
+      .sort({ created_at: -1 })
+      .skip(skip)
+      .limit(pageSize);
+
+    const formattedItems = items.map((item) => ({
+      id: item._id,
+      main_folder_name: item.main_folder_name,
+      sub_folder_name: item.sub_folder_name,
+      photo_path: item.photo_path,
+      video_path: item.video_path,
+      created_at: item.created_at
+    }));
+
+    return res.status(200).json({
+      success: true,
+      data: formattedItems,
+      pagination: {
+        totalItems,
+        totalPages: Math.ceil(totalItems / pageSize),
+        currentPage: pageNumber,
+        pageSize
+      }
     });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
