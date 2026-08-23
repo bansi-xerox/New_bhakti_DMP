@@ -3,7 +3,8 @@ const cors = require('cors');
 const path = require('path');
 const authRoutes = require('./routes/authRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
-const galleryRoutes = require('./routes/galleryRoutes')
+const galleryRoutes = require('./routes/galleryRoutes');
+const bhajanSahityaRoutes = require('./routes/bhajanSahityaRoutes')
 const app = express();
 
 // Middlewares
@@ -17,6 +18,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/auth', authRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/gallery', galleryRoutes);
+app.use('/api/bhajanSahitya', bhajanSahityaRoutes);
 
 // Root Check
 app.get('/', (req, res) => {
