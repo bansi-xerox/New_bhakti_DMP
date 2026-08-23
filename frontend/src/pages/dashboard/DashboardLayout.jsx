@@ -4,7 +4,7 @@ import Header from '../../components/Header';
 import { AuthContext } from '../../context/AuthContext';
 
 // Import Separated Module Pages
-import BhajanMala from './BhajanMala';
+import BhajanSahitya from './bhajanSahitya/BhajanSahitya';
 import AakhyanMala from './AakhyanMala';
 import Gallery from './gallery/Gallery';
 
@@ -22,14 +22,14 @@ const DashboardLayout = () => {
   // Render content page dynamically based on active tab
   const renderActiveModule = () => {
     switch (activeTab) {
-      case 'bhajan-mala':
-        return <BhajanMala />;
+      case 'bhajan-sahitya':
+        return <BhajanSahitya />;
       case 'aakhyan-mala':
         return <AakhyanMala />;
       case 'gallery':
         return <Gallery />;
       default:
-        return <BhajanMala />;
+        return <BhajanSahitya />;
     }
   };
 

@@ -7,8 +7,8 @@ const Sidebar = ({ activeTab, setActiveTab, onLogout }) => {
   const navigate = useNavigate();
 
   const navItems = [
-    { id: 'bhajan-mala', label: 'Bhajan Mala', icon: <Music size={19} /> },
-    { id: 'aakhyan-mala', label: 'Aakhyan Mala', icon: <BookOpen size={19} /> },
+    { id: 'bhajan-sahitya', label: 'Bhajan Sahitya', icon: <BookOpen size={19} /> },
+    { id: 'aakhyan-mala', label: 'Aakhyan Mala', icon: <Music size={19} /> },
     { id: 'gallery', label: 'Gallery', icon: <Image size={19} /> },
   ];
 
