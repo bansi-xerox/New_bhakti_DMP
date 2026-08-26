@@ -1,3 +1,9 @@
+
+
+
+
+
+
 const fs = require('fs');
 const path = require('path');
 const Gallery = require('../models/galleryModel');
@@ -54,12 +60,33 @@ exports.uploadMedia = async (req, res) => {
     }
 
     const targetDir = path.join(__dirname, '..', 'uploads', safeMain, safeSub, typeFolder);
+
+    // Ensure directory exists
+    if (!fs.existsSync(targetDir)) {
+      fs.mkdirSync(targetDir, { recursive: true });
+    }
+
+    // --- FIX: Calculate starting sequence number safely for batch uploads ---
+    let maxSeq = 0;
+    const existingFiles = fs.readdirSync(targetDir);
+    existingFiles.forEach(file => {
+      const parts = file.split('-');
+      if (parts.length >= 3) {
+        const lastPart = parts[parts.length - 1].split('.')[0];
+        const num = parseInt(lastPart, 10);
+        if (!isNaN(num) && num > maxSeq) {
+          maxSeq = num;
+        }
+      }
+    });
+
     const savedRecords = [];
 
     for (const file of files) {
-      const ext = path.extname(file.originalname).toLowerCase();
-      const seqNumber = getNextSequenceNumber(targetDir, safeMain, safeSub);
+      maxSeq++; // Increment safely for each file in the batch
+      const seqNumber = maxSeq;
 
+      const ext = path.extname(file.originalname).toLowerCase();
       const fileName = `${safeMain}-${safeSub}-${seqNumber}${ext}`;
       const fullFilePath = path.join(targetDir, fileName);
 
@@ -70,8 +97,8 @@ exports.uploadMedia = async (req, res) => {
       const videoPath = typeFolder === 'videos' ? relativePath : null;
 
       const newRecord = new Gallery({
-        main_folder_name,
-        sub_folder_name,
+        main_folder_name: safeMain,
+        sub_folder_name: safeSub,
         photo_path: photoPath,
         video_path: videoPath
       });
@@ -95,25 +122,9 @@ exports.uploadMedia = async (req, res) => {
   }
 };
 
-//     const items = await Gallery.find().sort({ created_at: -1 });
-
-//     const formattedItems = items.map((item) => ({
-//       id: item._id,
-//       main_folder_name: item.main_folder_name,
-//       sub_folder_name: item.sub_folder_name,
-//       photo_path: item.photo_path,
-//       video_path: item.video_path,
-//       created_at: item.created_at
-//     }));
-
-//     return res.status(200).json({ success: true, data: formattedItems });
-//   } catch (error) {
-//     return res.status(500).json({ success: false, message: error.message });
-//   }
-// };
 exports.getGalleryItems = async (req, res) => {
   try {
-    const {  page, limit,  search,  main_folder_name, sub_folder_name,  media_type   } = req.query;
+    const { page, limit, search, main_folder_name, sub_folder_name, media_type } = req.query;
     const query = {};
 
     if (main_folder_name) {
@@ -198,17 +209,14 @@ exports.getGalleryItems = async (req, res) => {
   }
 };
 
-// 4. Update Media / Move Folder
-// 4. Update Media / Move Folder
 exports.updateMedia = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // FIX: Safely check if req.body exists to prevent "Cannot read properties of undefined"
     if (!req.body) {
       return res.status(400).json({
         success: false,
-        message: 'માહિતી મોકલવામાં ભૂલ. કૃપા કરીને ફરી પ્રયાસ કરો. (Data sending error.)'
+        message: 'માહિતી મોકલવામાં ભૂલ. કૃપા કરીને ફરી પ્રયાસ કરો.'
       });
     }
 
@@ -218,13 +226,13 @@ exports.updateMedia = async (req, res) => {
     if (!mainFolder || !subFolder) {
       return res.status(400).json({
         success: false,
-        message: 'મુખ્ય ફોલ્ડર અને સબ ફોલ્ડરનું નામ જરૂરી છે. (Folder names are required.)'
+        message: 'મુખ્ય ફોલ્ડર અને સબ ફોલ્ડરનું નામ જરૂરી છે.'
       });
     }
 
     const item = await Gallery.findById(id);
     if (!item) {
-      return res.status(404).json({ success: false, message: 'ફાઇલ મળી નથી. (Media item not found.)' });
+      return res.status(404).json({ success: false, message: 'ફાઇલ મળી નથી.' });
     }
 
     const safeNewMain = sanitizeName(mainFolder);
@@ -235,20 +243,16 @@ exports.updateMedia = async (req, res) => {
     const oldRelPath = isPhoto ? item.photo_path : item.video_path;
     const oldFullPath = path.join(__dirname, '..', 'uploads', oldRelPath);
 
-    // Calculate the base directory to check if it exists
     const newBaseDir = path.join(__dirname, '..', 'uploads', safeNewMain, safeNewSub);
     const newTargetDir = path.join(newBaseDir, typeFolder);
 
-    // --- RULE: Only allow moving to EXISTING folders ---
-    const fs = require('fs');
     if (!fs.existsSync(newBaseDir)) {
       return res.status(400).json({
         success: false,
-        message: `ફોલ્ડર "${mainFolder} / ${subFolder}" અસ્તિત્વમાં નથી. તમે ફાઇલને ફક્ત હયાત ફોલ્ડરમાં જ ખસેડી શકો છો.` // Gujarati Alert
+        message: `ફોલ્ડર "${mainFolder} / ${subFolder}" અસ્તિત્વમાં નથી. તમે ફાઇલને ફક્ત હયાત ફોલ્ડરમાં જ ખસેડી શકો છો.`
       });
     }
 
-    // If the "photos" or "videos" sub-folder inside it doesn't exist yet, create it
     if (!fs.existsSync(newTargetDir)) {
       fs.mkdirSync(newTargetDir, { recursive: true });
     }
@@ -266,18 +270,27 @@ exports.updateMedia = async (req, res) => {
       const updatedFullPath = path.join(newTargetDir, updatedFileName);
       const updatedRelPath = `${safeNewMain}/${safeNewSub}/${typeFolder}/${updatedFileName}`;
 
-    // Update MongoDB
-    item.main_folder_name = mainFolder;
-    item.sub_folder_name = subFolder;
-    if (isPhoto) {
-      item.photo_path = newRelPath;
+      if (fs.existsSync(oldFullPath)) {
+        fs.unlinkSync(oldFullPath);
+      }
+
+      fs.writeFileSync(updatedFullPath, uploadedFile.buffer);
+
+      item.main_folder_name = safeNewMain;
+      item.sub_folder_name = safeNewSub;
+      if (isPhoto) {
+        item.photo_path = updatedRelPath;
+      } else {
+        item.video_path = updatedRelPath;
+      }
     } else {
       if (fs.existsSync(oldFullPath)) {
         fs.renameSync(oldFullPath, newFullPath);
       }
 
-      item.main_folder_name = new_main_folder_name;
-      item.sub_folder_name = new_sub_folder_name;
+      // FIX: Always save sanitized safe names to prevent duplicate folder listings
+      item.main_folder_name = safeNewMain;
+      item.sub_folder_name = safeNewSub;
       if (isPhoto) {
         item.photo_path = newRelPath;
       } else {
@@ -289,7 +302,7 @@ exports.updateMedia = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: 'ફાઇલ સફળતાપૂર્વક ખસેડવામાં આવી! (Media moved successfully!)',
+      message: 'ફાઇલ સફળતાપૂર્વક ખસેડવામાં આવી!',
       data: item
     });
   } catch (error) {
