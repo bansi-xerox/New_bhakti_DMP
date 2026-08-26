@@ -9,6 +9,7 @@ const bhajanSahityaSchema = new mongoose.Schema({
   bhajan: { type: String, required: true },
   bhajan_bhavarth: { type: String, default: null },
   page_no: { type: Number, default: null },
+  youtube_link: { type: String, default: null },
   
   created_at: { type: Date, default: Date.now },
   updated_at: { type: Date, default: null } 

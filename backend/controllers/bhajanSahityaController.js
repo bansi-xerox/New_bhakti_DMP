@@ -13,9 +13,9 @@ exports.createBhajan = async (req, res) => {
 // 2. Get all Bhajan Records (for the listing table)
 exports.getAllBhajans = async (req, res) => {
   try {
-    // Mongoose uses .find() and .select() to get specific fields
+    // Add 'youtube_link' to the select string
     const bhajans = await BhajanSahitya.find()
-      .select('sahitya_name heading_name bhajan_name bhajan_kadi bhajan_rag page_no');
+      .select('sahitya_name heading_name bhajan_name bhajan_kadi bhajan_rag page_no youtube_link'); 
     res.status(200).json({ success: true, data: bhajans });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Error fetching records', error: error.message });

@@ -115,35 +115,62 @@ exports.getGalleryItems = async (req, res) => {
 };
 
 // 4. Update Media / Move Folder
+// 4. Update Media / Move Folder
 exports.updateMedia = async (req, res) => {
   try {
     const { id } = req.params;
-    const { new_main_folder_name, new_sub_folder_name } = req.body;
 
-    if (!new_main_folder_name || !new_sub_folder_name) {
+    // FIX: Safely check if req.body exists to prevent "Cannot read properties of undefined"
+    if (!req.body) {
       return res.status(400).json({
         success: false,
-        message: 'New main folder and sub folder names are required.'
+        message: 'માહિતી મોકલવામાં ભૂલ. કૃપા કરીને ફરી પ્રયાસ કરો. (Data sending error.)'
+      });
+    }
+
+    const mainFolder = req.body.main_folder_name || req.body.new_main_folder_name;
+    const subFolder = req.body.sub_folder_name || req.body.new_sub_folder_name;
+
+    if (!mainFolder || !subFolder) {
+      return res.status(400).json({
+        success: false,
+        message: 'મુખ્ય ફોલ્ડર અને સબ ફોલ્ડરનું નામ જરૂરી છે. (Folder names are required.)'
       });
     }
 
     const item = await Gallery.findById(id);
     if (!item) {
-      return res.status(404).json({ success: false, message: 'Media item not found.' });
+      return res.status(404).json({ success: false, message: 'ફાઇલ મળી નથી. (Media item not found.)' });
     }
 
+    const safeNewMain = sanitizeName(mainFolder);
+    const safeNewSub = sanitizeName(subFolder);
+
     const isPhoto = Boolean(item.photo_path);
+    const typeFolder = isPhoto ? 'photos' : 'videos';
     const oldRelPath = isPhoto ? item.photo_path : item.video_path;
     const oldFullPath = path.join(__dirname, '..', 'uploads', oldRelPath);
 
-    const safeNewMain = sanitizeName(new_main_folder_name);
-    const safeNewSub = sanitizeName(new_sub_folder_name);
-    const typeFolder = isPhoto ? 'photos' : 'videos';
+    // Calculate the base directory to check if it exists
+    const newBaseDir = path.join(__dirname, '..', 'uploads', safeNewMain, safeNewSub);
+    const newTargetDir = path.join(newBaseDir, typeFolder);
 
-    const newTargetDir = path.join(__dirname, '..', 'uploads', safeNewMain, safeNewSub, typeFolder);
+    // --- RULE: Only allow moving to EXISTING folders ---
+    const fs = require('fs');
+    if (!fs.existsSync(newBaseDir)) {
+      return res.status(400).json({
+        success: false,
+        message: `ફોલ્ડર "${mainFolder} / ${subFolder}" અસ્તિત્વમાં નથી. તમે ફાઇલને ફક્ત હયાત ફોલ્ડરમાં જ ખસેડી શકો છો.` // Gujarati Alert
+      });
+    }
+
+    // If the "photos" or "videos" sub-folder inside it doesn't exist yet, create it
+    if (!fs.existsSync(newTargetDir)) {
+      fs.mkdirSync(newTargetDir, { recursive: true });
+    }
+
     const ext = path.extname(oldRelPath);
     const seqNumber = getNextSequenceNumber(newTargetDir, safeNewMain, safeNewSub);
-
     const newFileName = `${safeNewMain}-${safeNewSub}-${seqNumber}${ext}`;
     const newFullPath = path.join(newTargetDir, newFileName);
     const newRelPath = `${safeNewMain}/${safeNewSub}/${typeFolder}/${newFileName}`;
@@ -153,9 +180,9 @@ exports.updateMedia = async (req, res) => {
       fs.renameSync(oldFullPath, newFullPath);
     }
 
-    // Update in MongoDB
-    item.main_folder_name = new_main_folder_name;
-    item.sub_folder_name = new_sub_folder_name;
+    // Update MongoDB
+    item.main_folder_name = mainFolder;
+    item.sub_folder_name = subFolder;
     if (isPhoto) {
       item.photo_path = newRelPath;
     } else {
@@ -166,13 +193,14 @@ exports.updateMedia = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: 'Media updated successfully',
+      message: 'ફાઇલ સફળતાપૂર્વક ખસેડવામાં આવી! (Media moved successfully!)',
       data: item
     });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
+
 exports.deleteMedia = async (req, res) => {
   try {
     const { ids } = req.body;
