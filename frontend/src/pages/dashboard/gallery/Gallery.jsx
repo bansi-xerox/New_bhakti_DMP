@@ -1,7 +1,13 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { getGalleryItems, deleteGalleryMedia } from '../../../services/api';
-import { showGalleryToast, showErrorAlert, confirmMediaDelete } from '../../../components/common/Alert';
-import GalleryModal from './GalleryModal';
+import React, { useState, useEffect, useMemo, useCallback } from "react";
+import { getGalleryItems, deleteGalleryMedia } from "../../../services/api";
+import {
+  showGalleryToast,
+  showErrorAlert,
+  confirmMediaDelete,
+} from "../../../components/common/Alert";
+import GalleryModal from "./GalleryModal";
+import Pagination from "../../../components/common/Pagination";
+import SearchBar from "../../../components/common/SearchBar";
 
 // --- Zero-Dependency Lucide-Style SVG Icons ---
 const FolderIcon = ({ size = 18, className = "" }) => (
@@ -91,11 +97,11 @@ const ImageIcon = ({ size = 20, className = "" }) => (
 const BASE_SERVER_URL = 'http://localhost:5000/uploads/';
 
 const formatMediaUrl = (path) => {
-  if (!path) return '';
-  if (path.startsWith('http://') || path.startsWith('https://')) {
+  if (!path) return "";
+  if (path.startsWith("http://") || path.startsWith("https://")) {
     return path;
   }
-  return `${BASE_SERVER_URL}${path.replace(/^\/+/, '')}`;
+  return `${BASE_SERVER_URL}${path.replace(/^\/+/, "")}`;
 };
 
 const Gallery = () => {
@@ -113,27 +119,54 @@ const Gallery = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedIds, setSelectedIds] = useState([]);
 
-  useEffect(() => {
-    loadGallery();
-  }, []);
+  // Search & Pagination States
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
+  const [paginationData, setPaginationData] = useState({
+    totalItems: 0,
+    totalPages: 1,
+    hasNextPage: false,
+    hasPrevPage: false,
+  });
 
-  const loadGallery = async () => {
+  const loadGallery = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await getGalleryItems();
+      const params = {
+        page: currentPage,
+        limit: pageSize,
+        search: searchQuery.trim() || undefined,
+      };
+
+      const res = await getGalleryItems(params);
       if (res.data?.success) {
         setItems(res.data.data || []);
+        if (res.data.pagination) {
+          setPaginationData(res.data.pagination);
+        }
       }
     } catch (err) {
-      showErrorAlert('Fetch Error', 'Failed to load gallery items');
+      showErrorAlert("Fetch Error", "Failed to load gallery items");
     } finally {
       setLoading(false);
     }
+  }, [currentPage, pageSize, searchQuery]);
+
+  useEffect(() => {
+    loadGallery();
+  }, [loadGallery]);
+
+  const handleSearchSubmit = () => {
+    setCurrentPage(1);
+    loadGallery();
   };
 
   const folders = useMemo(() => {
-    const main = [...new Set(items.map((i) => i.main_folder_name).filter(Boolean))];
-    return ['All', ...main];
+    const main = [
+      ...new Set(items.map((i) => i.main_folder_name).filter(Boolean)),
+    ];
+    return ["All", ...main];
   }, [items]);
 
   const getSubFoldersForMain = (mainFolder) => {
@@ -151,8 +184,11 @@ const Gallery = () => {
 
   const filteredItems = useMemo(() => {
     return items.filter((item) => {
-      const matchMain = selectedFolder === 'All' || item.main_folder_name === selectedFolder;
-      const matchSub = selectedSubFolder === 'All' || item.sub_folder_name === selectedSubFolder;
+      const matchMain =
+        selectedFolder === "All" || item.main_folder_name === selectedFolder;
+      const matchSub =
+        selectedSubFolder === "All" ||
+        item.sub_folder_name === selectedSubFolder;
       const isPhoto = Boolean(item.photo_path);
       const matchType =
         filterType === 'ALL' ||
@@ -170,36 +206,46 @@ const Gallery = () => {
 
   const handleDeleteSingle = async (e, item) => {
     e.stopPropagation();
-    const type = item.photo_path ? 'photo' : 'video';
-    const confirm = await confirmMediaDelete(`Do you want to delete this ${type}?`);
+    const type = item.photo_path ? "photo" : "video";
+    const confirm = await confirmMediaDelete(
+      `Do you want to delete this ${type}?`,
+    );
 
     if (confirm.isConfirmed) {
       try {
         const res = await deleteGalleryMedia([item.id]);
         if (res.data?.success) {
-          showGalleryToast(res.data.message || 'Media deleted successfully');
+          showGalleryToast(res.data.message || "Media deleted successfully");
           setSelectedIds((prev) => prev.filter((id) => id !== item.id));
           loadGallery();
         }
       } catch (err) {
-        showErrorAlert('Delete Error', err.response?.data?.message || err.message);
+        showErrorAlert(
+          "Delete Error",
+          err.response?.data?.message || err.message,
+        );
       }
     }
   };
 
   const handleBulkDelete = async () => {
     if (selectedIds.length === 0) return;
-    const confirm = await confirmMediaDelete(`Delete selected ${selectedIds.length} items?`);
+    const confirm = await confirmMediaDelete(
+      `Delete selected ${selectedIds.length} items?`,
+    );
     if (confirm.isConfirmed) {
       try {
         const res = await deleteGalleryMedia(selectedIds);
         if (res.data?.success) {
-          showGalleryToast(res.data.message || 'Items deleted successfully');
+          showGalleryToast(res.data.message || "Items deleted successfully");
           setSelectedIds([]);
           loadGallery();
         }
       } catch (err) {
-        showErrorAlert('Delete Error', err.response?.data?.message || err.message);
+        showErrorAlert(
+          "Delete Error",
+          err.response?.data?.message || err.message,
+        );
       }
     }
   };
@@ -207,7 +253,7 @@ const Gallery = () => {
   const toggleSelectId = (e, id) => {
     e.stopPropagation();
     setSelectedIds((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id],
     );
   };
 
@@ -551,10 +597,13 @@ const Gallery = () => {
         <div
           className="modal fade show d-block"
           tabIndex="-1"
-          style={{ backgroundColor: 'rgba(0,0,0,0.85)', zIndex: 1060 }}
+          style={{ backgroundColor: "rgba(0,0,0,0.85)", zIndex: 1060 }}
           onClick={() => setPreviewMedia(null)}
         >
-          <div className="modal-dialog modal-dialog-centered modal-xl" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="modal-dialog modal-dialog-centered modal-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="modal-content bg-transparent border-0">
               <div className="d-flex justify-content-between align-items-center text-white mb-2 px-2">
                 <div>
@@ -575,16 +624,13 @@ const Gallery = () => {
                   <XIcon size={18} />
                 </button>
               </div>
-              <div
-                className="modal-body p-0 text-center bg-black rounded-4 overflow-hidden shadow-lg position-relative d-flex align-items-center justify-content-center"
-                style={{ minHeight: '60vh', maxHeight: '80vh' }}
-              >
+              <div className="modal-body p-0 text-center bg-black rounded-4 overflow-hidden">
                 {previewMedia.isPhoto ? (
                   <img
                     src={previewMedia.mediaUrl}
-                    alt={previewMedia.sub_folder_name}
+                    alt="Preview"
                     className="img-fluid object-fit-contain"
-                    style={{ maxHeight: '80vh', width: 'auto' }}
+                    style={{ maxHeight: "80vh" }}
                   />
                 ) : (
                   <video
@@ -592,7 +638,7 @@ const Gallery = () => {
                     controls
                     autoPlay
                     className="w-100"
-                    style={{ maxHeight: '80vh' }}
+                    style={{ maxHeight: "80vh" }}
                   />
                 )}
               </div>

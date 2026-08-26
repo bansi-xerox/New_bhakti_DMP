@@ -10,7 +10,6 @@ exports.createBhajan = async (req, res) => {
   }
 };
 
-// 2. Get all Bhajan Records (for the listing table)
 exports.getAllBhajans = async (req, res) => {
   try {
     // Add 'youtube_link' to the select string
@@ -18,11 +17,70 @@ exports.getAllBhajans = async (req, res) => {
       .select('sahitya_name heading_name bhajan_name bhajan_kadi bhajan_rag page_no youtube_link'); 
     res.status(200).json({ success: true, data: bhajans });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Error fetching records', error: error.message });
+    return res.status(500).json({
+      success: false,
+      message: 'Error fetching records',
+      error: error.message
+    });
   }
 };
 
-// 3. Get a single Bhajan by ID (for double-click edit form)
+// Dedicated Search Endpoint for Bhajan Sahitya
+exports.searchBhajans = async (req, res) => {
+  try {
+    const { q, page = 1, limit = 10 } = req.query;
+
+    if (!q || !q.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Search keyword (q) is required.'
+      });
+    }
+
+    const regex = new RegExp(q.trim(), 'i');
+    const query = {
+      $or: [
+        { bhajan_name: regex },
+        { sahitya_name: regex },
+        { heading_name: regex },
+        { bhajan_rag: regex },
+        { bhajan_kadi: regex }
+      ]
+    };
+
+    const pageNumber = parseInt(page, 10) || 1;
+    const pageSize = parseInt(limit, 10) || 10;
+    const skip = (pageNumber - 1) * pageSize;
+
+    const totalItems = await BhajanSahitya.countDocuments(query);
+    const bhajans = await BhajanSahitya.find(query)
+      .select('sahitya_name heading_name bhajan_name bhajan_kadi bhajan_rag page_no')
+      .sort({ _id: -1 })
+      .skip(skip)
+      .limit(pageSize);
+
+    const totalPages = Math.ceil(totalItems / pageSize);
+
+    return res.status(200).json({
+      success: true,
+      data: bhajans,
+      pagination: {
+        totalItems,
+        totalPages,
+        currentPage: pageNumber,
+        pageSize,
+        hasNextPage: pageNumber < totalPages,
+        hasPrevPage: pageNumber > 1
+      }
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: 'Search error',
+      error: error.message
+    });
+  }
+};
 exports.getBhajanById = async (req, res) => {
   try {
     // Mongoose uses .findById() instead of .findByPk()

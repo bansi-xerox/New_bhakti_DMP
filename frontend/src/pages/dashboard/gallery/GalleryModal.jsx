@@ -1,18 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import Modal from '../../../components/common/Modal';
-import Input from '../../../components/common/Input';
-import Select from '../../../components/common/Select';
-import Button from '../../../components/common/Button';
-import { uploadGalleryMedia, updateGalleryMedia } from '../../../services/api';
-import { showGalleryToast, showErrorAlert } from '../../../components/common/Alert';
+import React, { useState, useEffect } from "react";
+import Modal from "../../../components/common/Modal";
+import Input from "../../../components/common/Input";
+import Select from "../../../components/common/Select";
+import Button from "../../../components/common/Button";
+import { uploadGalleryMedia, updateGalleryMedia } from "../../../services/api";
+import {
+  showGalleryToast,
+  showErrorAlert,
+} from "../../../components/common/Alert";
 
 const GalleryModal = ({ isOpen, onClose, onSuccess, initialData = null }) => {
   const isEditMode = Boolean(initialData);
 
   const [formData, setFormData] = useState({
-    main_folder_name: '',
-    sub_folder_name: '',
-    media_type: 'Photos',
+    main_folder_name: "",
+    sub_folder_name: "",
+    media_type: "Photos",
     files: [],
   });
   const [previews, setPreviews] = useState([]);
@@ -23,18 +26,18 @@ const GalleryModal = ({ isOpen, onClose, onSuccess, initialData = null }) => {
       if (initialData) {
         // Edit Mode: Prefill existing data
         setFormData({
-          main_folder_name: initialData.main_folder_name || '',
-          sub_folder_name: initialData.sub_folder_name || '',
-          media_type: initialData.photo_path ? 'Photos' : 'Videos',
+          main_folder_name: initialData.main_folder_name || "",
+          sub_folder_name: initialData.sub_folder_name || "",
+          media_type: initialData.photo_path ? "Photos" : "Videos",
           files: [],
         });
         setPreviews([]);
       } else {
         // Insert Mode: Reset fields
         setFormData({
-          main_folder_name: '',
-          sub_folder_name: '',
-          media_type: 'Photos',
+          main_folder_name: "",
+          sub_folder_name: "",
+          media_type: "Photos",
           files: [],
         });
         setPreviews([]);
@@ -47,9 +50,9 @@ const GalleryModal = ({ isOpen, onClose, onSuccess, initialData = null }) => {
     setFormData((prev) => ({
       ...prev,
       [name]: value,
-      ...(name === 'media_type' ? { files: [] } : {}),
+      ...(name === "media_type" ? { files: [] } : {}),
     }));
-    if (name === 'media_type') setPreviews([]);
+    if (name === "media_type") setPreviews([]);
   };
 
   const handleFileChange = (e) => {
@@ -108,11 +111,11 @@ const GalleryModal = ({ isOpen, onClose, onSuccess, initialData = null }) => {
       } else {
         // Insert API Call (Keep FormData here because we are uploading files)
         const payload = new FormData();
-        payload.append('main_folder_name', formData.main_folder_name.trim());
-        payload.append('sub_folder_name', formData.sub_folder_name.trim());
-        payload.append('media_type', formData.media_type);
+        payload.append("main_folder_name", formData.main_folder_name.trim());
+        payload.append("sub_folder_name", formData.sub_folder_name.trim());
+        payload.append("media_type", formData.media_type);
 
-        formData.files.forEach((file) => payload.append('files', file));
+        formData.files.forEach((file) => payload.append("files", file));
 
         const res = await uploadGalleryMedia(payload);
         if (res.data?.success) {

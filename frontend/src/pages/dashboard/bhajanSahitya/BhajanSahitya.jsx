@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
-// 1. Import Reusable Components
+// Reusable UI Components
 import Input from '../../../components/common/Input';
 import Button from '../../../components/common/Button';
 import Modal from '../../../components/common/Modal';
+import SearchBar from '../../../components/common/SearchBar';
+import Pagination from '../../../components/common/Pagination';
 
 // 2. Import API Functions
 import {
@@ -21,6 +23,17 @@ import {
   confirmMediaDelete,
   showToastAlert
 } from '../../../components/common/Alert';
+
+const initialFormState = {
+  sahitya_name: '',
+  heading_name: '',
+  bhajan_name: '',
+  bhajan_kadi: '',
+  bhajan_rag: '',
+  bhajan: '',
+  bhajan_bhavarth: '',
+  page_no: ''
+};
 
 const BhajanSahitya = () => {
   const [bhajans, setBhajans] = useState([]);
@@ -43,22 +56,39 @@ const BhajanSahitya = () => {
 
   const [formData, setFormData] = useState(initialFormState);
 
-  // --- Fetch Data ---
-  const fetchBhajans = async () => {
+  // Search & Pagination States
+  const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize] = useState(10);
+  const [paginationData, setPaginationData] = useState({
+    totalItems: 0,
+    totalPages: 1,
+    hasNextPage: false,
+    hasPrevPage: false
+  });
+
+  // Fetch Data
+  const fetchBhajans = useCallback(async () => {
     try {
       const response = await getAllBhajans();
       setBhajans(response.data.data);
     } catch (error) {
       console.error("Error fetching data", error);
       showErrorAlert("Fetch Error", "Could not load bhajans.");
+    } finally {
+      setFetching(false);
     }
-  };
+  }, [currentPage, pageSize, searchQuery]);
 
   useEffect(() => {
     fetchBhajans();
-  }, []);
+  }, [fetchBhajans]);
 
-  // --- Handlers ---
+  const handleSearchSubmit = () => {
+    setCurrentPage(1);
+    fetchBhajans();
+  };
+
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -76,14 +106,13 @@ const BhajanSahitya = () => {
       setCurrentId(id);
       setIsEditing(true);
       setIsModalOpen(true);
-    } catch (error) {
+    } catch {
       showErrorAlert("Error", "Could not fetch record details.");
     }
   };
 
   const closeModal = () => setIsModalOpen(false);
 
-  // --- Form Submit ---
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -105,10 +134,8 @@ const BhajanSahitya = () => {
     }
   };
 
-  // --- Delete Handler ---
   const handleDelete = async (id) => {
     const result = await confirmMediaDelete("શું તમે ખરેખર આ રેકોર્ડ કાઢી નાખવા માંગો છો?");
-
     if (result.isConfirmed) {
       try {
         await deleteBhajan(id);
@@ -123,22 +150,16 @@ const BhajanSahitya = () => {
   return (
     <>
       <style>{`
-        .delete-btn-wrapper {
-          display: none;
-        }
-        .serial-cell:hover .serial-number {
-          display: none;
-        }
-        .serial-cell:hover .delete-btn-wrapper {
-          display: inline-block;
-        }
+        .delete-btn-wrapper { display: none; }
+        .serial-cell:hover .serial-number { display: none; }
+        .serial-cell:hover .delete-btn-wrapper { display: inline-block; }
       `}</style>
 
       <div className="container-fluid p-4" style={{ backgroundColor: '#fdf9f1', minHeight: '100vh' }}>
 
         {/* Header Card */}
-        <div className="card shadow-sm border-0 rounded-4 mb-4" style={{ borderColor: '#fdeee5' }}>
-          <div className="card-body d-flex justify-content-between align-items-center p-4">
+        <div className="card shadow-sm border-0 rounded-4 mb-4">
+          <div className="card-body d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 p-4">
             <div>
               <span className="badge text-uppercase mb-2 px-3 py-2" style={{ backgroundColor: '#ffeedc', color: '#f26522', borderRadius: '50px', fontWeight: 'bold' }}>
                 BHAJAN & SATSANG LIBRARY
@@ -153,6 +174,18 @@ const BhajanSahitya = () => {
             >
               + નવું ઉમેરો (Add New)
             </Button>
+          </div>
+        </div>
+
+        {/* Search Bar Row */}
+        <div className="card shadow-sm border-0 rounded-4 mb-4">
+          <div className="card-body p-3">
+            <SearchBar
+              value={searchQuery}
+              onChange={setSearchQuery}
+              onSubmit={handleSearchSubmit}
+              placeholder="Search by bhajan, author, rag, kadi..."
+            />
           </div>
         </div>
 
@@ -267,15 +300,15 @@ const BhajanSahitya = () => {
             
             <div className="col-12 mt-3">
               <label className="form-label fw-bold text-secondary small">ભજનનો પાઠ *</label>
-              <textarea required name="bhajan" value={formData.bhajan} onChange={handleInputChange} rows="5" className="form-control"></textarea>
+              <textarea required name="bhajan" value={formData.bhajan} onChange={handleInputChange} rows="5" className="form-control" />
             </div>
             <div className="col-12 mt-3">
               <label className="form-label fw-bold text-secondary small">ભજનનો અર્થ</label>
-              <textarea name="bhajan_bhavarth" value={formData.bhajan_bhavarth} onChange={handleInputChange} rows="3" className="form-control"></textarea>
+              <textarea name="bhajan_bhavarth" value={formData.bhajan_bhavarth} onChange={handleInputChange} rows="3" className="form-control" />
             </div>
 
             <div className="col-12 d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
-              <Button onClick={closeModal} className="btn btn-light px-4 py-2 text-muted fw-bold">
+              <Button type="button" onClick={closeModal} className="btn btn-light px-4 py-2 text-muted fw-bold">
                 રદ કરો
               </Button>
               <Button type="submit" loading={isLoading} className="btn px-4 py-2 fw-bold text-white shadow-sm" style={{ backgroundColor: '#f26522' }}>

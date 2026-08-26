@@ -39,10 +39,11 @@ export const updateGalleryMedia = (id, data) => API.put(`/gallery/update/${id}`,
 // ==========================================
 // 3. BHAJAN SAHITYA MODULE
 // ==========================================
-export const getAllBhajans = () => API.get('/bhajanSahitya');
 export const getBhajanById = (id) => API.get(`/bhajanSahitya/${id}`);
 export const createBhajan = (data) => API.post('/bhajanSahitya', data);
 export const updateBhajan = (id, data) => API.put(`/bhajanSahitya/${id}`, data);
+export const getAllBhajans = (params) => API.get('/bhajanSahitya', { params });
 export const deleteBhajan = (id) => API.delete(`/bhajanSahitya/${id}`);
+export const searchBhajans = (query, params) => API.get('/bhajanSahitya/search', { params: { q: query, ...params } });
 
 export default API;

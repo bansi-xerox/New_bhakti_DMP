@@ -3,10 +3,11 @@
     const upload = require('../middleware/upload');
     const galleryController = require('../controllers/galleryController');
 
-    // Define API Routes
     router.post('/upload', upload.array('files'), galleryController.uploadMedia);
     router.get('/', galleryController.getGalleryItems);
-    router.put('/update/:id', galleryController.updateMedia);
-    router.delete('/delete', galleryController.deleteMedia);
+
+router.put('/update/:id', upload.array('files'), galleryController.updateMedia);   
+ router.delete('/delete', galleryController.deleteMedia);
+    router.get('/search', galleryController.searchMedia);
 
     module.exports = router;
