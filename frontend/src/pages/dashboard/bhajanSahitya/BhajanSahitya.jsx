@@ -6,21 +6,21 @@ import Button from '../../../components/common/Button';
 import Modal from '../../../components/common/Modal';
 
 // 2. Import API Functions
-import { 
-  getAllBhajans, 
-  getBhajanById, 
-  createBhajan, 
-  updateBhajan, 
-  deleteBhajan 
-} from '../../../services/api'; 
+import {
+  getAllBhajans,
+  getBhajanById,
+  createBhajan,
+  updateBhajan,
+  deleteBhajan
+} from '../../../services/api';
 
 // 3. Import SweetAlert Utility Functions
-import { 
-  showSuccessAlert, 
-  showErrorAlert, 
-  confirmMediaDelete, 
-  showToastAlert 
-} from '../../../components/common/Alert'; 
+import {
+  showSuccessAlert,
+  showErrorAlert,
+  confirmMediaDelete,
+  showToastAlert
+} from '../../../components/common/Alert';
 
 const BhajanSahitya = () => {
   const [bhajans, setBhajans] = useState([]);
@@ -37,7 +37,8 @@ const BhajanSahitya = () => {
     bhajan_rag: '',
     bhajan: '',
     bhajan_bhavarth: '',
-    page_no: ''
+    page_no: '',
+    youtube_link: ''
   };
 
   const [formData, setFormData] = useState(initialFormState);
@@ -46,7 +47,7 @@ const BhajanSahitya = () => {
   const fetchBhajans = async () => {
     try {
       const response = await getAllBhajans();
-      setBhajans(response.data.data); 
+      setBhajans(response.data.data);
     } catch (error) {
       console.error("Error fetching data", error);
       showErrorAlert("Fetch Error", "Could not load bhajans.");
@@ -95,7 +96,7 @@ const BhajanSahitya = () => {
         showSuccessAlert("Success", "ભજન સફળતાપૂર્વક ઉમેરાયું!");
       }
       closeModal();
-      fetchBhajans(); 
+      fetchBhajans();
     } catch (error) {
       console.error("Save error:", error);
       showErrorAlert("Error", "Failed to save record.");
@@ -107,12 +108,12 @@ const BhajanSahitya = () => {
   // --- Delete Handler ---
   const handleDelete = async (id) => {
     const result = await confirmMediaDelete("શું તમે ખરેખર આ રેકોર્ડ કાઢી નાખવા માંગો છો?");
-    
+
     if (result.isConfirmed) {
       try {
         await deleteBhajan(id);
         showToastAlert("Record deleted successfully!");
-        fetchBhajans(); 
+        fetchBhajans();
       } catch (error) {
         showErrorAlert("Error", "Could not delete the record.");
       }
@@ -121,10 +122,6 @@ const BhajanSahitya = () => {
 
   return (
     <>
-      {/* 
-        NEW CSS: Hides delete button by default. 
-        On hover over the serial cell, it hides the number and shows the button 
-      */}
       <style>{`
         .delete-btn-wrapper {
           display: none;
@@ -138,7 +135,7 @@ const BhajanSahitya = () => {
       `}</style>
 
       <div className="container-fluid p-4" style={{ backgroundColor: '#fdf9f1', minHeight: '100vh' }}>
-        
+
         {/* Header Card */}
         <div className="card shadow-sm border-0 rounded-4 mb-4" style={{ borderColor: '#fdeee5' }}>
           <div className="card-body d-flex justify-content-between align-items-center p-4">
@@ -149,8 +146,8 @@ const BhajanSahitya = () => {
               <h2 className="fw-bold mb-1 text-dark">Bhajan Sahitya Manager</h2>
               <p className="text-muted mb-0 small">Organize and manage all bhajan texts and meanings effortlessly.</p>
             </div>
-            <Button 
-              onClick={openAddModal} 
+            <Button
+              onClick={openAddModal}
               className="btn px-4 py-2 fw-bold text-white shadow-sm"
               style={{ backgroundColor: '#f26522', borderRadius: '50px' }}
             >
@@ -172,24 +169,24 @@ const BhajanSahitya = () => {
                   <th className="py-3 px-4 text-secondary">ભજનની કડી</th>
                   <th className="py-3 px-4 text-secondary">ભજનનો રાગ</th>
                   <th className="py-3 px-4 text-secondary">પૃષ્ઠ ક્રમાંક</th>
+                  <th className="py-3 px-4 text-secondary text-center">YouTube Link</th> {/* <-- ADDED HEADER */}
                 </tr>
               </thead>
               <tbody>
                 {bhajans.length > 0 ? (
                   bhajans.map((item, index) => (
-                    <tr 
-                      key={item._id} 
+                    <tr
+                      key={item._id}
                       onDoubleClick={() => openEditModal(item._id)}
                       title="Double-click to edit"
                       style={{ cursor: 'pointer' }}
                     >
-                      {/* UPDATED SERIAL CELL */}
                       <td className="py-3 px-4 serial-cell" style={{ width: '80px', minWidth: '80px' }}>
                         <span className="serial-number text-secondary fw-bold">{index + 1}</span>
                         <div className="delete-btn-wrapper">
-                          <button 
+                          <button
                             onClick={(e) => {
-                              e.stopPropagation(); // Prevents opening edit modal
+                              e.stopPropagation();
                               handleDelete(item._id);
                             }}
                             className="btn btn-sm btn-danger border-0 py-1 px-2 fw-bold"
@@ -199,19 +196,36 @@ const BhajanSahitya = () => {
                           </button>
                         </div>
                       </td>
-                      {/* END SERIAL CELL */}
-                      
+
                       <td className="py-3 px-4 text-dark">{item.sahitya_name}</td>
                       <td className="py-3 px-4 text-muted">{item.heading_name}</td>
                       <td className="py-3 px-4 fw-bold" style={{ color: '#f26522' }}>{item.bhajan_name}</td>
                       <td className="py-3 px-4 text-muted text-truncate" style={{ maxWidth: '200px' }}>{item.bhajan_kadi}</td>
                       <td className="py-3 px-4 text-muted">{item.bhajan_rag}</td>
                       <td className="py-3 px-4 text-muted">{item.page_no}</td>
+                      
+                      {/* <-- ADDED YOUTUBE LINK CELL --> */}
+                      <td className="py-3 px-4 text-center">
+                        {item.youtube_link ? (
+                          <a 
+                            href={item.youtube_link} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            onClick={(e) => e.stopPropagation()} 
+                            className="text-danger fw-bold text-decoration-none" 
+                            title="Watch on YouTube"
+                          >
+                            ▶ Play
+                          </a>
+                        ) : (
+                          <span className="text-muted">-</span>
+                        )}
+                      </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="7" className="py-5 text-center text-muted">
+                    <td colSpan="8" className="py-5 text-center text-muted">
                       કોઈ ડેટા મળ્યો નથી. (No data found)
                     </td>
                   </tr>
@@ -222,14 +236,13 @@ const BhajanSahitya = () => {
         </div>
 
         {/* Reusable Custom Modal */}
-        <Modal 
-          isOpen={isModalOpen} 
-          onClose={closeModal} 
+        <Modal
+          isOpen={isModalOpen}
+          onClose={closeModal}
           title={isEditing ? 'ભજનમાં સુધારો કરો (Edit)' : 'નવું ભજન ઉમેરો (Add New)'}
           size="lg"
         >
           <form onSubmit={handleSubmit} className="row g-3">
-            
             <div className="col-md-6">
               <Input label="સાહિત્યનું નામ *" name="sahitya_name" value={formData.sahitya_name} onChange={handleInputChange} required />
             </div>
@@ -248,13 +261,14 @@ const BhajanSahitya = () => {
             <div className="col-md-6">
               <Input label="પૃષ્ઠ ક્રમાંક" type="number" name="page_no" value={formData.page_no} onChange={handleInputChange} />
             </div>
-
-            {/* Textareas */}
+            <div className="col-md-12">
+              <Input label="YouTube Link" type="url" name="youtube_link" value={formData.youtube_link} onChange={handleInputChange} placeholder="https://youtube.com/..." />
+            </div>
+            
             <div className="col-12 mt-3">
               <label className="form-label fw-bold text-secondary small">ભજનનો પાઠ *</label>
               <textarea required name="bhajan" value={formData.bhajan} onChange={handleInputChange} rows="5" className="form-control"></textarea>
             </div>
-
             <div className="col-12 mt-3">
               <label className="form-label fw-bold text-secondary small">ભજનનો અર્થ</label>
               <textarea name="bhajan_bhavarth" value={formData.bhajan_bhavarth} onChange={handleInputChange} rows="3" className="form-control"></textarea>

@@ -35,11 +35,7 @@ export const uploadGalleryMedia = (formData) =>
 export const getGalleryItems = () => API.get('/gallery');
 export const deleteGalleryMedia = (ids) =>
   API.delete('/gallery/delete', { data: { ids } });
-export const updateGalleryMedia = (id, formData) =>
-  API.put(`/gallery/update/${id}`, formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  });
-
+export const updateGalleryMedia = (id, data) => API.put(`/gallery/update/${id}`, data);
 // ==========================================
 // 3. BHAJAN SAHITYA MODULE
 // ==========================================

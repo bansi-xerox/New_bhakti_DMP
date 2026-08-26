@@ -5,7 +5,6 @@ import { AuthContext } from '../../context/AuthContext';
 
 // Import Separated Module Pages
 import BhajanSahitya from './bhajanSahitya/BhajanSahitya';
-import AakhyanMala from './AakhyanMala';
 import Gallery from './gallery/Gallery';
 
 const DashboardLayout = () => {
@@ -24,8 +23,6 @@ const DashboardLayout = () => {
     switch (activeTab) {
       case 'bhajan-sahitya':
         return <BhajanSahitya />;
-      case 'aakhyan-mala':
-        return <AakhyanMala />;
       case 'gallery':
         return <Gallery />;
       default:
