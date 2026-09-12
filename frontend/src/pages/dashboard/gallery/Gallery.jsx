@@ -540,7 +540,7 @@ const Gallery = () => {
             </div>
 
             {/* FILTERS & BULK DELETE */}
-          <div className="d-flex flex-wrap gap-2 align-items-center ms-auto">
+            <div className="d-flex flex-wrap gap-2 align-items-center ms-auto">
               <div className="btn-group btn-group-sm bg-light border rounded-3 p-1">
                 {['ALL', 'Photos', 'Videos'].map((t) => (
                   <button
@@ -555,14 +555,13 @@ const Gallery = () => {
                 ))}
               </div>
 
-           {/* NEW: Show both Move and Delete buttons when items are selected */}
+              {/* NEW: Move and Delete Buttons */}
               {selectedIds.length > 0 && (
-                <div className="d-flex align-items-center gap-2">
+                <div className="d-flex align-items-center gap-2 ms-2">
                   <button
                     type="button"
                     className="btn btn-warning btn-sm fw-bold px-3 py-1 rounded-3 shadow-sm d-flex align-items-center gap-2 text-dark"
                     onClick={() => {
-                      // Pass all selected items as an array to the modal
                       const itemsToMove = filteredItems.filter(i => selectedIds.includes(i.id));
                       setSelectedForEdit(itemsToMove);
                       setIsModalOpen(true);
@@ -570,6 +569,7 @@ const Gallery = () => {
                   >
                     <FolderOpenIcon size={16} /> Move ({selectedIds.length})
                   </button>
+                  
                   <button
                     type="button"
                     className="btn btn-danger btn-sm fw-bold px-3 py-1 rounded-3 shadow-sm d-flex align-items-center gap-2"
@@ -578,7 +578,7 @@ const Gallery = () => {
                     <Trash2Icon size={16} /> Delete ({selectedIds.length})
                   </button>
                 </div>
-                )}
+              )}
             </div>
           </div>
 
@@ -618,12 +618,12 @@ const Gallery = () => {
                         <video src={mediaUrl} muted preload="metadata" />
                       )}
 
-                    {/* Hover Overlay with Delete & Checkbox */}
+                 {/* Hover Overlay with Delete & Checkbox */}
                       <div 
                         className="media-overlay" 
                         style={{ 
                           opacity: isSelected ? 1 : undefined, 
-                          backgroundColor: isSelected ? 'rgba(0,0,0,0.15)' : undefined 
+                          backgroundColor: isSelected ? 'rgba(0,0,0,0.2)' : undefined 
                         }}
                       >
                         <input
