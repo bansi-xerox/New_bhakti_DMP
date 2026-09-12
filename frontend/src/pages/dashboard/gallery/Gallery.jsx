@@ -120,7 +120,7 @@ const Gallery = () => {
   const [searchQuery] = useState("");
 const [setPaginationData] = useState(null);
   // Search & Pagination States
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage] = useState(1);
   const [pageSize] = useState(5);
 
 

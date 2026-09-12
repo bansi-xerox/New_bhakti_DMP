@@ -48,8 +48,7 @@ const BhajanSahitya = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(10);
-  const [ setFetching] = useState(false);
-
+const [fetching, setFetching] = useState(false);
 
   // Fetch Data
   const fetchBhajans = useCallback(async () => {
@@ -62,7 +61,7 @@ const BhajanSahitya = () => {
     } finally {
       setFetching(false);
     }
-  }, [currentPage, pageSize, searchQuery]);
+  }, [currentPage, pageSize, searchQuery, setFetching]);
 
   useEffect(() => {
     fetchBhajans();
