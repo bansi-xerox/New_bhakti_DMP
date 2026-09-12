@@ -48,6 +48,7 @@ const BhajanSahitya = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(10);
+  const [ setFetching] = useState(false);
 
 
   // Fetch Data
