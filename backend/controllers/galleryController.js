@@ -1,9 +1,4 @@
 
-
-
-
-
-
 const fs = require('fs');
 const path = require('path');
 const Gallery = require('../models/galleryModel');
@@ -246,13 +241,11 @@ exports.updateMedia = async (req, res) => {
     const newBaseDir = path.join(__dirname, '..', 'uploads', safeNewMain, safeNewSub);
     const newTargetDir = path.join(newBaseDir, typeFolder);
 
-    if (!fs.existsSync(newBaseDir)) {
-      return res.status(400).json({
-        success: false,
-        message: `ફોલ્ડર "${mainFolder} / ${subFolder}" અસ્તિત્વમાં નથી. તમે ફાઇલને ફક્ત હયાત ફોલ્ડરમાં જ ખસેડી શકો છો.`
-      });
-    }
-
+    // ==========================================
+    // CHANGED LOGIC HERE: 
+    // We removed the error block that checks !fs.existsSync(newBaseDir).
+    // Now, it will just create whatever folders are missing automatically!
+    // ==========================================
     if (!fs.existsSync(newTargetDir)) {
       fs.mkdirSync(newTargetDir, { recursive: true });
     }
@@ -288,7 +281,7 @@ exports.updateMedia = async (req, res) => {
         fs.renameSync(oldFullPath, newFullPath);
       }
 
-      // FIX: Always save sanitized safe names to prevent duplicate folder listings
+      // Always save sanitized safe names to prevent duplicate folder listings
       item.main_folder_name = safeNewMain;
       item.sub_folder_name = safeNewSub;
       if (isPhoto) {
