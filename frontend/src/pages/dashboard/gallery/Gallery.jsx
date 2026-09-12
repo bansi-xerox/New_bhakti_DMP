@@ -120,21 +120,21 @@ const Gallery = () => {
   // Search & Pagination States
 
 
- const loadGallery = useCallback(async () => {
-  try {
-    setLoading(true);
+  const loadGallery = useCallback(async () => {
+    try {
+      setLoading(true);
 
-    const res = await getGalleryItems();
+      const res = await getGalleryItems();
 
-    if (res.data?.success) {
-      setItems(res.data.data || []);
+      if (res.data?.success) {
+        setItems(res.data.data || []);
+      }
+    } catch (err) {
+      showErrorAlert("Fetch Error", "Failed to load gallery items");
+    } finally {
+      setLoading(false);
     }
-  } catch (err) {
-    showErrorAlert("Fetch Error", "Failed to load gallery items");
-  } finally {
-    setLoading(false);
-  }
-}, []);
+  }, []);
   useEffect(() => {
     loadGallery();
   }, [loadGallery]);
@@ -234,7 +234,7 @@ const Gallery = () => {
   };
 
   return (
-<div className="container-fluid p-0 p-0 p-0 d-flex flex-column" style={{ minHeight: '100%', backgroundColor: 'transparent' }}>
+    <div className="container-fluid p-0 p-0 p-0 d-flex flex-column" style={{ minHeight: '100%', backgroundColor: 'transparent' }}>
       <style>{`
         .theme-orange-gradient { 
           background: linear-gradient(135deg, #f97316 0%, #ea580c 100%) !important; 
@@ -253,8 +253,13 @@ const Gallery = () => {
           box-shadow: 0 4px 18px rgba(0,0,0,0.03);
         }
         
-        .gallery-layout { display: flex; gap: 1.5rem; min-height: calc(100vh - 120px); align-items: stretch; }
-        
+.gallery-layout { 
+  display: flex; 
+  gap: 1.5rem; 
+  height: calc(100vh - 130px); 
+  align-items: stretch; 
+  overflow: hidden; 
+}        
         .gallery-inner-sidebar { 
           width: 280px; 
           flex-shrink: 0;
@@ -263,11 +268,12 @@ const Gallery = () => {
         }
         
         .gallery-main-area { 
-          flex: 1; 
-          display: flex;
-          flex-direction: column;
-          gap: 1.5rem;
-          min-width: 0; 
+            flex: 1; 
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            min-width: 0; 
+            overflow: hidden; 
         }
 
         .folder-btn { 
@@ -494,7 +500,7 @@ const Gallery = () => {
           </div>
 
           {/* MEDIA GRID AREA */}
-          <div className="premium-card p-4 flex-grow-1">
+          <div className="premium-card p-4 flex-grow-1 overflow-auto">
             {loading ? (
               <div className="text-center mt-5">
                 <div className="spinner-border theme-orange-text" role="status"></div>
