@@ -167,6 +167,26 @@ const Gallery = () => {
     return ["All", ...main];
   }, [items]);
 
+
+  const handleMoveSelected = () => {
+  const selectedItems = filteredItems.filter((item) =>
+    selectedIds.includes(item.id)
+  );
+
+  setSelectedForEdit(selectedItems);
+  setIsModalOpen(true);
+};
+
+const handleDoubleClick = (e, item) => {
+  e.stopPropagation();
+
+  if (clickTimeoutRef.current) {
+    clearTimeout(clickTimeoutRef.current);
+  }
+
+  // Do nothing
+};
+
   const getSubFoldersForMain = (mainFolder) => {
     if (mainFolder === 'All') return [];
     return [
@@ -558,27 +578,29 @@ const Gallery = () => {
               {/* NEW: Move and Delete Buttons (Visible only when items are selected) */}
               {selectedIds.length > 0 && (
                 <div className="d-flex align-items-center gap-2 ms-2">
-                  {/* BULK MOVE BUTTON */}
+
+                  <span className="fw-bold text-dark">
+                    {selectedIds.length} Selected
+                  </span>
+
+                  {/* Move Button */}
                   <button
                     type="button"
-                    className="btn btn-warning btn-sm fw-bold px-3 py-1 rounded-3 shadow-sm d-flex align-items-center gap-2 text-dark"
-                    onClick={() => {
-                      const itemsToMove = filteredItems.filter(i => selectedIds.includes(i.id));
-                      setSelectedForEdit(itemsToMove);
-                      setIsModalOpen(true);
-                    }}
+                    className="btn btn-warning btn-sm fw-bold px-3 py-1 rounded-3"
+                    onClick={handleMoveSelected}
                   >
-                    <FolderOpenIcon size={16} /> Move ({selectedIds.length})
+                    Move
                   </button>
 
-                  {/* BULK DELETE BUTTON */}
+                  {/* Delete Button */}
                   <button
                     type="button"
-                    className="btn btn-danger btn-sm fw-bold px-3 py-1 rounded-3 shadow-sm d-flex align-items-center gap-2"
+                    className="btn btn-danger btn-sm fw-bold px-3 py-1 rounded-3"
                     onClick={handleBulkDelete}
                   >
-                    <Trash2Icon size={16} /> Delete ({selectedIds.length})
+                    Delete
                   </button>
+
                 </div>
               )}
             </div>
