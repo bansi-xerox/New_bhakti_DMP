@@ -642,6 +642,7 @@ const Gallery = () => {
                 <div>
                   <h5 className="fw-bold mb-0 d-flex align-items-center gap-2">
                     {previewMedia.isPhoto ? <ImageIcon size={20} /> : <PlayIcon size={20} />}
+                    {previewMedia.sub_folder_name}
                   </h5>
                   <small className="text-light opacity-75 d-flex align-items-center gap-1 mt-1">
                     <FolderIcon size={14} /> {previewMedia.main_folder_name}
