@@ -643,7 +643,7 @@ const Gallery = () => {
                 <div>
                   <h5 className="fw-bold mb-0 d-flex align-items-center gap-2">
                     {previewMedia.isPhoto ? <ImageIcon size={20} /> : <PlayIcon size={20} />}
-                    {previewMedia.sub_folder_name}
+                    {(previewMedia.photo_path || previewMedia.video_path || '').split('/').pop()}
                   </h5>
 
                 </div>
