@@ -130,11 +130,11 @@ const BhajanSahitya = () => {
       `}</style>
 
       <div
-        className="container-fluid px-4 pb-4 pt-0 d-flex flex-column"
+        className="container-fluid px-3 px-md-4 pb-3 pb-md-4 pt-0 d-flex flex-column h-100"
         style={{
           backgroundColor: '#fdf9f1',
-          height: 'calc(100vh - 80px)',
-          overflow: 'hidden'
+          flex: 1,
+          minHeight: 0
         }}
       >
         {/* Header Card */}
@@ -170,8 +170,10 @@ const BhajanSahitya = () => {
         </div>
 
         {/* Data Table Card */}
-        <div className="card shadow-sm border-0 rounded-4 overflow-hidden flex-grow-1 d-flex flex-column">
-          <div className="card-body p-0 overflow-auto flex-grow-1">
+        <div className="card shadow-sm border-0 rounded-4 overflow-hidden flex-grow-1 d-flex flex-column" style={{ minHeight: 0 }}>
+          {/* Added table-responsive for horizontal mobile scroll */}
+          <div className="card-body p-0 overflow-auto flex-grow-1 table-responsive">
+            {/* Kept minWidth so columns don't crush on mobile */}
             <table className="table table-hover align-middle mb-0" style={{ minWidth: '900px' }}>
               <thead style={{ backgroundColor: '#fef8f4', position: 'sticky', top: 0, zIndex: 1 }}>
                 <tr>
