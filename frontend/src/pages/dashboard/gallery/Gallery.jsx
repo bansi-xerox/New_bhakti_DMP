@@ -234,8 +234,7 @@ const Gallery = () => {
   };
 
   return (
-    <div className="container-fluid p-3 d-flex flex-column" style={{ minHeight: '100%', backgroundColor: 'transparent' }}>
-
+<div className="container-fluid px-3 pb-3 pt-0 d-flex flex-column" style={{ minHeight: '100%', backgroundColor: 'transparent' }}>
       <style>{`
         .theme-orange-gradient { 
           background: linear-gradient(135deg, #f97316 0%, #ea580c 100%) !important; 
