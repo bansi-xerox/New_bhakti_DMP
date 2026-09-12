@@ -167,26 +167,6 @@ const Gallery = () => {
     return ["All", ...main];
   }, [items]);
 
-
-  const handleMoveSelected = () => {
-  const selectedItems = filteredItems.filter((item) =>
-    selectedIds.includes(item.id)
-  );
-
-  setSelectedForEdit(selectedItems);
-  setIsModalOpen(true);
-};
-
-const handleDoubleClick = (e, item) => {
-  e.stopPropagation();
-
-  if (clickTimeoutRef.current) {
-    clearTimeout(clickTimeoutRef.current);
-  }
-
-  // Do nothing
-};
-
   const getSubFoldersForMain = (mainFolder) => {
     if (mainFolder === 'All') return [];
     return [
@@ -578,29 +558,27 @@ const handleDoubleClick = (e, item) => {
               {/* NEW: Move and Delete Buttons (Visible only when items are selected) */}
               {selectedIds.length > 0 && (
                 <div className="d-flex align-items-center gap-2 ms-2">
-
-                  <span className="fw-bold text-dark">
-                    {selectedIds.length} Selected
-                  </span>
-
-                  {/* Move Button */}
+                  {/* BULK MOVE BUTTON */}
                   <button
                     type="button"
-                    className="btn btn-warning btn-sm fw-bold px-3 py-1 rounded-3"
-                    onClick={handleMoveSelected}
+                    className="btn btn-warning btn-sm fw-bold px-3 py-1 rounded-3 shadow-sm d-flex align-items-center gap-2 text-dark"
+                    onClick={() => {
+                      const itemsToMove = filteredItems.filter(i => selectedIds.includes(i.id));
+                      setSelectedForEdit(itemsToMove);
+                      setIsModalOpen(true);
+                    }}
                   >
-                    Move
+                    <FolderOpenIcon size={16} /> Move ({selectedIds.length})
                   </button>
 
-                  {/* Delete Button */}
+                  {/* BULK DELETE BUTTON */}
                   <button
                     type="button"
-                    className="btn btn-danger btn-sm fw-bold px-3 py-1 rounded-3"
+                    className="btn btn-danger btn-sm fw-bold px-3 py-1 rounded-3 shadow-sm d-flex align-items-center gap-2"
                     onClick={handleBulkDelete}
                   >
-                    Delete
+                    <Trash2Icon size={16} /> Delete ({selectedIds.length})
                   </button>
-
                 </div>
               )}
             </div>
@@ -656,10 +634,10 @@ const handleDoubleClick = (e, item) => {
                           checked={isSelected}
                           onChange={(e) => toggleSelectId(e, item.id)}
                           onClick={(e) => e.stopPropagation()}
-                          style={{ width: '1.25rem', height: '1.25rem' }}
+                          style={{ width: '1.25rem', height: '1.25rem' }} // Made checkbox slightly bigger for better UX
                         />
 
-                        {/* ONLY show the individual dustbin if the item is NOT selected AND we aren't in bulk selection mode */}
+                        {/* show the individual dustbin if the item is NOT selected AND we aren't in bulk selection mode */}
                         {!isSelected && selectedIds.length === 0 && (
                           <button
                             type="button"
