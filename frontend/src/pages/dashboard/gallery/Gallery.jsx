@@ -236,6 +236,33 @@ const Gallery = () => {
   return (
     <div className="container-fluid p-0 p-0 p-0 d-flex flex-column" style={{ minHeight: '100%', backgroundColor: 'transparent' }}>
       <style>{`
+
+::-webkit-scrollbar {
+          width: 8px;
+          height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+          background: #fff7ed; /* Very light orange track */
+          border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+          background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); /* Matches your button */
+          border-radius: 10px;
+          border: 2px solid #fff7ed; /* Adds a nice gap around the thumb */
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+          background: #c2410c; /* Slightly darker orange on hover */
+        }
+
+        /* For Firefox */
+        .gallery-inner-sidebar, .overflow-auto {
+          scrollbar-width: thin;
+          scrollbar-color: #ea580c #fff7ed;
+        }
+
         .theme-orange-gradient { 
           background: linear-gradient(135deg, #f97316 0%, #ea580c 100%) !important; 
           color: white !important; border: none !important;
