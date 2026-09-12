@@ -563,9 +563,8 @@ const Gallery = () => {
                     type="button"
                     className="btn btn-warning btn-sm fw-bold px-3 py-1 rounded-3 shadow-sm d-flex align-items-center gap-2 text-dark"
                     onClick={() => {
-                      // Find the actual item objects for the selected IDs
                       const itemsToMove = filteredItems.filter(i => selectedIds.includes(i.id));
-                      setSelectedForEdit(itemsToMove); // Pass the array to trigger isBulkEdit in the modal
+                      setSelectedForEdit(itemsToMove);
                       setIsModalOpen(true);
                     }}
                   >
@@ -635,10 +634,10 @@ const Gallery = () => {
                           checked={isSelected}
                           onChange={(e) => toggleSelectId(e, item.id)}
                           onClick={(e) => e.stopPropagation()}
-                          style={{ width: '1.25rem', height: '1.25rem' }} // Made checkbox slightly bigger for better UX
+                          style={{ width: '1.25rem', height: '1.25rem' }}
                         />
 
-                        {/* show the individual dustbin if the item is NOT selected AND we aren't in bulk selection mode */}
+                        {/* ONLY show the individual dustbin if the item is NOT selected AND we aren't in bulk selection mode */}
                         {!isSelected && selectedIds.length === 0 && (
                           <button
                             type="button"
@@ -649,7 +648,7 @@ const Gallery = () => {
                             <Trash2Icon size={14} />
                           </button>
                         )}
- 
+
                         {!isPhoto && (
                           <div className="position-absolute top-50 start-50 translate-middle text-white" style={{ pointerEvents: 'none' }}>
                             <PlayIcon fill="white" size={28} />
