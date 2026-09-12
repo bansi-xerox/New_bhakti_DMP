@@ -586,7 +586,7 @@ const Gallery = () => {
                         <video src={mediaUrl} muted preload="metadata" />
                       )}
 
-                      <div className="media-overlay" onClick={(e) => e.stopPropagation()}>
+                      <div className="media-overlay">
                         <input
                           type="checkbox"
                           className="form-check-input media-checkbox shadow-sm cursor-pointer"
