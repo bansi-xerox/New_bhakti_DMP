@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Sparkles } from 'lucide-react';
+import '../../assets/userTheme.css';
 
 const Header = () => {
   return (
@@ -16,7 +17,7 @@ const Header = () => {
             <p>પવિત્ર ભક્તિ સાહિત્ય સંગ્રહ</p>
           </div>
         </Link>
-       
+
       </div>
     </header>
   );

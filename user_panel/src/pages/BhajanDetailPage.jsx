@@ -52,14 +52,16 @@ const BhajanDetailPage = () => {
 
   return (
     <div className="user-app-layout">
+      {/* 1. Global Royal Header */}
       <Header />
 
       <main className="main-desktop-container">
+        {/* Subpage Breadcrumb Back Bar */}
         <div className="subpage-back-bar">
           <button className="back-action-btn" onClick={() => navigate(-1)}>
             <ArrowLeft size={16} /> પાછા જાઓ
           </button>
-          <span style={{ color: '#8d6e63', fontSize: '14px' }}>
+          <span style={{ color: '#8d6e63', fontSize: '14.5px' }}>
             / {bhajan?.bhajan_name?.trim() || 'વિગત'}
           </span>
         </div>
@@ -67,41 +69,44 @@ const BhajanDetailPage = () => {
         {loading ? (
           <Loader />
         ) : !bhajan ? (
-          <p style={{ textAlign: 'center', color: '#8d6e63' }}>ભજન મળ્યું નથી.</p>
+          <p style={{ textAlign: 'center', color: '#8d6e63', padding: '60px 0' }}>ભજન મળ્યું નથી.</p>
         ) : (
           <div className="bhajan-desktop-stage">
-            {/* Header Stage */}
-            <div className="stage-title-header">
-              <h2>{bhajan.bhajan_name?.trim()}</h2>
-              <div className="stage-badge-group">
-                {bhajan.sahitya_name && (
-                  <span className="pill-badge">સાહિત્ય: {bhajan.sahitya_name.trim()}</span>
-                )}
-                {bhajan.bhajan_rag && (
-                  <span className="pill-badge">રાગ: {bhajan.bhajan_rag.trim()}</span>
-                )}
-                {bhajan.page_no && (
-                  <span className="pill-badge">પૃષ્ઠ: {bhajan.page_no}</span>
-                )}
+            {/* 2. Sticky Stage Header (Title & Segmented Tabs અંદર ફિક્સ રહેશે) */}
+            <div className="stage-sticky-header">
+              <div className="stage-title-header">
+                <h2>{bhajan.bhajan_name?.trim()}</h2>
+                <div className="stage-badge-group">
+                  {bhajan.sahitya_name && (
+                    <span className="pill-badge">સાહિત્ય: {bhajan.sahitya_name.trim()}</span>
+                  )}
+                  {bhajan.bhajan_rag && (
+                    <span className="pill-badge">રાગ: {bhajan.bhajan_rag.trim()}</span>
+                  )}
+                  {bhajan.page_no && (
+                    <span className="pill-badge">પૃષ્ઠ: {bhajan.page_no}</span>
+                  )}
+                </div>
+              </div>
+
+              {/* Segmented Tab Bar */}
+              <div className="desktop-tab-bar">
+                {tabs.map((tab) => (
+                  <button
+                    key={tab.id}
+                    className={`tab-pill-btn ${activeTab === tab.id ? 'active' : ''}`}
+                    onClick={() => setActiveTab(tab.id)}
+                  >
+                    {tab.icon}
+                    <span>{tab.label}</span>
+                  </button>
+                ))}
               </div>
             </div>
 
-            {/* Segmented Tab Bar */}
-            <div className="desktop-tab-bar">
-              {tabs.map((tab) => (
-                <button
-                  key={tab.id}
-                  className={`tab-pill-btn ${activeTab === tab.id ? 'active' : ''}`}
-                  onClick={() => setActiveTab(tab.id)}
-                >
-                  {tab.icon}
-                  <span>{tab.label}</span>
-                </button>
-              ))}
-            </div>
-
-            {/* Tab Content */}
+            {/* 3. Scrollable Tab Content Body (માત્ર આ જ ભાગ અંદર સ્ક્રોલ થશે) */}
             <div className="stage-content-body">
+              {/* Lyrics Tab */}
               {activeTab === 'lyrics' && (
                 <div>
                   <div className="font-controls-bar">
@@ -114,13 +119,15 @@ const BhajanDetailPage = () => {
                 </div>
               )}
 
+              {/* Bhavarth Tab */}
               {activeTab === 'bhavarth' && (
                 <div className="bhavarth-container">
-                  <h4 style={{ color: '#bf360c', marginTop: 0, fontSize: '18px' }}>🙏 ભજન ભાવાર્થ / રહસ્ય:</h4>
+                  <h4 style={{ color: '#bf360c', marginTop: 0, fontSize: '19px' }}>🙏 ભજન ભાવાર્થ / રહસ્ય:</h4>
                   {formatText(bhajan.bhajan_bhavarth) || 'આ ભજનનો ભાવાર્થ ઉપલબ્ધ નથી.'}
                 </div>
               )}
 
+              {/* YouTube Video Tab */}
               {activeTab === 'video' && (
                 <div>
                   {bhajan.youtube_link ? (
@@ -133,11 +140,14 @@ const BhajanDetailPage = () => {
                       />
                     </div>
                   ) : (
-                    <p style={{ textAlign: 'center', color: '#8d6e63', padding: '40px 0' }}>આ ભજન માટે વિડીયો લિંક ઉપલબ્ધ નથી.</p>
+                    <p style={{ textAlign: 'center', color: '#8d6e63', padding: '50px 0', fontSize: '16px' }}>
+                      આ ભજન માટે વિડીયો લિંક ઉપલબ્ધ નથી.
+                    </p>
                   )}
                 </div>
               )}
 
+              {/* Info Tab */}
               {activeTab === 'info' && (
                 <table className="info-detail-table">
                   <tbody>
@@ -173,6 +183,7 @@ const BhajanDetailPage = () => {
         )}
       </main>
 
+      {/* 4. Taller & Enhanced Royal Footer */}
       <Footer />
     </div>
   );
