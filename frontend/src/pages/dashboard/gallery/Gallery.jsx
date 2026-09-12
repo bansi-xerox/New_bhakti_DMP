@@ -236,6 +236,23 @@ const Gallery = () => {
   return (
     <div className="container-fluid p-0 p-0 p-0 d-flex flex-column" style={{ minHeight: '100%', backgroundColor: 'transparent' }}>
       <style>{`
+
+/* --- Lightbox Zoom Animation --- */
+        @keyframes zoomIn {
+          from {
+            opacity: 0;
+            transform: scale(0.5); /* Starts zoomed out */
+          }
+          to {
+            opacity: 1;
+            transform: scale(1); /* Zooms in to original size */
+          }
+        }
+        
+        .modal-zoom-anim {
+          animation: zoomIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
 .theme-orange-gradient { 
           background: linear-gradient(135deg, #f97316 0%, #ea580c 100%) !important; 
           color: white !important; border: none !important;
@@ -603,15 +620,17 @@ const Gallery = () => {
       </div>
 
       {/* FULL SCREEN LIGHTBOX MODAL */}
+    {/* FULL SCREEN LIGHTBOX MODAL */}
       {previewMedia && (
         <div
           className="modal fade show d-block"
           tabIndex="-1"
-          style={{ backgroundColor: "rgba(0,0,0,0.85)", zIndex: 1060 }}
+          style={{ backgroundColor: "rgba(0,0,0,0.85)", zIndex: 1060, transition: 'background-color 0.3s ease' }}
           onClick={() => setPreviewMedia(null)}
         >
           <div
-            className="modal-dialog modal-dialog-centered modal-xl"
+            // Added 'modal-zoom-anim' here for the zoom effect
+            className="modal-dialog modal-dialog-centered modal-xl modal-zoom-anim"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="modal-content bg-transparent border-0">
@@ -628,19 +647,21 @@ const Gallery = () => {
                 <button
                   type="button"
                   className="btn btn-light btn-sm rounded-circle fw-bold shadow d-flex align-items-center justify-content-center"
-                  style={{ width: '32px', height: '32px' }}
+                  style={{ width: '32px', height: '32px', transition: 'transform 0.2s ease' }}
+                  onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+                  onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
                   onClick={() => setPreviewMedia(null)}
                 >
                   <XIcon size={18} />
                 </button>
               </div>
-              <div className="modal-body p-0 text-center bg-black rounded-4 overflow-hidden">
+              <div className="modal-body p-0 text-center bg-black rounded-4 overflow-hidden shadow-lg">
                 {previewMedia.isPhoto ? (
                   <img
                     src={previewMedia.mediaUrl}
                     alt="Preview"
                     className="img-fluid object-fit-contain"
-                    style={{ maxHeight: "80vh" }}
+                    style={{ maxHeight: "80vh", width: "100%" }}
                   />
                 ) : (
                   <video
