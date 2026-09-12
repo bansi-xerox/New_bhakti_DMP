@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Sparkles, Heart } from 'lucide-react';
+import { Heart } from 'lucide-react';
 
 const Footer = () => {
   return (
@@ -8,10 +8,7 @@ const Footer = () => {
       <div className="footer-top-inner">
         {/* Column 1: Brand Info */}
         <div className="footer-brand">
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-            {/* <Sparkles size={22} color="#ffca28" /> */}
-            <h3>ભજન કીર્તન સાહિત્ય દર્શન</h3>
-          </div>
+          <h3>ભજન કીર્તન સાહિત્ય દર્શન</h3>
           <p>
             પરંપરાગત ભજનો, સંતવાણી, આખ્યાનો અને ભક્તિ સત્સંગનું એકીકૃત ડિજિટલ સાહિત્ય કેન્દ્ર.
           </p>
@@ -30,7 +27,7 @@ const Footer = () => {
         {/* Column 3: Contact & Devotion */}
         <div className="footer-column">
           <h4>સત્સંગ પ્રેરણા</h4>
-          <p style={{ fontSize: '13.5px', color: '#c7b6ac', lineHeight: '1.6', margin: 0 }}>
+          <p style={{ fontSize: '14px', color: '#d7ccc8', lineHeight: '1.65', margin: 0 }}>
             "હરિ ભજતાં હજુ કોઈની લાજ જતાં નથી જાણી રે..." <br />
             ભક્તિરસનો આનંદ માણો અને પ્રભુના નામનો મહિમા વધારો.
           </p>
