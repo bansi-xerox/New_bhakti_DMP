@@ -592,6 +592,7 @@ const Gallery = () => {
                           className="form-check-input media-checkbox shadow-sm cursor-pointer"
                           checked={isSelected}
                           onChange={(e) => toggleSelectId(e, item.id)}
+                          onClick={(e) => e.stopPropagation()}
                         />
 
                         <button
