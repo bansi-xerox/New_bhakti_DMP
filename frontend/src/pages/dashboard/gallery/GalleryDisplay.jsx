@@ -247,9 +247,8 @@ function GalleryDisplay({ items, onDeleteSingle, onDeleteBulk, onOpenUploadModal
                   <div className="btn-group bg-light p-1 rounded-pill">
                     <button
                       type="button"
-                      className={`btn btn-sm rounded-pill px-4 fw-bold ${
-                        activeTab === 'Photos' ? 'btn-white bg-white shadow-sm text-primary' : 'text-secondary'
-                      }`}
+                      className={`btn btn-sm rounded-pill px-4 fw-bold ${activeTab === 'Photos' ? 'btn-white bg-white shadow-sm text-primary' : 'text-secondary'
+                        }`}
                       onClick={() => {
                         setActiveTab('Photos');
                         setSelectedIds([]);
@@ -259,9 +258,8 @@ function GalleryDisplay({ items, onDeleteSingle, onDeleteBulk, onOpenUploadModal
                     </button>
                     <button
                       type="button"
-                      className={`btn btn-sm rounded-pill px-4 fw-bold ${
-                        activeTab === 'Videos' ? 'btn-white bg-white shadow-sm text-primary' : 'text-secondary'
-                      }`}
+                      className={`btn btn-sm rounded-pill px-4 fw-bold ${activeTab === 'Videos' ? 'btn-white bg-white shadow-sm text-primary' : 'text-secondary'
+                        }`}
                       onClick={() => {
                         setActiveTab('Videos');
                         setSelectedIds([]);
@@ -319,31 +317,31 @@ function GalleryDisplay({ items, onDeleteSingle, onDeleteBulk, onOpenUploadModal
 
                       {/* Hover Overlay with Delete & Checkbox */}
                       <div
-                        className={`position-absolute top-0 start-0 w-100 h-100 d-flex justify-content-between align-items-start p-3 ${
-                          isHovered ? 'opacity-100' : 'opacity-0'
-                        }`}
+                        className="media-overlay"
                         style={{
-                          backgroundColor: 'rgba(0, 0, 0, 0.45)',
-                          transition: 'opacity 0.2s ease',
+                          opacity: (isSelected || hovered) ? 1 : 0,
+                          backgroundColor: isSelected ? 'rgba(0,0,0,0.15)' : 'rgba(0,0,0,0.4)'
                         }}
-                        onClick={(e) => e.stopPropagation()}
                       >
                         <input
                           type="checkbox"
-                          className="form-check-input mt-1"
-                          style={{ width: '22px', height: '22px', cursor: 'pointer' }}
-                          checked={selectedIds.includes(item.id)}
-                          onChange={() => toggleSelect(item.id)}
+                          className="form-check-input media-checkbox shadow-sm cursor-pointer"
+                          checked={isSelected}
+                          onChange={(e) => toggleSelectId(e, item.id)}
+                          onClick={(e) => e.stopPropagation()}
                         />
-                        <button
-                          type="button"
-                          className="btn btn-danger btn-sm rounded-circle p-0 d-flex align-items-center justify-content-center shadow"
-                          style={{ width: '32px', height: '32px' }}
-                          title="Delete"
-                          onClick={(e) => onDeleteSingle(e, item)}
-                        >
-                          🗑
-                        </button>
+
+                        {/* ONLY show the dustbin if the item is NOT selected */}
+                        {!isSelected && (
+                          <button
+                            type="button"
+                            className="btn btn-danger btn-sm rounded-circle media-delete-btn p-0 d-flex align-items-center justify-content-center shadow"
+                            style={{ width: '28px', height: '28px' }}
+                            onClick={(e) => handleDeleteSingle(e, item)}
+                          >
+                            <Trash2Icon size={14} />
+                          </button>
+                        )}
                       </div>
                     </div>
                   </div>
