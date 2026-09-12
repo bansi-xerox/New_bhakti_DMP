@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { getGalleryItems, deleteGalleryMedia } from "../../../services/api";
 import {
   showGalleryToast,
@@ -7,7 +7,29 @@ import {
 } from "../../../components/common/Alert";
 import GalleryModal from "./GalleryModal";
 
+const clickTimeoutRef = useRef(null);
 
+const handleSingleClick = (item, mediaUrl, isPhoto) => {
+  // Clear any existing timer
+  if (clickTimeoutRef.current) {
+    clearTimeout(clickTimeoutRef.current);
+  }
+  // Set a timer to open the big image. If they double click, this gets cancelled.
+  clickTimeoutRef.current = setTimeout(() => {
+    setPreviewMedia({ ...item, mediaUrl, isPhoto });
+  }, 250);
+};
+
+const handleDoubleClick = (e, item) => {
+  e.stopPropagation();
+  // Cancel the single click preview from opening
+  if (clickTimeoutRef.current) {
+    clearTimeout(clickTimeoutRef.current);
+  }
+  setPreviewMedia(null);
+  setSelectedForEdit(item);
+  setIsModalOpen(true);
+};
 // --- Zero-Dependency Lucide-Style SVG Icons ---
 const FolderIcon = ({ size = 18, className = "" }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
@@ -572,13 +594,8 @@ const Gallery = () => {
                     <div
                       key={item.id}
                       className={`media-card ${isSelected ? 'selected shadow' : ''}`}
-                      onClick={() => setPreviewMedia({ ...item, mediaUrl, isPhoto })}
-                      onDoubleClick={(e) => {
-                        e.stopPropagation();
-                        setPreviewMedia(null); // Prevent preview from staying open
-                        setSelectedForEdit(item);
-                        setIsModalOpen(true);
-                      }}
+                      onClick={() => handleSingleClick(item, mediaUrl, isPhoto)}
+                      onDoubleClick={(e) => handleDoubleClick(e, item)}
                     >
                       {isPhoto ? (
                         <img src={mediaUrl} alt={item.sub_folder_name} loading="lazy" />
@@ -600,7 +617,7 @@ const Gallery = () => {
                           className="btn btn-danger btn-sm rounded-circle media-delete-btn p-0 d-flex align-items-center justify-content-center shadow"
                           style={{ width: '28px', height: '28px' }}
                           onClick={(e) => handleDeleteSingle(e, item)}
-                          // title="Delete"
+                        // title="Delete"
                         >
                           <Trash2Icon size={14} />
                         </button>
@@ -620,7 +637,7 @@ const Gallery = () => {
         </div>
       </div>
 
-  {/* FULL SCREEN LIGHTBOX MODAL */}
+      {/* FULL SCREEN LIGHTBOX MODAL */}
       {previewMedia && (
         <div
           className="modal fade show d-block"
@@ -633,11 +650,11 @@ const Gallery = () => {
             onClick={(e) => e.stopPropagation()}
           >
             {/* INLINE STYLE ADDED HERE: Guaranteed solid black background */}
-            <div 
-              className="modal-content border-0 rounded-4 overflow-hidden shadow-lg" 
+            <div
+              className="modal-content border-0 rounded-4 overflow-hidden shadow-lg"
               style={{ backgroundColor: '#000000' }}
             >
-              
+
               {/* Header Section */}
               <div className="d-flex justify-content-between align-items-center text-white p-3">
                 <div>
@@ -658,7 +675,7 @@ const Gallery = () => {
                   <XIcon size={18} />
                 </button>
               </div>
-              
+
               {/* Image/Video Section */}
               <div className="modal-body p-0 text-center">
                 {previewMedia.isPhoto ? (
