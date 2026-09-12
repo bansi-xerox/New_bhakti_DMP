@@ -117,8 +117,6 @@ const Gallery = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedIds, setSelectedIds] = useState([]);
   // Search & Pagination States
-  const [currentPage] = useState(1);
-  const [pageSize] = useState(5);
 
 
  const loadGallery = useCallback(async () => {

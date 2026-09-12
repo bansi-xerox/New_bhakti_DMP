@@ -46,9 +46,6 @@ const BhajanSahitya = () => {
 
   // Search & Pagination States
   const [searchQuery, setSearchQuery] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize] = useState(10);
-
   const fetchBhajans = useCallback(async () => {
   try {
     const response = await getAllBhajans();
@@ -63,7 +60,6 @@ const BhajanSahitya = () => {
   }, [fetchBhajans]);
 
   const handleSearchSubmit = () => {
-    setCurrentPage(1);
     fetchBhajans();
   };
 
