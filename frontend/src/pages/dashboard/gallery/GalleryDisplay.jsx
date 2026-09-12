@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { confirmMediaDelete } from '../../../components/common/Alert';
 
-// const API_SERVER_URL = process.env.REACT_APP_API_BASE_URL?.replace('/api', '') || 'https://new-bhakti-dmp.onrender.com';
-const API_SERVER_URL =  'http://localhost:5000';
+const API_SERVER_URL = process.env.REACT_APP_API_BASE_URL?.replace('/api', '') || 'https://new-bhakti-dmp.onrender.com';
+// const API_SERVER_URL =  'http://localhost:5000';
 
 function GalleryDisplay({ items, onDeleteSingle, onDeleteBulk, onOpenUploadModal }) {
   const [activeMainFolder, setActiveMainFolder] = useState(null);
