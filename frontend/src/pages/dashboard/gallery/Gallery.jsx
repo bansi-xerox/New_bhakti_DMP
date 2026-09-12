@@ -93,6 +93,7 @@ const ImageIcon = ({ size = 20, className = "" }) => (
   </svg>
 );
 
+// const BASE_SERVER_URL = 'http://localhost:5000/uploads/';
 const BASE_SERVER_URL = 'https://new-bhakti-dmp.onrender.com/uploads/';
 const formatMediaUrl = (path) => {
   if (!path) return "";
