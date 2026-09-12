@@ -93,8 +93,7 @@ const ImageIcon = ({ size = 20, className = "" }) => (
   </svg>
 );
 
-const BASE_SERVER_URL = 'http://localhost:5000/uploads/';
-
+const BASE_SERVER_URL = 'https://new-bhakti-dmp.onrender.com/uploads/';
 const formatMediaUrl = (path) => {
   if (!path) return "";
   if (path.startsWith("http://") || path.startsWith("https://")) {
@@ -117,36 +116,26 @@ const Gallery = () => {
   const [filterType, setFilterType] = useState('ALL');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedIds, setSelectedIds] = useState([]);
-  const [searchQuery] = useState("");
-const [setPaginationData] = useState(null);
   // Search & Pagination States
   const [currentPage] = useState(1);
   const [pageSize] = useState(5);
 
 
-  const loadGallery = useCallback(async () => {
-    try {
-      setLoading(true);
-      const params = {
-        page: currentPage,
-        limit: pageSize,
-        search: searchQuery.trim() || undefined,
-      };
+ const loadGallery = useCallback(async () => {
+  try {
+    setLoading(true);
 
-      const res = await getGalleryItems(params);
-      if (res.data?.success) {
-        setItems(res.data.data || []);
-        if (res.data.pagination) {
-          setPaginationData(res.data.pagination);
-        }
-      }
-    } catch (err) {
-      showErrorAlert("Fetch Error", "Failed to load gallery items");
-    } finally {
-      setLoading(false);
+    const res = await getGalleryItems();
+
+    if (res.data?.success) {
+      setItems(res.data.data || []);
     }
-  }, [currentPage, pageSize, searchQuery]);
-
+  } catch (err) {
+    showErrorAlert("Fetch Error", "Failed to load gallery items");
+  } finally {
+    setLoading(false);
+  }
+}, []);
   useEffect(() => {
     loadGallery();
   }, [loadGallery]);

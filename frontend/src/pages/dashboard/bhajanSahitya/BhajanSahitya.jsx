@@ -48,21 +48,16 @@ const BhajanSahitya = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(10);
-const [fetching, setFetching] = useState(false);
 
-  // Fetch Data
   const fetchBhajans = useCallback(async () => {
-    try {
-      const response = await getAllBhajans();
-      setBhajans(response.data.data);
-    } catch (error) {
-      console.error("Error fetching data", error);
-      showErrorAlert("Fetch Error", "Could not load bhajans.");
-    } finally {
-      setFetching(false);
-    }
-  }, [currentPage, pageSize, searchQuery, setFetching]);
-
+  try {
+    const response = await getAllBhajans();
+    setBhajans(response.data.data);
+  } catch (error) {
+    console.error("Error fetching data", error);
+    showErrorAlert("Fetch Error", "Could not load bhajans.");
+  }
+}, []);
   useEffect(() => {
     fetchBhajans();
   }, [fetchBhajans]);
