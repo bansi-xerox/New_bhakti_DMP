@@ -582,7 +582,7 @@ const Gallery = () => {
                           className="btn btn-danger btn-sm rounded-circle media-delete-btn p-0 d-flex align-items-center justify-content-center shadow"
                           style={{ width: '28px', height: '28px' }}
                           onClick={(e) => handleDeleteSingle(e, item)}
-                          title="Delete"
+                          // title="Delete"
                         >
                           <Trash2Icon size={14} />
                         </button>
