@@ -10,7 +10,6 @@ import Gallery from './gallery/Gallery';
 const DashboardLayout = () => {
   const [activeTab, setActiveTab] = useState('bhajan-mala');
   const { logout } = useContext(AuthContext);
-const [fetching, setFetching] = useState(false);
   // Tab Titles mapping for Header
   const tabTitles = {
     'bhajan-mala': 'Bhajan Mala Module',

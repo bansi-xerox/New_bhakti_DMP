@@ -5,7 +5,6 @@ import Input from '../../../components/common/Input';
 import Button from '../../../components/common/Button';
 import Modal from '../../../components/common/Modal';
 import SearchBar from '../../../components/common/SearchBar';
-import Pagination from '../../../components/common/Pagination';
 
 // 2. Import API Functions
 import {
@@ -24,16 +23,6 @@ import {
   showToastAlert
 } from '../../../components/common/Alert';
 
-const initialFormState = {
-  sahitya_name: '',
-  heading_name: '',
-  bhajan_name: '',
-  bhajan_kadi: '',
-  bhajan_rag: '',
-  bhajan: '',
-  bhajan_bhavarth: '',
-  page_no: ''
-};
 
 const BhajanSahitya = () => {
   const [bhajans, setBhajans] = useState([]);
@@ -41,7 +30,6 @@ const BhajanSahitya = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [currentId, setCurrentId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-const [fetching, setFetching] = useState(false);
   const initialFormState = {
     sahitya_name: '',
     heading_name: '',
@@ -60,12 +48,7 @@ const [fetching, setFetching] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(10);
-  const [paginationData, setPaginationData] = useState({
-    totalItems: 0,
-    totalPages: 1,
-    hasNextPage: false,
-    hasPrevPage: false
-  });
+
 
   // Fetch Data
   const fetchBhajans = useCallback(async () => {

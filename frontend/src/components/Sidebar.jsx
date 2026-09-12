@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Music, BookOpen, Image, LogOut, ChevronRight, Sparkles } from 'lucide-react';
+import {BookOpen, Image, LogOut, ChevronRight, Sparkles } from 'lucide-react';
 import { showConfirmDialog, showToastAlert } from './common/Alert';
 
 const Sidebar = ({ activeTab, setActiveTab, onLogout }) => {

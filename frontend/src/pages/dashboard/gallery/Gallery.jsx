@@ -6,8 +6,7 @@ import {
   confirmMediaDelete,
 } from "../../../components/common/Alert";
 import GalleryModal from "./GalleryModal";
-import Pagination from "../../../components/common/Pagination";
-import SearchBar from "../../../components/common/SearchBar";
+
 
 // --- Zero-Dependency Lucide-Style SVG Icons ---
 const FolderIcon = ({ size = 18, className = "" }) => (
@@ -120,15 +119,9 @@ const Gallery = () => {
   const [selectedIds, setSelectedIds] = useState([]);
 
   // Search & Pagination States
-  const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
-  const [paginationData, setPaginationData] = useState({
-    totalItems: 0,
-    totalPages: 1,
-    hasNextPage: false,
-    hasPrevPage: false,
-  });
+
 
   const loadGallery = useCallback(async () => {
     try {
@@ -156,12 +149,6 @@ const Gallery = () => {
   useEffect(() => {
     loadGallery();
   }, [loadGallery]);
-
-  const handleSearchSubmit = () => {
-    setCurrentPage(1);
-    loadGallery();
-  };
-
   const folders = useMemo(() => {
     const main = [
       ...new Set(items.map((i) => i.main_folder_name).filter(Boolean)),
