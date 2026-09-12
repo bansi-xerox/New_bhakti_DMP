@@ -1,18 +1,23 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Sparkles } from 'lucide-react';
 
-const Header = ({ title, showBack = true }) => {
-  const navigate = useNavigate();
-
+const Header = () => {
   return (
-    <header className="user-header">
-      {showBack && (
-        <button className="header-back-btn" onClick={() => navigate(-1)} aria-label="Back">
-          <ArrowLeft size={20} />
-        </button>
-      )}
-      <h2>{title || 'ભજન સાહિત્ય'}</h2>
+    <header className="royal-header">
+      <div className="royal-header-inner">
+        {/* Brand Logo & Name */}
+        <Link to="/" className="royal-brand-group">
+          <div className="royal-brand-emblem">
+            <Sparkles size={28} />
+          </div>
+          <div className="royal-brand-titles">
+            <h1>ભજન કીર્તન પોર્ટલ</h1>
+            <p>પવિત્ર ભક્તિ સાહિત્ય સંગ્રહ</p>
+          </div>
+        </Link>
+       
+      </div>
     </header>
   );
 };
