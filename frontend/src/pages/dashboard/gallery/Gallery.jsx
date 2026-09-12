@@ -540,7 +540,7 @@ const Gallery = () => {
             </div>
 
             {/* FILTERS & BULK DELETE */}
-            <div className="d-flex flex-wrap gap-2 align-items-center ms-auto">
+          <div className="d-flex flex-wrap gap-2 align-items-center ms-auto">
               <div className="btn-group btn-group-sm bg-light border rounded-3 p-1">
                 {['ALL', 'Photos', 'Videos'].map((t) => (
                   <button
@@ -555,15 +555,30 @@ const Gallery = () => {
                 ))}
               </div>
 
+           {/* NEW: Show both Move and Delete buttons when items are selected */}
               {selectedIds.length > 0 && (
-                <button
-                  type="button"
-                  className="btn btn-danger btn-sm fw-bold px-3 py-1 rounded-3 shadow-sm d-flex align-items-center gap-2"
-                  onClick={handleBulkDelete}
-                >
-                  <Trash2Icon size={16} />({selectedIds.length})
-                </button>
-              )}
+                <div className="d-flex align-items-center gap-2">
+                  <button
+                    type="button"
+                    className="btn btn-warning btn-sm fw-bold px-3 py-1 rounded-3 shadow-sm d-flex align-items-center gap-2 text-dark"
+                    onClick={() => {
+                      // Pass all selected items as an array to the modal
+                      const itemsToMove = filteredItems.filter(i => selectedIds.includes(i.id));
+                      setSelectedForEdit(itemsToMove);
+                      setIsModalOpen(true);
+                    }}
+                  >
+                    <FolderOpenIcon size={16} /> Move ({selectedIds.length})
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-danger btn-sm fw-bold px-3 py-1 rounded-3 shadow-sm d-flex align-items-center gap-2"
+                    onClick={handleBulkDelete}
+                  >
+                    <Trash2Icon size={16} /> Delete ({selectedIds.length})
+                  </button>
+                </div>
+                )}
             </div>
           </div>
 
@@ -603,7 +618,14 @@ const Gallery = () => {
                         <video src={mediaUrl} muted preload="metadata" />
                       )}
 
-                      <div className="media-overlay">
+                    {/* Hover Overlay with Delete & Checkbox */}
+                      <div 
+                        className="media-overlay" 
+                        style={{ 
+                          opacity: isSelected ? 1 : undefined, 
+                          backgroundColor: isSelected ? 'rgba(0,0,0,0.15)' : undefined 
+                        }}
+                      >
                         <input
                           type="checkbox"
                           className="form-check-input media-checkbox shadow-sm cursor-pointer"
@@ -612,15 +634,17 @@ const Gallery = () => {
                           onClick={(e) => e.stopPropagation()}
                         />
 
-                        <button
-                          type="button"
-                          className="btn btn-danger btn-sm rounded-circle media-delete-btn p-0 d-flex align-items-center justify-content-center shadow"
-                          style={{ width: '28px', height: '28px' }}
-                          onClick={(e) => handleDeleteSingle(e, item)}
-                        // title="Delete"
-                        >
-                          <Trash2Icon size={14} />
-                        </button>
+                        {/* ONLY show the dustbin if the item is NOT selected */}
+                        {!isSelected && (
+                          <button
+                            type="button"
+                            className="btn btn-danger btn-sm rounded-circle media-delete-btn p-0 d-flex align-items-center justify-content-center shadow"
+                            style={{ width: '28px', height: '28px' }}
+                            onClick={(e) => handleDeleteSingle(e, item)}
+                          >
+                            <Trash2Icon size={14} />
+                          </button>
+                        )}
 
                         {!isPhoto && (
                           <div className="position-absolute top-50 start-50 translate-middle text-white" style={{ pointerEvents: 'none' }}>
@@ -701,13 +725,17 @@ const Gallery = () => {
       )}
 
       {/* UPLOAD / EDIT MODAL */}
+    {/* UPLOAD / EDIT MODAL */}
       <GalleryModal
         isOpen={isModalOpen}
         onClose={() => {
           setIsModalOpen(false);
           setSelectedForEdit(null);
         }}
-        onSuccess={loadGallery}
+        onSuccess={() => {
+          loadGallery();
+          setSelectedIds([]); // Clear checkboxes after a successful move
+        }}
         initialData={selectedForEdit}
       />
     </div>
