@@ -619,7 +619,7 @@ const Gallery = () => {
         </div>
       </div>
 
-    {/* FULL SCREEN LIGHTBOX MODAL */}
+  {/* FULL SCREEN LIGHTBOX MODAL */}
       {previewMedia && (
         <div
           className="modal fade show d-block"
@@ -631,15 +631,17 @@ const Gallery = () => {
             className="modal-dialog modal-dialog-centered modal-xl modal-zoom-anim"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* UPDATED: Added bg-black and rounded corners to the main modal-content */}
-            <div className="modal-content bg-black border-0 rounded-4 overflow-hidden shadow-lg">
+            {/* INLINE STYLE ADDED HERE: Guaranteed solid black background */}
+            <div 
+              className="modal-content border-0 rounded-4 overflow-hidden shadow-lg" 
+              style={{ backgroundColor: '#000000' }}
+            >
               
-              {/* UPDATED: Added padding (p-3) to create spacing inside the black header area */}
+              {/* Header Section */}
               <div className="d-flex justify-content-between align-items-center text-white p-3">
                 <div>
                   <h5 className="fw-bold mb-0 d-flex align-items-center gap-2">
                     {previewMedia.isPhoto ? <ImageIcon size={20} /> : <PlayIcon size={20} />}
-                    {previewMedia.sub_folder_name}
                   </h5>
                   <small className="text-light opacity-75 d-flex align-items-center gap-1 mt-1">
                     <FolderIcon size={14} /> {previewMedia.main_folder_name}
@@ -657,7 +659,7 @@ const Gallery = () => {
                 </button>
               </div>
               
-              {/* UPDATED: Removed duplicate bg-black and rounded properties from the body since the parent handles it */}
+              {/* Image/Video Section */}
               <div className="modal-body p-0 text-center">
                 {previewMedia.isPhoto ? (
                   <img
