@@ -539,7 +539,7 @@ const Gallery = () => {
               )}
             </div>
 
-            {/* FILTERS & BULK DELETE */}
+            {/* FILTERS & BULK ACTIONS */}
             <div className="d-flex flex-wrap gap-2 align-items-center ms-auto">
               <div className="btn-group btn-group-sm bg-light border rounded-3 p-1">
                 {['ALL', 'Photos', 'Videos'].map((t) => (
@@ -555,21 +555,24 @@ const Gallery = () => {
                 ))}
               </div>
 
-              {/* NEW: Move and Delete Buttons */}
+              {/* NEW: Move and Delete Buttons (Visible only when items are selected) */}
               {selectedIds.length > 0 && (
                 <div className="d-flex align-items-center gap-2 ms-2">
+                  {/* BULK MOVE BUTTON */}
                   <button
                     type="button"
                     className="btn btn-warning btn-sm fw-bold px-3 py-1 rounded-3 shadow-sm d-flex align-items-center gap-2 text-dark"
                     onClick={() => {
+                      // Find the actual item objects for the selected IDs
                       const itemsToMove = filteredItems.filter(i => selectedIds.includes(i.id));
-                      setSelectedForEdit(itemsToMove);
+                      setSelectedForEdit(itemsToMove); // Pass the array to trigger isBulkEdit in the modal
                       setIsModalOpen(true);
                     }}
                   >
                     <FolderOpenIcon size={16} /> Move ({selectedIds.length})
                   </button>
-                  
+
+                  {/* BULK DELETE BUTTON */}
                   <button
                     type="button"
                     className="btn btn-danger btn-sm fw-bold px-3 py-1 rounded-3 shadow-sm d-flex align-items-center gap-2"
@@ -618,12 +621,12 @@ const Gallery = () => {
                         <video src={mediaUrl} muted preload="metadata" />
                       )}
 
-                 {/* Hover Overlay with Delete & Checkbox */}
-                      <div 
-                        className="media-overlay" 
-                        style={{ 
-                          opacity: isSelected ? 1 : undefined, 
-                          backgroundColor: isSelected ? 'rgba(0,0,0,0.2)' : undefined 
+                      {/* Hover Overlay with Delete & Checkbox */}
+                      <div
+                        className="media-overlay"
+                        style={{
+                          opacity: isSelected ? 1 : undefined,
+                          backgroundColor: isSelected ? 'rgba(0,0,0,0.3)' : undefined
                         }}
                       >
                         <input
@@ -632,10 +635,11 @@ const Gallery = () => {
                           checked={isSelected}
                           onChange={(e) => toggleSelectId(e, item.id)}
                           onClick={(e) => e.stopPropagation()}
+                          style={{ width: '1.25rem', height: '1.25rem' }} // Made checkbox slightly bigger for better UX
                         />
 
-                        {/* ONLY show the dustbin if the item is NOT selected */}
-                        {!isSelected && (
+                        {/* show the individual dustbin if the item is NOT selected AND we aren't in bulk selection mode */}
+                        {!isSelected && selectedIds.length === 0 && (
                           <button
                             type="button"
                             className="btn btn-danger btn-sm rounded-circle media-delete-btn p-0 d-flex align-items-center justify-content-center shadow"
@@ -645,7 +649,7 @@ const Gallery = () => {
                             <Trash2Icon size={14} />
                           </button>
                         )}
-
+ 
                         {!isPhoto && (
                           <div className="position-absolute top-50 start-50 translate-middle text-white" style={{ pointerEvents: 'none' }}>
                             <PlayIcon fill="white" size={28} />
@@ -725,7 +729,7 @@ const Gallery = () => {
       )}
 
       {/* UPLOAD / EDIT MODAL */}
-    {/* UPLOAD / EDIT MODAL */}
+      {/* UPLOAD / EDIT MODAL */}
       <GalleryModal
         isOpen={isModalOpen}
         onClose={() => {
