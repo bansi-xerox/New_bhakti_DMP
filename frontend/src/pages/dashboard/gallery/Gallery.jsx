@@ -594,8 +594,8 @@ const Gallery = () => {
                     <div
                       key={item.id}
                       className={`media-card ${isSelected ? 'selected shadow' : ''}`}
-                      onClick={() => handleSingleClick(item, mediaUrl, isPhoto)}
-                      onDoubleClick={(e) => handleDoubleClick(e, item)}
+                      // onClick={() => handleSingleClick(item, mediaUrl, isPhoto)}
+                      onClick={(e) => handleDoubleClick(e, item)}
                     >
                       {isPhoto ? (
                         <img src={mediaUrl} alt={item.sub_folder_name} loading="lazy" />
