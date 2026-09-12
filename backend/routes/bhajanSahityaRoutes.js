@@ -10,7 +10,7 @@ router.post('/', protect, bhajanController.createBhajan);
 router.put('/:id', protect, bhajanController.updateBhajan);
 router.delete('/:id', protect, bhajanController.deleteBhajan);
 
-router.get('/',protect, bhajanController.getAllBhajans);
-router.get('/:id',protect, bhajanController.getBhajanById);
+router.get('/', bhajanController.getAllBhajans);
+router.get('/:id', bhajanController.getBhajanById);
 
 module.exports = router;
