@@ -127,35 +127,6 @@ const BhajanSahitya = () => {
         .delete-btn-wrapper { display: none; }
         .serial-cell:hover .serial-number { display: none; }
         .serial-cell:hover .delete-btn-wrapper { display: inline-block; }
-
-        /* --- Custom Orange Scrollbar --- */
-        
-        /* For Chrome, Safari, and Edge */
-        ::-webkit-scrollbar {
-          width: 8px;
-          height: 8px;
-        }
-        
-        ::-webkit-scrollbar-track {
-          background: #fff7ed; /* Very light orange track */
-          border-radius: 10px;
-        }
-        
-        ::-webkit-scrollbar-thumb {
-          background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); /* Matches your button */
-          border-radius: 10px;
-          border: 2px solid #fff7ed;
-        }
-        
-        ::-webkit-scrollbar-thumb:hover {
-          background: #c2410c;
-        }
-
-        /* For Firefox */
-        .overflow-auto, .table-responsive {
-          scrollbar-width: thin;
-          scrollbar-color: #ea580c #fff7ed;
-        }
       `}</style>
 <div
         className="container-fluid px-3 px-md-4 pb-3 pb-md-4 pt-0 d-flex flex-column"
