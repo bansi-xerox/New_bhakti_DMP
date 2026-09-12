@@ -236,34 +236,7 @@ const Gallery = () => {
   return (
     <div className="container-fluid p-0 p-0 p-0 d-flex flex-column" style={{ minHeight: '100%', backgroundColor: 'transparent' }}>
       <style>{`
-
-::-webkit-scrollbar {
-          width: 8px;
-          height: 8px;
-        }
-        
-        ::-webkit-scrollbar-track {
-          background: #fff7ed; /* Very light orange track */
-          border-radius: 10px;
-        }
-        
-        ::-webkit-scrollbar-thumb {
-          background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); /* Matches your button */
-          border-radius: 10px;
-          border: 2px solid #fff7ed; /* Adds a nice gap around the thumb */
-        }
-        
-        ::-webkit-scrollbar-thumb:hover {
-          background: #c2410c; /* Slightly darker orange on hover */
-        }
-
-        /* For Firefox */
-        .gallery-inner-sidebar, .overflow-auto {
-          scrollbar-width: thin;
-          scrollbar-color: #ea580c #fff7ed;
-        }
-
-        .theme-orange-gradient { 
+.theme-orange-gradient { 
           background: linear-gradient(135deg, #f97316 0%, #ea580c 100%) !important; 
           color: white !important; border: none !important;
           transition: all 0.3s ease;
@@ -280,13 +253,13 @@ const Gallery = () => {
           box-shadow: 0 4px 18px rgba(0,0,0,0.03);
         }
         
-.gallery-layout { 
-  display: flex; 
-  gap: 1.5rem; 
-  height: calc(100vh - 130px); 
-  align-items: stretch; 
-  overflow: hidden; 
-}        
+        .gallery-layout { 
+          display: flex; 
+          gap: 1.5rem; 
+          height: calc(100vh - 130px); 
+          align-items: stretch; 
+          overflow: hidden; 
+        }        
         .gallery-inner-sidebar { 
           width: 280px; 
           flex-shrink: 0;
@@ -384,6 +357,35 @@ const Gallery = () => {
         .media-card:hover .media-overlay { opacity: 1; }
         .media-checkbox { position: absolute; top: 0.5rem; left: 0.5rem; z-index: 2; width: 1.1rem; height: 1.1rem; }
         .media-delete-btn { position: absolute; top: 0.5rem; right: 0.5rem; z-index: 2; }
+
+        /* --- Custom Orange Scrollbar --- */
+        
+        /* For Chrome, Safari, and Edge */
+        ::-webkit-scrollbar {
+          width: 8px;
+          height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+          background: #fff7ed;
+          border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+          background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+          border-radius: 10px;
+          border: 2px solid #fff7ed;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+          background: #c2410c;
+        }
+
+        /* For Firefox */
+        .gallery-inner-sidebar, .overflow-auto {
+          scrollbar-width: thin;
+          scrollbar-color: #ea580c #fff7ed;
+        }
       `}</style>
 
       <div className="gallery-layout">
