@@ -47,14 +47,14 @@ const BhajanSahitya = () => {
   // Search & Pagination States
   const [searchQuery, setSearchQuery] = useState('');
   const fetchBhajans = useCallback(async () => {
-  try {
-    const response = await getAllBhajans();
-    setBhajans(response.data.data);
-  } catch (error) {
-    console.error("Error fetching data", error);
-    showErrorAlert("Fetch Error", "Could not load bhajans.");
-  }
-}, []);
+    try {
+      const response = await getAllBhajans();
+      setBhajans(response.data.data);
+    } catch (error) {
+      console.error("Error fetching data", error);
+      showErrorAlert("Fetch Error", "Could not load bhajans.");
+    }
+  }, []);
   useEffect(() => {
     fetchBhajans();
   }, [fetchBhajans]);
@@ -129,8 +129,14 @@ const BhajanSahitya = () => {
         .serial-cell:hover .delete-btn-wrapper { display: inline-block; }
       `}</style>
 
-      <div className="container-fluid p-4" style={{ backgroundColor: '#fdf9f1', minHeight: '100vh' }}>
-
+      <div
+        className="container-fluid px-4 pb-4 pt-0 d-flex flex-column"
+        style={{
+          backgroundColor: '#fdf9f1',
+          height: 'calc(100vh - 80px)',
+          overflow: 'hidden'
+        }}
+      >
         {/* Header Card */}
         <div className="card shadow-sm border-0 rounded-4 mb-4">
           <div className="card-body d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 p-4">
@@ -164,10 +170,10 @@ const BhajanSahitya = () => {
         </div>
 
         {/* Data Table Card */}
-        <div className="card shadow-sm border-0 rounded-4 overflow-hidden">
-          <div className="card-body p-0 table-responsive">
-            <table className="table table-hover align-middle mb-0">
-              <thead style={{ backgroundColor: '#fef8f4' }}>
+        <div className="card shadow-sm border-0 rounded-4 overflow-hidden flex-grow-1 d-flex flex-column">
+          <div className="card-body p-0 overflow-auto flex-grow-1">
+            <table className="table table-hover align-middle mb-0" style={{ minWidth: '900px' }}>
+              <thead style={{ backgroundColor: '#fef8f4', position: 'sticky', top: 0, zIndex: 1 }}>
                 <tr>
                   <th className="py-3 px-4 text-secondary" style={{ width: '80px' }}>ક્રમ</th>
                   <th className="py-3 px-4 text-secondary">સાહિત્યનું નામ</th>
@@ -210,16 +216,16 @@ const BhajanSahitya = () => {
                       <td className="py-3 px-4 text-muted text-truncate" style={{ maxWidth: '200px' }}>{item.bhajan_kadi}</td>
                       <td className="py-3 px-4 text-muted">{item.bhajan_rag}</td>
                       <td className="py-3 px-4 text-muted">{item.page_no}</td>
-                      
+
                       {/* <-- ADDED YOUTUBE LINK CELL --> */}
                       <td className="py-3 px-4 text-center">
                         {item.youtube_link ? (
-                          <a 
-                            href={item.youtube_link} 
-                            target="_blank" 
-                            rel="noopener noreferrer" 
-                            onClick={(e) => e.stopPropagation()} 
-                            className="text-danger fw-bold text-decoration-none" 
+                          <a
+                            href={item.youtube_link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            className="text-danger fw-bold text-decoration-none"
                             title="Watch on YouTube"
                           >
                             ▶ Play
@@ -271,7 +277,7 @@ const BhajanSahitya = () => {
             <div className="col-md-12">
               <Input label="YouTube Link" type="url" name="youtube_link" value={formData.youtube_link} onChange={handleInputChange} placeholder="https://youtube.com/..." />
             </div>
-            
+
             <div className="col-12 mt-3">
               <label className="form-label fw-bold text-secondary small">ભજનનો પાઠ *</label>
               <textarea required name="bhajan" value={formData.bhajan} onChange={handleInputChange} rows="5" className="form-control" />
