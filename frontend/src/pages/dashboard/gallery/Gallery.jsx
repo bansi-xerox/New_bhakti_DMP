@@ -619,7 +619,6 @@ const Gallery = () => {
         </div>
       </div>
 
-      {/* FULL SCREEN LIGHTBOX MODAL */}
     {/* FULL SCREEN LIGHTBOX MODAL */}
       {previewMedia && (
         <div
@@ -629,12 +628,14 @@ const Gallery = () => {
           onClick={() => setPreviewMedia(null)}
         >
           <div
-            // Added 'modal-zoom-anim' here for the zoom effect
             className="modal-dialog modal-dialog-centered modal-xl modal-zoom-anim"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="modal-content bg-transparent border-0">
-              <div className="d-flex justify-content-between align-items-center text-white mb-2 px-2">
+            {/* UPDATED: Added bg-black and rounded corners to the main modal-content */}
+            <div className="modal-content bg-black border-0 rounded-4 overflow-hidden shadow-lg">
+              
+              {/* UPDATED: Added padding (p-3) to create spacing inside the black header area */}
+              <div className="d-flex justify-content-between align-items-center text-white p-3">
                 <div>
                   <h5 className="fw-bold mb-0 d-flex align-items-center gap-2">
                     {previewMedia.isPhoto ? <ImageIcon size={20} /> : <PlayIcon size={20} />}
@@ -646,7 +647,7 @@ const Gallery = () => {
                 </div>
                 <button
                   type="button"
-                  className="btn btn-light btn-sm rounded-circle fw-bold shadow d-flex align-items-center justify-content-center"
+                  className="btn btn-light btn-sm rounded-circle fw-bold shadow d-flex align-items-center justify-content-center text-dark"
                   style={{ width: '32px', height: '32px', transition: 'transform 0.2s ease' }}
                   onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
                   onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
@@ -655,7 +656,9 @@ const Gallery = () => {
                   <XIcon size={18} />
                 </button>
               </div>
-              <div className="modal-body p-0 text-center bg-black rounded-4 overflow-hidden shadow-lg">
+              
+              {/* UPDATED: Removed duplicate bg-black and rounded properties from the body since the parent handles it */}
+              <div className="modal-body p-0 text-center">
                 {previewMedia.isPhoto ? (
                   <img
                     src={previewMedia.mediaUrl}
