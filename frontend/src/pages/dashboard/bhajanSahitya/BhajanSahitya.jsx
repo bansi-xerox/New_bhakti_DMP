@@ -128,13 +128,15 @@ const BhajanSahitya = () => {
         .serial-cell:hover .serial-number { display: none; }
         .serial-cell:hover .delete-btn-wrapper { display: inline-block; }
       `}</style>
-
-      <div
-        className="container-fluid px-3 px-md-4 pb-3 pb-md-4 pt-0 d-flex flex-column h-100"
+<div
+        className="container-fluid px-3 px-md-4 pb-3 pb-md-4 pt-0 d-flex flex-column"
         style={{
           backgroundColor: '#fdf9f1',
           flex: 1,
-          minHeight: 0
+          minHeight: 0,
+          height: '100vh',       
+          maxHeight: '100vh', 
+          overflow: 'hidden'     
         }}
       >
         {/* Header Card */}
