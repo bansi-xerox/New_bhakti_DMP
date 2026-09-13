@@ -7,29 +7,6 @@ import {
 } from "../../../components/common/Alert";
 import GalleryModal from "./GalleryModal";
 
-const clickTimeoutRef = useRef(null);
-
-const handleSingleClick = (item, mediaUrl, isPhoto) => {
-  // Clear any existing timer
-  if (clickTimeoutRef.current) {
-    clearTimeout(clickTimeoutRef.current);
-  }
-  // Set a timer to open the big image. If they double click, this gets cancelled.
-  clickTimeoutRef.current = setTimeout(() => {
-    setPreviewMedia({ ...item, mediaUrl, isPhoto });
-  }, 250);
-};
-
-const handleDoubleClick = (e, item) => {
-  e.stopPropagation();
-  // Cancel the single click preview from opening
-  if (clickTimeoutRef.current) {
-    clearTimeout(clickTimeoutRef.current);
-  }
-  setPreviewMedia(null);
-  setSelectedForEdit(item);
-  setIsModalOpen(true);
-};
 // --- Zero-Dependency Lucide-Style SVG Icons ---
 const FolderIcon = ({ size = 18, className = "" }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
@@ -131,6 +108,30 @@ const Gallery = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedForEdit, setSelectedForEdit] = useState(null);
   const [previewMedia, setPreviewMedia] = useState(null);
+
+  const clickTimeoutRef = useRef(null);
+
+const handleSingleClick = (item, mediaUrl, isPhoto) => {
+  // Clear any existing timer
+  if (clickTimeoutRef.current) {
+    clearTimeout(clickTimeoutRef.current);
+  }
+  // Set a timer to open the big image. If they double click, this gets cancelled.
+  clickTimeoutRef.current = setTimeout(() => {
+    setPreviewMedia({ ...item, mediaUrl, isPhoto });
+  }, 250);
+};
+
+const handleDoubleClick = (e, item) => {
+  e.stopPropagation();
+  // Cancel the single click preview from opening
+  if (clickTimeoutRef.current) {
+    clearTimeout(clickTimeoutRef.current);
+  }
+  setPreviewMedia(null);
+  setSelectedForEdit(item);
+  setIsModalOpen(true);
+};
 
   // Layout States
   const [expandedMainFolder, setExpandedMainFolder] = useState('All');
