@@ -54,7 +54,7 @@ const BhajanSahitya = () => {
       showErrorAlert("Fetch Error", "Could not load bhajans.");
     }
   }, []);
-  
+
   useEffect(() => {
     fetchBhajans();
   }, [fetchBhajans]);
@@ -151,7 +151,8 @@ const BhajanSahitya = () => {
         className="w-100 flex-grow-1 d-flex flex-column p-3 p-md-4"
         style={{
           backgroundColor: '#fdf9f1',
-          height: '100%', 
+          height: '100vh',       /* Force exact screen height */
+          maxHeight: '100vh',    /* Never allow it to expand past the screen */
           overflow: 'hidden', // Stops the outer page scrollbar
           margin: 0
         }}
@@ -279,7 +280,7 @@ const BhajanSahitya = () => {
               <Input label="સાહિત્યનું નામ *" name="sahitya_name" value={formData.sahitya_name} onChange={handleInputChange} required />
             </div>
             <div className="col-md-6">
-              <Input label="શીર્ષકનું નામ" name="heading_name" value={formData.heading_name} onChange={handleInputChange}  />
+              <Input label="શીર્ષકનું નામ" name="heading_name" value={formData.heading_name} onChange={handleInputChange} />
             </div>
             <div className="col-md-6">
               <Input label="ભજનનું નામ *" name="bhajan_name" value={formData.bhajan_name} onChange={handleInputChange} required />
