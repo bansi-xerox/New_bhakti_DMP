@@ -16,6 +16,7 @@ const GalleryModal = ({ isOpen, onClose, onSuccess, initialData = null }) => {
   const [formData, setFormData] = useState({
     main_folder_name: "",
     sub_folder_name: "",
+    event_date: "",
     media_type: "Photos",
     files: [],
   });
@@ -30,14 +31,21 @@ const GalleryModal = ({ isOpen, onClose, onSuccess, initialData = null }) => {
           setFormData({
             main_folder_name: "",
             sub_folder_name: "",
+            event_date: "",
             media_type: "Photos",
             files: [],
           });
         } else {
+
+          const formattedDate = initialData.event_date
+            ? new Date(initialData.event_date).toISOString().split('T')[0]
+            : "";
+
           // Single Edit Mode: Prefill existing data
           setFormData({
             main_folder_name: initialData.main_folder_name || "",
             sub_folder_name: initialData.sub_folder_name || "",
+            event_date: formattedDate, // Prefill date
             media_type: initialData.photo_path ? "Photos" : "Videos",
             files: [],
           });
@@ -48,6 +56,7 @@ const GalleryModal = ({ isOpen, onClose, onSuccess, initialData = null }) => {
         setFormData({
           main_folder_name: "",
           sub_folder_name: "",
+          event_date: "", // Reset
           media_type: "Photos",
           files: [],
         });
@@ -109,9 +118,10 @@ const GalleryModal = ({ isOpen, onClose, onSuccess, initialData = null }) => {
       if (isEditMode) {
         const payload = {
           main_folder_name: formData.main_folder_name.trim(),
-          sub_folder_name: formData.sub_folder_name.trim()
+          sub_folder_name: formData.sub_folder_name.trim(),
+          event_date: formData.event_date || null // Add to update payload
         };
-        
+
         if (isBulkEdit) {
           // Bulk Move: Fire updates for every selected item using Promise.all
           await Promise.all(
@@ -123,7 +133,7 @@ const GalleryModal = ({ isOpen, onClose, onSuccess, initialData = null }) => {
           await updateGalleryMedia(initialData.id, payload);
           showGalleryToast('સફળતાપૂર્વક ખસેડવામાં આવ્યું! (File moved!)');
         }
-        
+
         onSuccess();
         onClose();
 
@@ -133,7 +143,9 @@ const GalleryModal = ({ isOpen, onClose, onSuccess, initialData = null }) => {
         payload.append("main_folder_name", formData.main_folder_name.trim());
         payload.append("sub_folder_name", formData.sub_folder_name.trim());
         payload.append("media_type", formData.media_type);
-
+        if (formData.event_date) {
+          payload.append("event_date", formData.event_date); // Add to FormData
+        }
         formData.files.forEach((file) => payload.append("files", file));
 
         const res = await uploadGalleryMedia(payload);
@@ -168,7 +180,7 @@ const GalleryModal = ({ isOpen, onClose, onSuccess, initialData = null }) => {
 
       <form onSubmit={handleSubmit}>
         <div className="row g-3 mb-3">
-          <div className="col-12 col-md-6">
+          <div className="col-12 col-md-4">
             <Input
               label="DESTINATION FOLDER / YEAR"
               name="main_folder_name"
@@ -178,7 +190,7 @@ const GalleryModal = ({ isOpen, onClose, onSuccess, initialData = null }) => {
               required
             />
           </div>
-          <div className="col-12 col-md-6">
+          <div className="col-12 col-md-4">
             <Input
               label="DESTINATION SUB FOLDER"
               name="sub_folder_name"
@@ -188,8 +200,16 @@ const GalleryModal = ({ isOpen, onClose, onSuccess, initialData = null }) => {
               required
             />
           </div>
+          <div className="col-12 col-md-4">
+            <Input
+              type="date"
+              label="EVENT DATE (Optional)"
+              name="event_date"
+              value={formData.event_date}
+              onChange={handleInputChange}
+            />
+          </div>
         </div>
-
         {isEditMode ? (
           <div className="alert border theme-orange-border-light theme-orange-light-bg rounded-3 mt-4 mb-4">
             <div className="d-flex gap-2 align-items-center">
@@ -257,7 +277,7 @@ const GalleryModal = ({ isOpen, onClose, onSuccess, initialData = null }) => {
                       <div className="d-flex align-items-center justify-content-between p-2 bg-white border rounded-3 shadow-sm">
                         <div className="d-flex align-items-center gap-2 text-truncate">
                           {formData.media_type === 'Photos' ? (
-                            <img src={file.url} alt={file.name} className="rounded object-fit-cover shadow-sm border" style={{ width: '40px', height: '40px' }}/>
+                            <img src={file.url} alt={file.name} className="rounded object-fit-cover shadow-sm border" style={{ width: '40px', height: '40px' }} />
                           ) : (
                             <span className="fs-4">🎥</span>
                           )}
