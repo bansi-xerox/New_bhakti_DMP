@@ -95,7 +95,8 @@ exports.uploadMedia = async (req, res) => {
         main_folder_name: safeMain,
         sub_folder_name: safeSub,
         photo_path: photoPath,
-        video_path: videoPath
+        video_path: videoPath,
+        event_date: event_date ? new Date(event_date) : null // Add this line
       });
 
       const savedDoc = await newRecord.save();
@@ -119,7 +120,7 @@ exports.uploadMedia = async (req, res) => {
 
 exports.getGalleryItems = async (req, res) => {
   try {
-    const { page, limit, search, main_folder_name, sub_folder_name, media_type } = req.query;
+    const { page, limit, search, main_folder_name, sub_folder_name, media_type, event_date } = req.query;
     const query = {};
 
     if (main_folder_name) {
@@ -162,6 +163,7 @@ exports.getGalleryItems = async (req, res) => {
         id: item._id,
         main_folder_name: item.main_folder_name,
         sub_folder_name: item.sub_folder_name,
+        event_date: item.event_date, // Add this line
         photo_path: item.photo_path,
         video_path: item.video_path,
         created_at: item.created_at
@@ -225,11 +227,15 @@ exports.updateMedia = async (req, res) => {
       });
     }
 
+
     const item = await Gallery.findById(id);
     if (!item) {
       return res.status(404).json({ success: false, message: 'ફાઇલ મળી નથી.' });
     }
-
+    
+    if (req.body.event_date !== undefined) {
+      item.event_date = req.body.event_date ? new Date(req.body.event_date) : null;
+    }
     const safeNewMain = sanitizeName(mainFolder);
     const safeNewSub = sanitizeName(subFolder);
 
