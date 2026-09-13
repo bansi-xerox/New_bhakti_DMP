@@ -96,8 +96,7 @@ const HeadingBhajansPage = () => {
         )}
       </main>
 
-      {/* 3. Devam Infotech Copyright Footer */}
-      <Footer />
+     
     </div>
   );
 };

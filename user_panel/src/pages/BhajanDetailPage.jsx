@@ -183,8 +183,7 @@ const BhajanDetailPage = () => {
         )}
       </main>
 
-      {/* 4. Taller & Enhanced Royal Footer */}
-      <Footer />
+     
     </div>
   );
 };

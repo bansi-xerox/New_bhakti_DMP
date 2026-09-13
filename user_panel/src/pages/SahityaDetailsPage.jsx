@@ -128,7 +128,7 @@ const SahityaDetailsPage = () => {
         )}
       </main>
 
-      <Footer />
+      
     </div>
   );
 };
