@@ -96,7 +96,7 @@ exports.uploadMedia = async (req, res) => {
         sub_folder_name: safeSub,
         photo_path: photoPath,
         video_path: videoPath,
-        event_date: event_date ? new Date(event_date) : null // Add this line
+        event_date: event_date ? new Date(event_date) : new Date()// Add this line
       });
 
       const savedDoc = await newRecord.save();
@@ -232,9 +232,9 @@ exports.updateMedia = async (req, res) => {
     if (!item) {
       return res.status(404).json({ success: false, message: 'ફાઇલ મળી નથી.' });
     }
-    
-    if (req.body.event_date !== undefined) {
-      item.event_date = req.body.event_date ? new Date(req.body.event_date) : null;
+
+  if (req.body.event_date !== undefined) {
+      item.event_date = req.body.event_date ? new Date(req.body.event_date) : new Date(); // Defaults to today if empty
     }
     const safeNewMain = sanitizeName(mainFolder);
     const safeNewSub = sanitizeName(subFolder);

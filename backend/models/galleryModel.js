@@ -9,9 +9,9 @@ const gallerySchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  event_date: {
+ event_date: {
     type: Date,
-    default: null
+    default: Date.now // Defaults to current timestamp in DB
   },
   photo_path: {
     type: String,
