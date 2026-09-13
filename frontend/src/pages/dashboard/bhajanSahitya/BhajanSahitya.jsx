@@ -147,14 +147,13 @@ const BhajanSahitya = () => {
       `}</style>
 
      {/* Main Container */}
+  {/* Main Container */}
       <div
         className="w-100 d-flex flex-column p-3 p-md-4"
         style={{
           backgroundColor: '#fdf9f1',
-          flex: 1,
-          minHeight: 0,          /* MAGIC RULE: Stops the div from pushing past the screen */
-          height: '100%',        /* Perfectly fits inside your dashboard layout */
-          overflow: 'hidden'     /* Kills the outer page scrollbar completely */
+          height: 'calc(100vh - 75px)',  /* MAGIC RULE: Full screen height MINUS the top navbar height */
+          overflow: 'hidden'             /* Forcefully kills the outer scrollbar */
         }}
       >
         {/* Header Card */}
