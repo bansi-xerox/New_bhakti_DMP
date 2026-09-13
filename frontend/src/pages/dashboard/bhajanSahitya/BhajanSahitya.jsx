@@ -146,15 +146,15 @@ const BhajanSahitya = () => {
         }
       `}</style>
 
-      {/* Main Container: Removed container-fluid, changed height to 100% */}
+     {/* Main Container */}
       <div
-        className="w-100 flex-grow-1 d-flex flex-column p-3 p-md-4"
+        className="w-100 d-flex flex-column p-3 p-md-4"
         style={{
           backgroundColor: '#fdf9f1',
-          height: '100vh',       /* Force exact screen height */
-          maxHeight: '100vh',    /* Never allow it to expand past the screen */
-          overflow: 'hidden', // Stops the outer page scrollbar
-          margin: 0
+          flex: 1,
+          minHeight: 0,          /* MAGIC RULE: Stops the div from pushing past the screen */
+          height: '100%',        /* Perfectly fits inside your dashboard layout */
+          overflow: 'hidden'     /* Kills the outer page scrollbar completely */
         }}
       >
         {/* Header Card */}
