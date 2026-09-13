@@ -198,6 +198,7 @@ const GalleryModal = ({ isOpen, onClose, onSuccess, initialData = null }) => {
               required
             />
           </div>
+          hiiiiii
           <div className="col-12 col-md-4"> 
             <Input
               type="date"
