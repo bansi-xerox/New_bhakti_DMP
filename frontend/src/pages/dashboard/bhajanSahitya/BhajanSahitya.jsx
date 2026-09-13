@@ -146,13 +146,13 @@ const BhajanSahitya = () => {
         }
       `}</style>
 
-     {/* Main Container */}
   {/* Main Container */}
       <div
         className="w-100 d-flex flex-column p-3 p-md-4"
         style={{
           backgroundColor: '#fdf9f1',
           height: 'calc(100vh - 75px)',  /* MAGIC RULE: Full screen height MINUS the top navbar height */
+      maxHeight: 'calc(100vh - 90px)',  /* Strictly prevents pushing the parent container */
           overflow: 'hidden'             /* Forcefully kills the outer scrollbar */
         }}
       >
