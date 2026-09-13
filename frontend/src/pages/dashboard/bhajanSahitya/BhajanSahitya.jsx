@@ -145,15 +145,13 @@ const BhajanSahitya = () => {
           background: #d95316; /* Darker orange on hover */
         }
       `}</style>
-
-  {/* Main Container */}
-  {/* Main Container */}
+{/* Main Container */}
       <div
         className="w-100 d-flex flex-column p-3 p-md-4"
         style={{
           backgroundColor: '#fdf9f1',
-          height: 'calc(100vh - 90px)', /* Increased to 90px to fully account for the tall top navbar */
-          overflow: 'hidden' /* Forcefully prevents the outer scrollbar */
+          height: 'calc(100vh - 130px)', /* Increased to 130px to fully clear the parent's paddings and top navbar */
+          overflow: 'hidden' /* Keeps this specific container from scrolling */
         }}
       >
         {/* Header Card */}
