@@ -6,7 +6,7 @@ const { sanitizeName, getNextSequenceNumber } = require('../utils/fileHelper');
 
 exports.uploadMedia = async (req, res) => {
   try {
-    const { main_folder_name, sub_folder_name, media_type } = req.body;
+    const { main_folder_name, sub_folder_name, media_type, event_date } = req.body; 
     const files = req.files;
 
     if (!main_folder_name || !sub_folder_name || !media_type) {
@@ -233,7 +233,7 @@ exports.updateMedia = async (req, res) => {
       return res.status(404).json({ success: false, message: 'ફાઇલ મળી નથી.' });
     }
 
-  if (req.body.event_date !== undefined) {
+    if (req.body.event_date !== undefined) {
       item.event_date = req.body.event_date ? new Date(req.body.event_date) : new Date(); // Defaults to today if empty
     }
     const safeNewMain = sanitizeName(mainFolder);
