@@ -200,7 +200,8 @@ const GalleryModal = ({ isOpen, onClose, onSuccess, initialData = null }) => {
               required
             />
           </div>
-          <div className="col-12 col-md-4">
+          {/* event date is added */}
+          <div className="col-12 col-md-4"> 
             <Input
               type="date"
               label="EVENT DATE (Optional)"
