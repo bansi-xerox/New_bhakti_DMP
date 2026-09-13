@@ -578,7 +578,7 @@ const handleDoubleClick = (e, item) => {
       className="btn btn-danger btn-sm fw-bold px-3 py-1 rounded-3 shadow-sm d-flex align-items-center gap-2"
       onClick={handleBulkDelete}
     >
-      <Trash2Icon size={16} /> Delete ({selectedIds.length})
+      <Trash2Icon size={16} /> ({selectedIds.length})
     </button>
   </div>
 )}
