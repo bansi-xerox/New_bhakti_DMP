@@ -9,14 +9,17 @@ import {
   showErrorAlert,
 } from "../../../components/common/Alert";
 
+// Helper function to get today's date in YYYY-MM-DD format
+const getTodayDateString = () => new Date().toISOString().split('T')[0];
+
 const GalleryModal = ({ isOpen, onClose, onSuccess, initialData = null }) => {
   const isEditMode = Boolean(initialData);
-  const isBulkEdit = Array.isArray(initialData); // Check if multiple items are selected
+  const isBulkEdit = Array.isArray(initialData);
 
   const [formData, setFormData] = useState({
     main_folder_name: "",
     sub_folder_name: "",
-    event_date: "",
+    event_date: getTodayDateString(), // Default to today
     media_type: "Photos",
     files: [],
   });
@@ -27,36 +30,33 @@ const GalleryModal = ({ isOpen, onClose, onSuccess, initialData = null }) => {
     if (isOpen) {
       if (initialData) {
         if (isBulkEdit) {
-          // Bulk Move Mode: Keep fields empty so user types the target destination
           setFormData({
             main_folder_name: "",
             sub_folder_name: "",
-            event_date: "",
+            event_date: getTodayDateString(), // Default to today
             media_type: "Photos",
             files: [],
           });
         } else {
-
+          // Use existing date, or fallback to today's date if missing
           const formattedDate = initialData.event_date
             ? new Date(initialData.event_date).toISOString().split('T')[0]
-            : "";
+            : getTodayDateString();
 
-          // Single Edit Mode: Prefill existing data
           setFormData({
             main_folder_name: initialData.main_folder_name || "",
             sub_folder_name: initialData.sub_folder_name || "",
-            event_date: formattedDate, // Prefill date
+            event_date: formattedDate,
             media_type: initialData.photo_path ? "Photos" : "Videos",
             files: [],
           });
         }
         setPreviews([]);
       } else {
-        // Insert Mode: Reset fields
         setFormData({
           main_folder_name: "",
           sub_folder_name: "",
-          event_date: "", // Reset
+          event_date: getTodayDateString(), // Default to today
           media_type: "Photos",
           files: [],
         });
@@ -119,17 +119,16 @@ const GalleryModal = ({ isOpen, onClose, onSuccess, initialData = null }) => {
         const payload = {
           main_folder_name: formData.main_folder_name.trim(),
           sub_folder_name: formData.sub_folder_name.trim(),
-          event_date: formData.event_date || null // Add to update payload
+          // Send the date, or if somehow cleared, send today's date
+          event_date: formData.event_date || getTodayDateString() 
         };
 
         if (isBulkEdit) {
-          // Bulk Move: Fire updates for every selected item using Promise.all
           await Promise.all(
             initialData.map(item => updateGalleryMedia(item.id, payload))
           );
           showGalleryToast('બધા મીડિયા સફળતાપૂર્વક ખસેડવામાં આવ્યા! (Multiple files moved!)');
         } else {
-          // Single Move
           await updateGalleryMedia(initialData.id, payload);
           showGalleryToast('સફળતાપૂર્વક ખસેડવામાં આવ્યું! (File moved!)');
         }
@@ -138,14 +137,13 @@ const GalleryModal = ({ isOpen, onClose, onSuccess, initialData = null }) => {
         onClose();
 
       } else {
-        // Normal Upload
         const payload = new FormData();
         payload.append("main_folder_name", formData.main_folder_name.trim());
         payload.append("sub_folder_name", formData.sub_folder_name.trim());
         payload.append("media_type", formData.media_type);
-        if (formData.event_date) {
-          payload.append("event_date", formData.event_date); // Add to FormData
-        }
+        // Send the date, or if somehow cleared, send today's date
+        payload.append("event_date", formData.event_date || getTodayDateString()); 
+        
         formData.files.forEach((file) => payload.append("files", file));
 
         const res = await uploadGalleryMedia(payload);
@@ -200,7 +198,6 @@ const GalleryModal = ({ isOpen, onClose, onSuccess, initialData = null }) => {
               required
             />
           </div>
-          {/* event date is added */}
           <div className="col-12 col-md-4"> 
             <Input
               type="date"
