@@ -23,7 +23,6 @@ import {
   showToastAlert
 } from '../../../components/common/Alert';
 
-
 const BhajanSahitya = () => {
   const [bhajans, setBhajans] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -55,6 +54,7 @@ const BhajanSahitya = () => {
       showErrorAlert("Fetch Error", "Could not load bhajans.");
     }
   }, []);
+  
   useEffect(() => {
     fetchBhajans();
   }, [fetchBhajans]);
@@ -123,24 +123,41 @@ const BhajanSahitya = () => {
 
   return (
     <>
-     <style>{`
+      <style>{`
         .delete-btn-wrapper { display: none; }
         .serial-cell:hover .serial-number { display: none; }
         .serial-cell:hover .delete-btn-wrapper { display: inline-block; }
+
+        /* --- Custom Orange Scrollbar --- */
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 8px;
+          height: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: #fef8f4;
+          border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: #f26522; /* Orange color */
+          border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: #d95316; /* Darker orange on hover */
+        }
       `}</style>
-<div
-        className="container-fluid px-3 px-md-4 pb-3 pb-md-4 pt-0 d-flex flex-column"
+
+      {/* Main Container: Removed container-fluid, changed height to 100% */}
+      <div
+        className="w-100 flex-grow-1 d-flex flex-column p-3 p-md-4"
         style={{
           backgroundColor: '#fdf9f1',
-          flex: 1,
-          minHeight: 0,
-          height: '100vh',       
-          maxHeight: '100vh', 
-          overflow: 'hidden'     
+          height: '100%', 
+          overflow: 'hidden', // Stops the outer page scrollbar
+          margin: 0
         }}
       >
         {/* Header Card */}
-        <div className="card shadow-sm border-0 rounded-4 mb-4">
+        <div className="card shadow-sm border-0 rounded-4 mb-4 flex-shrink-0">
           <div className="card-body d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 p-4">
             <div>
               <span className="badge text-uppercase mb-2 px-3 py-2" style={{ backgroundColor: '#ffeedc', color: '#f26522', borderRadius: '50px', fontWeight: 'bold' }}>
@@ -160,7 +177,7 @@ const BhajanSahitya = () => {
         </div>
 
         {/* Search Bar Row */}
-        <div className="card shadow-sm border-0 rounded-4 mb-4">
+        <div className="card shadow-sm border-0 rounded-4 mb-4 flex-shrink-0">
           <div className="card-body p-3">
             <SearchBar
               value={searchQuery}
@@ -173,20 +190,19 @@ const BhajanSahitya = () => {
 
         {/* Data Table Card */}
         <div className="card shadow-sm border-0 rounded-4 overflow-hidden flex-grow-1 d-flex flex-column" style={{ minHeight: 0 }}>
-          {/* Added table-responsive for horizontal mobile scroll */}
-          <div className="card-body p-0 overflow-auto flex-grow-1 table-responsive">
-            {/* Kept minWidth so columns don't crush on mobile */}
+          {/* Inner scrolling area with the orange custom scrollbar */}
+          <div className="card-body p-0 overflow-auto flex-grow-1 custom-scrollbar">
             <table className="table table-hover align-middle mb-0" style={{ minWidth: '900px' }}>
               <thead style={{ backgroundColor: '#fef8f4', position: 'sticky', top: 0, zIndex: 1 }}>
                 <tr>
-                  <th className="py-3 px-4 text-secondary" style={{ width: '80px' }}>ક્રમ</th>
-                  <th className="py-3 px-4 text-secondary">સાહિત્યનું નામ</th>
-                  <th className="py-3 px-4 text-secondary">શીર્ષકનું નામ</th>
-                  <th className="py-3 px-4 text-secondary">ભજનનું નામ</th>
-                  <th className="py-3 px-4 text-secondary">ભજનની કડી</th>
-                  <th className="py-3 px-4 text-secondary">ભજનનો રાગ</th>
-                  <th className="py-3 px-4 text-secondary">પૃષ્ઠ ક્રમાંક</th>
-                  <th className="py-3 px-4 text-secondary text-center">YouTube Link</th> {/* <-- ADDED HEADER */}
+                  <th className="py-3 px-4 text-secondary" style={{ width: '80px', backgroundColor: '#fef8f4' }}>ક્રમ</th>
+                  <th className="py-3 px-4 text-secondary" style={{ backgroundColor: '#fef8f4' }}>સાહિત્યનું નામ</th>
+                  <th className="py-3 px-4 text-secondary" style={{ backgroundColor: '#fef8f4' }}>શીર્ષકનું નામ</th>
+                  <th className="py-3 px-4 text-secondary" style={{ backgroundColor: '#fef8f4' }}>ભજનનું નામ</th>
+                  <th className="py-3 px-4 text-secondary" style={{ backgroundColor: '#fef8f4' }}>ભજનની કડી</th>
+                  <th className="py-3 px-4 text-secondary" style={{ backgroundColor: '#fef8f4' }}>ભજનનો રાગ</th>
+                  <th className="py-3 px-4 text-secondary" style={{ backgroundColor: '#fef8f4' }}>પૃષ્ઠ ક્રમાંક</th>
+                  <th className="py-3 px-4 text-secondary text-center" style={{ backgroundColor: '#fef8f4' }}>YouTube Link</th>
                 </tr>
               </thead>
               <tbody>
@@ -221,7 +237,6 @@ const BhajanSahitya = () => {
                       <td className="py-3 px-4 text-muted">{item.bhajan_rag}</td>
                       <td className="py-3 px-4 text-muted">{item.page_no}</td>
 
-                      {/* <-- ADDED YOUTUBE LINK CELL --> */}
                       <td className="py-3 px-4 text-center">
                         {item.youtube_link ? (
                           <a

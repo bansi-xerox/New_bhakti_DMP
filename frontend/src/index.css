@@ -1,12 +1,15 @@
 body, html {
   margin: 0;
   padding: 0;
-  height: 100%;
-  overflow: hidden; /* This forcefully kills the outer scrollbar */
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden; /* Forcefully kills the outer scrollbar */
+  background-color: #fdf9f1; /* Ensure base background matches */
 }
 
 #root {
   height: 100%;
+  width: 100%;
   display: flex;
   flex-direction: column;
 }
