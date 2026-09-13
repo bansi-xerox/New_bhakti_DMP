@@ -147,13 +147,12 @@ const BhajanSahitya = () => {
       `}</style>
 
   {/* Main Container */}
-   {/* Main Container */}
+  {/* Main Container */}
       <div
         className="w-100 d-flex flex-column p-3 p-md-4"
         style={{
           backgroundColor: '#fdf9f1',
-          flex: 1, /* Takes up the remaining available space */
-          height: 'calc(100vh - 65px)', /* Adjust '65px' based on your actual Top Navbar height */
+          height: 'calc(100vh - 90px)', /* Increased to 90px to fully account for the tall top navbar */
           overflow: 'hidden' /* Forcefully prevents the outer scrollbar */
         }}
       >
