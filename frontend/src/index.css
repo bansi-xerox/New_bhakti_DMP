@@ -13,3 +13,30 @@ body, html {
   display: flex;
   flex-direction: column;
 }
+
+/* --- Global Orange Scrollbar --- */
+/* This ensures ALL scrollbars in the app turn orange */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #fef8f4;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #f26522; /* Orange color */
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #d95316; /* Darker orange on hover */
+}
+
+/* For Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #f26522 #fef8f4;
+}
