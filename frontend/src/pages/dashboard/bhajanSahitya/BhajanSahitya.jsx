@@ -154,10 +154,11 @@ const BhajanSahitya = () => {
 
       {/* Main Container */}
     <div
-       className="w-100 d-flex flex-column p-4 gap-3"
+       className="w-100 d-flex flex-column gap-3"
         style={{
           backgroundColor: '#fdf9f1',
           height: 'calc(100vh - 20px)',
+          padding: '24px',
           overflow: 'hidden'
         }}
       >
