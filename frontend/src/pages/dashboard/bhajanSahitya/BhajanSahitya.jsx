@@ -162,12 +162,12 @@ const BhajanSahitya = () => {
       `}</style>
 
       {/* Main Container - ચારેય બાજુ બિલકુલ સરખી 20px સ્પેસ */}
-      <div
+    <div
         className="w-100 d-flex flex-column gap-3"
         style={{
           backgroundColor: '#fdf9f1',
-          height: '100vh',
-          padding: '20px',
+          height: 'calc(100vh - 40px)',
+          margin: '20px',
           boxSizing: 'border-box',
           overflow: 'hidden'
         }}
