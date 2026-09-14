@@ -296,11 +296,11 @@ const handleDoubleClick = (e, item) => {
       .gallery-layout { 
           display: flex; 
           gap: 1.5rem; 
-          height: calc(100vh - 20px); /* અહીં હાઇટ અપડેટ કરી */
+          height: calc(100vh - 40px);
           align-items: stretch; 
           overflow: hidden; 
         }
-          
+
         .gallery-inner-sidebar { 
           width: 280px; 
           flex-shrink: 0;
