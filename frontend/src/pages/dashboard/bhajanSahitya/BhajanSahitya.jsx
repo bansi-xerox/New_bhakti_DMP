@@ -130,17 +130,18 @@ const BhajanSahitya = () => {
         .premium-card {
           background-color: white;
           border-radius: 12px;
-          border: 1px solid rgba(0, 0, 0, 0.08);
+          border: 1px solid rgba(242, 101, 34, 0.2);
           box-shadow: 0 4px 18px rgba(0,0,0,0.03);
         }
 
-        /* Table Border & Clean Look */
+        /* Table Border & Clean Look (Both Horizontal and Vertical Borders with Shading Orange) */
         .table-custom th, .table-custom td {
-          border-color: #f1ebd9 !important;
+          border: 1px solid #fbd3bc !important;
           vertical-align: middle;
         }
         .table-custom th {
-          border-bottom: 2px solid #e6dcbe !important;
+          border-bottom: 2px solid #f26522 !important;
+          background-color: #fef5ee !important;
         }
 
         /* --- Custom Orange Scrollbar --- */
@@ -161,13 +162,13 @@ const BhajanSahitya = () => {
         }
       `}</style>
 
-      {/* Main Container - ચારેય બાજુ બિલકુલ સરખી 20px સ્પેસ */}
-    <div
+      {/* Main Container - ચારેય બાજુ બિલકુલ સરખી 16px સ્પેસ */}
+      <div
         className="w-100 d-flex flex-column gap-3"
         style={{
           backgroundColor: '#fdf9f1',
-          height: 'calc(100vh - 40px)',
-          margin: '20px',
+          height: 'calc(100vh - 32px)',
+          margin: '16px',
           boxSizing: 'border-box',
           overflow: 'hidden'
         }}
@@ -197,20 +198,20 @@ const BhajanSahitya = () => {
           </div>
         </div>
 
-        {/* Data Table Card with Proper Border */}
-        <div className="premium-card overflow-hidden flex-grow-1 d-flex flex-column border" style={{ minHeight: 0, borderColor: '#e6dcbe !important' }}>
+        {/* Data Table Card with Proper Shading Orange Border */}
+        <div className="premium-card overflow-hidden flex-grow-1 d-flex flex-column" style={{ minHeight: 0, borderColor: '#fbd3bc' }}>
           <div className="card-body p-0 overflow-auto flex-grow-1 custom-scrollbar">
             <table className="table table-hover align-middle mb-0 table-custom" style={{ minWidth: '900px' }}>
-              <thead style={{ backgroundColor: '#fef8f4', position: 'sticky', top: 0, zIndex: 1 }}>
+              <thead style={{ position: 'sticky', top: 0, zIndex: 1 }}>
                 <tr>
-                  <th className="py-3 px-4 text-secondary" style={{ width: '80px', backgroundColor: '#fef8f4' }}>ક્રમ</th>
-                  <th className="py-3 px-4 text-secondary" style={{ backgroundColor: '#fef8f4' }}>સાહિત્યનું નામ</th>
-                  <th className="py-3 px-4 text-secondary" style={{ backgroundColor: '#fef8f4' }}>શીર્ષકનું નામ</th>
-                  <th className="py-3 px-4 text-secondary" style={{ backgroundColor: '#fef8f4' }}>ભજનનું નામ</th>
-                  <th className="py-3 px-4 text-secondary" style={{ backgroundColor: '#fef8f4' }}>ભજનની કડી</th>
-                  <th className="py-3 px-4 text-secondary" style={{ backgroundColor: '#fef8f4' }}>ભજનનો રાગ</th>
-                  <th className="py-3 px-4 text-secondary" style={{ backgroundColor: '#fef8f4' }}>પૃષ્ઠ ક્રમાંક</th>
-                  <th className="py-3 px-4 text-secondary text-center" style={{ backgroundColor: '#fef8f4' }}>YouTube Link</th>
+                  <th className="py-3 px-4 text-secondary" style={{ width: '80px' }}>ક્રમ</th>
+                  <th className="py-3 px-4 text-secondary">સાહિત્યનું નામ</th>
+                  <th className="py-3 px-4 text-secondary">શીર્ષકનું નામ</th>
+                  <th className="py-3 px-4 text-secondary">ભજનનું નામ</th>
+                  <th className="py-3 px-4 text-secondary">ભજનની કડી</th>
+                  <th className="py-3 px-4 text-secondary">ભજનનો રાગ</th>
+                  <th className="py-3 px-4 text-secondary">પૃષ્ઠ ક્રમાંક</th>
+                  <th className="py-3 px-4 text-secondary text-center">YouTube Link</th>
                 </tr>
               </thead>
               <tbody>
