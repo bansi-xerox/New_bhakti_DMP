@@ -145,7 +145,7 @@ const BhajanSahitya = () => {
           background: #d95316; /* Darker orange on hover */
         }
       `}</style>
-{/* Main Container */}
+      {/* Main Container */}
       <div
         className="w-100 d-flex flex-column p-3 p-md-4"
         style={{
@@ -277,7 +277,12 @@ const BhajanSahitya = () => {
               <Input label="સાહિત્યનું નામ *" name="sahitya_name" value={formData.sahitya_name} onChange={handleInputChange} required />
             </div>
             <div className="col-md-6">
-              <Input label="શીર્ષકનું નામ" name="heading_name" value={formData.heading_name} onChange={handleInputChange} />
+              <Input
+                label="શીર્ષકનું નામ"
+                name="heading_name"
+                value={formData.heading_name}
+                onChange={handleInputChange}
+              />
             </div>
             <div className="col-md-6">
               <Input label="ભજનનું નામ *" name="bhajan_name" value={formData.bhajan_name} onChange={handleInputChange} required />

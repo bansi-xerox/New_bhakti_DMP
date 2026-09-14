@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const bhajanSahityaSchema = new mongoose.Schema({
   sahitya_name: { type: String, required: true },
-  heading_name: { type: String, required: true },
+ heading_name: { type: String, default: null },
   bhajan_name: { type: String, required: true },
   bhajan_kadi: { type: String, default: null },
   bhajan_rag: { type: String, default: null },
