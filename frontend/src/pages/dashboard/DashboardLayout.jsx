@@ -8,17 +8,16 @@ import BhajanSahitya from './bhajanSahitya/BhajanSahitya';
 import Gallery from './gallery/Gallery';
 
 const DashboardLayout = () => {
-  const [activeTab, setActiveTab] = useState('bhajan-mala');
+  const [activeTab, setActiveTab] = useState('bhajan-sahitya');
   const { logout } = useContext(AuthContext);
   // Tab Titles mapping for Header
   const tabTitles = {
-    'bhajan-mala': 'Bhajan Mala Module',
-    'aakhyan-mala': 'Aakhyan Mala Module',
+    'bhajan-sahitya': 'Bhajan Sahitya Module', 
     'gallery': 'Gallery Module',
   };
 
   // Render content page dynamically based on active tab
-  const renderActiveModule = () => {
+ const renderActiveModule = () => {
     switch (activeTab) {
       case 'bhajan-sahitya':
         return <BhajanSahitya />;
