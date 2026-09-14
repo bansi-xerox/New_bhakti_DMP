@@ -162,16 +162,18 @@ const BhajanSahitya = () => {
         }
       `}</style>
 
-     <div
-        className="w-100 d-flex flex-column gap-3"
-        style={{
-          backgroundColor: '#fdf9f1',
-          height: '100vh',
-          padding: '16px', // margin ની જગ્યાએ padding વાપરવું
-          boxSizing: 'border-box',
-          overflow: 'hidden'
-        }}
-      >
+    <div
+       className="w-100 d-flex flex-column gap-3"
+       style={{
+         backgroundColor: '#fdf9f1',
+         height: 'calc(100vh - 32px)', // Changed from 100vh to leave equal bottom space
+         margin: '16px',               // Added equal margin/spacing on all sides
+         width: 'calc(100% - 32px) !important',
+         padding: '0px', 
+         boxSizing: 'border-box',
+         overflow: 'hidden'
+       }}
+     >
         
         {/* Top Header & Action Row */}
         <div className="premium-card p-3 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 flex-shrink-0">

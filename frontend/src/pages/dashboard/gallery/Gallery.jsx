@@ -293,16 +293,17 @@ const handleDoubleClick = (e, item) => {
           box-shadow: 0 4px 18px rgba(0,0,0,0.03);
         }
         
-      .gallery-layout { 
-          display: flex; 
-          gap: 1.5rem; 
-          height: calc(100vh - 40px); 
-          margin: 20px;
-          align-items: stretch; 
-          overflow: hidden; 
-          box-sizing: border-box;
-        }
-          
+    .gallery-layout { 
+        display: flex; 
+        gap: 1.5rem; 
+        height: calc(100vh - 32px); /* Ensures equal spacing for top & bottom */
+        margin: 16px;                 /* Equal margin on all four sides */
+        width: calc(100% - 32px);
+        align-items: stretch; 
+        overflow: hidden; 
+        box-sizing: border-box;
+      }
+
         .gallery-inner-sidebar { 
           width: 280px; 
           flex-shrink: 0;
