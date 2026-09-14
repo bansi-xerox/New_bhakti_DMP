@@ -164,10 +164,7 @@ const BhajanSahitya = () => {
         {/* Top Header & Action Row (Merged & Clean) */}
         <div className="premium-card p-3 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 flex-shrink-0">
           <div>
-            <span className="badge text-uppercase mb-1 px-3 py-1" style={{ backgroundColor: '#ffeedc', color: '#f26522', borderRadius: '50px', fontWeight: 'bold', fontSize: '11px' }}>
-              BHAJAN & SATSANG LIBRARY
-            </span>
-            <h4 className="fw-bold mb-0 text-dark">Bhajan Sahitya Manager</h4>
+            <h4 className="fw-bold mb-0 text-dark">Bhajan & Satsang Library</h4>
           </div>
           
           <div className="d-flex align-items-center gap-3">
