@@ -166,12 +166,10 @@ const BhajanSahitya = () => {
        className="w-100 d-flex flex-column gap-3"
        style={{
          backgroundColor: '#fdf9f1',
-         height: 'calc(100vh - 32px)', // Changed from 100vh to leave equal bottom space
-         margin: '16px',               // Added equal margin/spacing on all sides
-         width: 'calc(100% - 32px) !important',
-         padding: '0px', 
+         height: '100vh',
+         padding: '16px',         // Leaves exactly 16px of space on all 4 sides (Top, Right, Bottom, Left)
          boxSizing: 'border-box',
-         overflow: 'hidden'
+         overflow: 'hidden'       // Prevents outer scrolling, forcing inner elements to fit & scroll
        }}
      >
         
