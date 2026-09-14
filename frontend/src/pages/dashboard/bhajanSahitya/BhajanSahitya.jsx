@@ -184,7 +184,7 @@ const BhajanSahitya = () => {
               className="btn px-4 py-2 fw-bold text-white shadow-sm text-now0wrap"
               style={{ backgroundColor: '#f26522', borderRadius: '50px', fontSize: '14px' }}
             >
-              + નવું ઉમેરો (Add New)
+              + Add New Bhajan
             </Button>
           </div>
         </div>
