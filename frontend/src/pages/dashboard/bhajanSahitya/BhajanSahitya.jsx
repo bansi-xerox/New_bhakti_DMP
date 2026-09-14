@@ -6,7 +6,7 @@ import Button from '../../../components/common/Button';
 import Modal from '../../../components/common/Modal';
 import SearchBar from '../../../components/common/SearchBar';
 
-// 2. Import API Functions
+// Import API Functions
 import {
   getAllBhajans,
   getBhajanById,
@@ -15,7 +15,7 @@ import {
   deleteBhajan
 } from '../../../services/api';
 
-// 3. Import SweetAlert Utility Functions
+// Import SweetAlert Utility Functions
 import {
   showSuccessAlert,
   showErrorAlert,
@@ -42,9 +42,8 @@ const BhajanSahitya = () => {
   };
 
   const [formData, setFormData] = useState(initialFormState);
-
-  // Search & Pagination States
   const [searchQuery, setSearchQuery] = useState('');
+
   const fetchBhajans = useCallback(async () => {
     try {
       const response = await getAllBhajans();
@@ -128,6 +127,13 @@ const BhajanSahitya = () => {
         .serial-cell:hover .serial-number { display: none; }
         .serial-cell:hover .delete-btn-wrapper { display: inline-block; }
 
+        .premium-card {
+          background-color: white;
+          border-radius: 12px;
+          border: 1px solid rgba(0,0,0,0.04);
+          box-shadow: 0 4px 18px rgba(0,0,0,0.03);
+        }
+
         /* --- Custom Orange Scrollbar --- */
         .custom-scrollbar::-webkit-scrollbar {
           width: 8px;
@@ -138,57 +144,53 @@ const BhajanSahitya = () => {
           border-radius: 10px;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: #f26522; /* Orange color */
+          background: #f26522;
           border-radius: 10px;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: #d95316; /* Darker orange on hover */
+          background: #d95316;
         }
       `}</style>
+
       {/* Main Container */}
       <div
-        className="w-100 d-flex flex-column p-3 p-md-4"
+        className="w-100 d-flex flex-column p-3 gap-3"
         style={{
           backgroundColor: '#fdf9f1',
-          height: 'calc(100vh - 130px)', /* Increased to 130px to fully clear the parent's paddings and top navbar */
-          overflow: 'hidden' /* Keeps this specific container from scrolling */
+          height: 'calc(100vh - 70px)',
+          overflow: 'hidden'
         }}
       >
-        {/* Header Card */}
-        <div className="card shadow-sm border-0 rounded-4 mb-4 flex-shrink-0">
-          <div className="card-body d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 p-4">
-            <div>
-              <span className="badge text-uppercase mb-2 px-3 py-2" style={{ backgroundColor: '#ffeedc', color: '#f26522', borderRadius: '50px', fontWeight: 'bold' }}>
-                BHAJAN & SATSANG LIBRARY
-              </span>
-              <h2 className="fw-bold mb-1 text-dark">Bhajan Sahitya Manager</h2>
-              <p className="text-muted mb-0 small">Organize and manage all bhajan texts and meanings effortlessly.</p>
+        {/* Top Header & Action Row (Merged & Clean) */}
+        <div className="premium-card p-3 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 flex-shrink-0">
+          <div>
+            <span className="badge text-uppercase mb-1 px-3 py-1" style={{ backgroundColor: '#ffeedc', color: '#f26522', borderRadius: '50px', fontWeight: 'bold', fontSize: '11px' }}>
+              BHAJAN & SATSANG LIBRARY
+            </span>
+            <h4 className="fw-bold mb-0 text-dark">Bhajan Sahitya Manager</h4>
+          </div>
+          
+          <div className="d-flex align-items-center gap-3">
+            <div style={{ width: '280px' }}>
+              <SearchBar
+                value={searchQuery}
+                onChange={setSearchQuery}
+                onSubmit={handleSearchSubmit}
+                placeholder="Search bhajans..."
+              />
             </div>
             <Button
               onClick={openAddModal}
-              className="btn px-4 py-2 fw-bold text-white shadow-sm"
-              style={{ backgroundColor: '#f26522', borderRadius: '50px' }}
+              className="btn px-4 py-2 fw-bold text-white shadow-sm text-now0wrap"
+              style={{ backgroundColor: '#f26522', borderRadius: '50px', fontSize: '14px' }}
             >
               + નવું ઉમેરો (Add New)
             </Button>
           </div>
         </div>
 
-        {/* Search Bar Row */}
-        <div className="card shadow-sm border-0 rounded-4 mb-4 flex-shrink-0">
-          <div className="card-body p-3">
-            <SearchBar
-              value={searchQuery}
-              onChange={setSearchQuery}
-              onSubmit={handleSearchSubmit}
-              placeholder="Search by bhajan, author, rag, kadi..."
-            />
-          </div>
-        </div>
-
         {/* Data Table Card */}
-        <div className="card shadow-sm border-0 rounded-4 overflow-hidden flex-grow-1 d-flex flex-column" style={{ minHeight: 0 }}>
-          {/* Inner scrolling area with the orange custom scrollbar */}
+        <div className="premium-card overflow-hidden flex-grow-1 d-flex flex-column" style={{ minHeight: 0 }}>
           <div className="card-body p-0 overflow-auto flex-grow-1 custom-scrollbar">
             <table className="table table-hover align-middle mb-0" style={{ minWidth: '900px' }}>
               <thead style={{ backgroundColor: '#fef8f4', position: 'sticky', top: 0, zIndex: 1 }}>
@@ -229,7 +231,7 @@ const BhajanSahitya = () => {
                       </td>
 
                       <td className="py-3 px-4 text-dark">{item.sahitya_name}</td>
-                      <td className="py-3 px-4 text-muted">{item.heading_name}</td>
+                      <td className="py-3 px-4 text-muted">{item.heading_name || '-'}</td>
                       <td className="py-3 px-4 fw-bold" style={{ color: '#f26522' }}>{item.bhajan_name}</td>
                       <td className="py-3 px-4 text-muted text-truncate" style={{ maxWidth: '200px' }}>{item.bhajan_kadi}</td>
                       <td className="py-3 px-4 text-muted">{item.bhajan_rag}</td>
