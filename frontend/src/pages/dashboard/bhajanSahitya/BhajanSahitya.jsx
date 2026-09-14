@@ -23,6 +23,17 @@ import {
   showToastAlert
 } from '../../../components/common/Alert';
 
+// --- Zero-Dependency Lucide-Style Trash Icon ---
+const Trash2Icon = ({ size = 16, className = "" }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <path d="M3 6h18" />
+    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+    <line x1="10" x2="10" y1="11" y2="17" />
+    <line x1="14" x2="14" y1="11" y2="17" />
+  </svg>
+);
+
 const BhajanSahitya = () => {
   const [bhajans, setBhajans] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -86,7 +97,7 @@ const BhajanSahitya = () => {
 
   const closeModal = () => setIsModalOpen(false);
 
-const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     try {
@@ -101,7 +112,6 @@ const handleSubmit = async (e) => {
       fetchBhajans();
     } catch (error) {
       console.error("Save error:", error);
-      // Extracts backend error message if available
       const errorMsg = error.response?.data?.message || "Failed to save record.";
       showErrorAlert("Error", errorMsg);
     } finally {
@@ -164,7 +174,7 @@ const handleSubmit = async (e) => {
         }
       `}</style>
 
-    <div
+     <div
        className="w-100 d-flex flex-column gap-3"
        style={{
          backgroundColor: '#fdf9f1',
@@ -233,10 +243,11 @@ const handleSubmit = async (e) => {
                               e.stopPropagation();
                               handleDelete(item._id);
                             }}
-                            className="btn btn-sm btn-danger border-0 py-1 px-2 fw-bold"
-                            style={{ fontSize: '0.75rem', borderRadius: '4px' }}
+                            className="btn btn-sm btn-danger border-0 p-1 d-flex align-items-center justify-content-center shadow-sm"
+                            style={{ width: '28px', height: '28px', borderRadius: '4px' }}
+                            title="Delete"
                           >
-                            Delete
+                            <Trash2Icon size={14} />
                           </button>
                         </div>
                       </td>
