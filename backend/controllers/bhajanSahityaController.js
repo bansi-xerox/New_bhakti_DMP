@@ -1,8 +1,24 @@
 const BhajanSahitya = require('../models/BhajanSahitya');
 
-// 1. Create a new Bhajan Record
+// 1. Create a new Bhajan Record with duplicate check
 exports.createBhajan = async (req, res) => {
   try {
+    const { sahitya_name, heading_name, bhajan_name } = req.body;
+
+    // Check if duplicate entry already exists
+    const existingBhajan = await BhajanSahitya.findOne({
+      sahitya_name,
+      heading_name: heading_name || null,
+      bhajan_name
+    });
+
+    if (existingBhajan) {
+      return res.status(400).json({
+        success: false,
+        message: 'આ ભજન (સાહિત્ય, શીર્ષક અને નામ સાથે) પહેલેથી જ અસ્તિત્વમાં છે!'
+      });
+    }
+
     const newBhajan = await BhajanSahitya.create(req.body);
     res.status(201).json({ success: true, message: 'Bhajan added successfully', data: newBhajan });
   } catch (error) {
@@ -12,7 +28,6 @@ exports.createBhajan = async (req, res) => {
 
 exports.getAllBhajans = async (req, res) => {
   try {
-    // Add 'youtube_link' to the select string
     const bhajans = await BhajanSahitya.find()
       .select('sahitya_name heading_name bhajan_name bhajan_kadi bhajan_rag page_no youtube_link'); 
     res.status(200).json({ success: true, data: bhajans });
@@ -81,11 +96,10 @@ exports.searchBhajans = async (req, res) => {
     });
   }
 };
+
 exports.getBhajanById = async (req, res) => {
   try {
-    // Mongoose uses .findById() instead of .findByPk()
     const bhajan = await BhajanSahitya.findById(req.params.id);
-    
     if (!bhajan) return res.status(404).json({ success: false, message: 'Record not found' });
     res.status(200).json({ success: true, data: bhajan });
   } catch (error) {
@@ -93,11 +107,26 @@ exports.getBhajanById = async (req, res) => {
   }
 };
 
-// 4. Update a Bhajan Record
+// 4. Update a Bhajan Record with duplicate check
 exports.updateBhajan = async (req, res) => {
   try {
-    // Mongoose uses .findByIdAndUpdate()
-    // { new: true } ensures it returns the newly updated document, not the old one
+    const { sahitya_name, heading_name, bhajan_name } = req.body;
+
+    // Check if another record with the same combination already exists (excluding current id)
+    const existingBhajan = await BhajanSahitya.findOne({
+      _id: { $ne: req.params.id },
+      sahitya_name,
+      heading_name: heading_name || null,
+      bhajan_name
+    });
+
+    if (existingBhajan) {
+      return res.status(400).json({
+        success: false,
+        message: 'આ નામનું ભજન અન્ય રેકોર્ડમાં પહેલેથી જ ઉપલબ્ધ છે!'
+      });
+    }
+
     const updatedBhajan = await BhajanSahitya.findByIdAndUpdate(
       req.params.id, 
       req.body, 
@@ -115,11 +144,8 @@ exports.updateBhajan = async (req, res) => {
 // 5. Delete a Bhajan Record
 exports.deleteBhajan = async (req, res) => {
   try {
-    // Mongoose uses .findByIdAndDelete()
     const deletedBhajan = await BhajanSahitya.findByIdAndDelete(req.params.id);
-    
     if (!deletedBhajan) return res.status(404).json({ success: false, message: 'Record not found' });
-
     res.status(200).json({ success: true, message: 'Bhajan deleted successfully' });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Error deleting record', error: error.message });

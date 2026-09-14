@@ -86,7 +86,7 @@ const BhajanSahitya = () => {
 
   const closeModal = () => setIsModalOpen(false);
 
-  const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     try {
@@ -101,7 +101,9 @@ const BhajanSahitya = () => {
       fetchBhajans();
     } catch (error) {
       console.error("Save error:", error);
-      showErrorAlert("Error", "Failed to save record.");
+      // Extracts backend error message if available
+      const errorMsg = error.response?.data?.message || "Failed to save record.";
+      showErrorAlert("Error", errorMsg);
     } finally {
       setIsLoading(false);
     }
