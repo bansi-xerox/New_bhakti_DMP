@@ -299,6 +299,7 @@ const handleDoubleClick = (e, item) => {
           height: calc(100vh - 40px);
           align-items: stretch; 
           overflow: hidden; 
+          padding: 0.5rem 1rem 0.5rem 0.5rem;
         }
 
         .gallery-inner-sidebar { 
