@@ -153,11 +153,11 @@ const BhajanSahitya = () => {
       `}</style>
 
       {/* Main Container */}
-      <div
+    <div
         className="w-100 d-flex flex-column p-3 gap-3"
         style={{
           backgroundColor: '#fdf9f1',
-          height: 'calc(100vh - 70px)',
+          height: 'calc(100vh - 20px)',
           overflow: 'hidden'
         }}
       >
@@ -193,7 +193,7 @@ const BhajanSahitya = () => {
         <div className="premium-card overflow-hidden flex-grow-1 d-flex flex-column" style={{ minHeight: 0 }}>
           <div className="card-body p-0 overflow-auto flex-grow-1 custom-scrollbar">
             <table className="table table-hover align-middle mb-0" style={{ minWidth: '900px' }}>
-              <thead style={{ backgroundColor: '#fef8f4', position: 'sticky', top: 0, zIndex: 1 }}>
+             <thead style={{ backgroundColor: '#fef8f4', position: 'sticky', top: 0, zIndex: 1 }}>
                 <tr>
                   <th className="py-3 px-4 text-secondary" style={{ width: '80px', backgroundColor: '#fef8f4' }}>ક્રમ</th>
                   <th className="py-3 px-4 text-secondary" style={{ backgroundColor: '#fef8f4' }}>સાહિત્યનું નામ</th>

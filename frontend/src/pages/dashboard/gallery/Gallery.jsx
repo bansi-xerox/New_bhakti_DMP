@@ -293,13 +293,14 @@ const handleDoubleClick = (e, item) => {
           box-shadow: 0 4px 18px rgba(0,0,0,0.03);
         }
         
-        .gallery-layout { 
+      .gallery-layout { 
           display: flex; 
           gap: 1.5rem; 
-          height: calc(100vh - 130px); 
+          height: calc(100vh - 20px); /* અહીં હાઇટ અપડેટ કરી */
           align-items: stretch; 
           overflow: hidden; 
-        }        
+        }
+          
         .gallery-inner-sidebar { 
           width: 280px; 
           flex-shrink: 0;
