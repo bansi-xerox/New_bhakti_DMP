@@ -162,17 +162,17 @@ const BhajanSahitya = () => {
         }
       `}</style>
 
-      {/* Main Container - ચારેય બાજુ બિલકુલ સરખી 16px સ્પેસ */}
-      <div
+     <div
         className="w-100 d-flex flex-column gap-3"
         style={{
           backgroundColor: '#fdf9f1',
-          height: 'calc(100vh - 32px)',
-          margin: '16px',
+          height: '100vh',
+          padding: '16px', // margin ની જગ્યાએ padding વાપરવું
           boxSizing: 'border-box',
           overflow: 'hidden'
         }}
       >
+        
         {/* Top Header & Action Row */}
         <div className="premium-card p-3 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 flex-shrink-0">
           <div>
