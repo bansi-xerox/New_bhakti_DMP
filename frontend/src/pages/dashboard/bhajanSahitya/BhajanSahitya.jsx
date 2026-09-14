@@ -294,7 +294,13 @@ const BhajanSahitya = () => {
               <Input label="ભજનનો રાગ" name="bhajan_rag" value={formData.bhajan_rag} onChange={handleInputChange} />
             </div>
             <div className="col-md-6">
-              <Input label="પૃષ્ઠ ક્રમાંક" type="number" name="page_no" value={formData.page_no} onChange={handleInputChange} />
+              <Input
+                label="પૃષ્ઠ ક્રમાંક"
+                name="page_no"
+                value={formData.page_no}
+                onChange={handleInputChange}
+                placeholder="5-10"
+              />
             </div>
             <div className="col-md-12">
               <Input label="YouTube Link" type="url" name="youtube_link" value={formData.youtube_link} onChange={handleInputChange} placeholder="https://youtube.com/..." />
