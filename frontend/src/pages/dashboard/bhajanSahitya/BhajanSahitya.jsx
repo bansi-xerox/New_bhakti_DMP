@@ -130,8 +130,17 @@ const BhajanSahitya = () => {
         .premium-card {
           background-color: white;
           border-radius: 12px;
-          border: 1px solid rgba(0,0,0,0.04);
+          border: 1px solid rgba(0, 0, 0, 0.08);
           box-shadow: 0 4px 18px rgba(0,0,0,0.03);
+        }
+
+        /* Table Border & Clean Look */
+        .table-custom th, .table-custom td {
+          border-color: #f1ebd9 !important;
+          vertical-align: middle;
+        }
+        .table-custom th {
+          border-bottom: 2px solid #e6dcbe !important;
         }
 
         /* --- Custom Orange Scrollbar --- */
@@ -152,17 +161,18 @@ const BhajanSahitya = () => {
         }
       `}</style>
 
-      {/* Main Container */}
-    <div
-       className="w-100 d-flex flex-column gap-3"
+      {/* Main Container - ચારેય બાજુ બિલકુલ સરખી 20px સ્પેસ */}
+      <div
+        className="w-100 d-flex flex-column gap-3"
         style={{
           backgroundColor: '#fdf9f1',
-          height: 'calc(100vh - 20px)',
-          padding: '24px',
+          height: '100vh',
+          padding: '20px',
+          boxSizing: 'border-box',
           overflow: 'hidden'
         }}
       >
-        {/* Top Header & Action Row (Merged & Clean) */}
+        {/* Top Header & Action Row */}
         <div className="premium-card p-3 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 flex-shrink-0">
           <div>
             <h4 className="fw-bold mb-0 text-dark">Bhajan & Satsang Library</h4>
@@ -179,7 +189,7 @@ const BhajanSahitya = () => {
             </div>
             <Button
               onClick={openAddModal}
-              className="btn px-4 py-2 fw-bold text-white shadow-sm text-now0wrap"
+              className="btn px-4 py-2 fw-bold text-white shadow-sm"
               style={{ backgroundColor: '#f26522', borderRadius: '50px', fontSize: '14px' }}
             >
               + Add New Bhajan
@@ -187,11 +197,11 @@ const BhajanSahitya = () => {
           </div>
         </div>
 
-        {/* Data Table Card */}
-        <div className="premium-card overflow-hidden flex-grow-1 d-flex flex-column" style={{ minHeight: 0 }}>
+        {/* Data Table Card with Proper Border */}
+        <div className="premium-card overflow-hidden flex-grow-1 d-flex flex-column border" style={{ minHeight: 0, borderColor: '#e6dcbe !important' }}>
           <div className="card-body p-0 overflow-auto flex-grow-1 custom-scrollbar">
-            <table className="table table-hover align-middle mb-0" style={{ minWidth: '900px' }}>
-             <thead style={{ backgroundColor: '#fef8f4', position: 'sticky', top: 0, zIndex: 1 }}>
+            <table className="table table-hover align-middle mb-0 table-custom" style={{ minWidth: '900px' }}>
+              <thead style={{ backgroundColor: '#fef8f4', position: 'sticky', top: 0, zIndex: 1 }}>
                 <tr>
                   <th className="py-3 px-4 text-secondary" style={{ width: '80px', backgroundColor: '#fef8f4' }}>ક્રમ</th>
                   <th className="py-3 px-4 text-secondary" style={{ backgroundColor: '#fef8f4' }}>સાહિત્યનું નામ</th>
