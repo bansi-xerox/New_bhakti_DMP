@@ -41,7 +41,6 @@ const Sidebar = ({ activeTab, setActiveTab, onLogout }) => {
 
       {/* Navigation Links */}
       <div className="sidebar-nav-container">
-        <span className="sidebar-section-title">MAIN MODULES</span>
         <ul className="sidebar-menu">
           {navItems.map((item) => {
             const isActive = activeTab === item.id;
