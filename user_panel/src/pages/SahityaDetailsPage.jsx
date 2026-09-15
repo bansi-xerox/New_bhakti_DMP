@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Folder, Music, ArrowRight, ArrowLeft, Search, X } from 'lucide-react';
+import { ArrowRight, Search, X } from 'lucide-react';
 import { getAllBhajans } from '../services/api';
 import Header from '../components/common/Header';
 import Footer from '../components/common/Footer';
@@ -53,7 +53,7 @@ const SahityaDetailsPage = () => {
     }
   };
 
-  // Search Filter: શીર્ષક અથવા ભજનના નામ અને રાગ પરથી ફિલ્ટર થશે
+  // Search Filter
   const filteredItems = combinedItems.filter((item) => {
     if (!searchTerm.trim()) return true;
     const query = searchTerm.toLowerCase();
@@ -73,8 +73,6 @@ const SahityaDetailsPage = () => {
       <Header />
 
       <main className="main-desktop-container">
-       
-
         {/* Standalone Modern Searchbar */}
         <div className="standalone-search-container">
           <div className="search-input-wrapper wide-search-wrapper">
@@ -93,19 +91,11 @@ const SahityaDetailsPage = () => {
                 onClick={() => setSearchTerm('')}
                 aria-label="Clear Search"
               >
-                <X size={18} />
+                <X size={16} />
               </button>
             )}
           </div>
         </div>
-
-         {/* Breadcrumb Back Bar
-        <div className="subpage-back-bar">
-          <button className="back-action-btn" onClick={() => navigate('/')}>
-            <ArrowLeft size={16} /> પાછા જાઓ
-          </button>
-          <span style={{ color: '#8d6e63', fontSize: '14px' }}>/ {sahityaName}</span>
-        </div> */}
 
         {loading ? (
           <Loader />
@@ -125,7 +115,7 @@ const SahityaDetailsPage = () => {
         ) : (
           <div className="desktop-grid">
             {filteredItems.map((item, idx) => {
-              // જો આ શીર્ષક (Heading) હોય તો (Arrow સાથે):
+              // if heading (with arrow):
               if (item.type === 'heading') {
                 return (
                   <div
@@ -137,17 +127,15 @@ const SahityaDetailsPage = () => {
                       )
                     }
                   >
-                    <div>
-                      <div className="card-title-row">
-                        <h4 className="desktop-card-title">{item.name}</h4>
-                        <ArrowRight size={18} className="title-arrow-icon" />
-                      </div>
+                    <div className="card-title-row">
+                      <h4 className="desktop-card-title">{item.name}</h4>
+                      <ArrowRight size={18} className="title-arrow-icon" />
                     </div>
                   </div>
                 );
               }
 
-              // જો આ ભજન (Bhajan) હોય તો (Arrow વગર):
+              // if bhajan without arrow:
               const b = item.data;
               return (
                 <div
@@ -155,11 +143,13 @@ const SahityaDetailsPage = () => {
                   className="desktop-card"
                   onClick={() => navigate(`/bhajan/${b._id}`)}
                 >
-                  <div>
+                  <div className="card-title-row">
                     <h4 className="desktop-card-title">{b.bhajan_name?.trim()}</h4>
-                    <p className="desktop-card-subtitle">
-                      {b.bhajan_rag ? `રાગ: ${b.bhajan_rag}` : ''}
-                    </p>
+                    {b.bhajan_rag && (
+                      <span style={{ fontSize: '13px', color: '#8d6e63' }}>
+                        {b.bhajan_rag}
+                      </span>
+                    )}
                   </div>
                 </div>
               );

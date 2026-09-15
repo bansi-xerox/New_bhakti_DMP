@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BookOpen, Search, ArrowRight, X } from 'lucide-react';
+import { Search, ArrowRight, X } from 'lucide-react';
 import { getAllBhajans } from '../services/api';
 import Header from '../components/common/Header';
 import Footer from '../components/common/Footer';
@@ -47,7 +47,7 @@ const HomePage = () => {
       <Header />
 
       <main className="main-desktop-container">
-        {/* 2. Standalone Modern Searchbar (Hero removed) */}
+        {/* 2. Standalone Modern Searchbar */}
         <div className="standalone-search-container">
           <div className="search-input-wrapper wide-search-wrapper">
             <Search className="search-icon" size={20} />
@@ -65,31 +65,19 @@ const HomePage = () => {
                 onClick={() => setSearchTerm('')}
                 aria-label="Clear Search"
               >
-                <X size={18} />
+                <X size={16} />
               </button>
             )}
           </div>
         </div>
 
-        {/* 3. Enhanced Royal Section Header */}
+        {/* 3. Cards Grid (Balanced Padding) */}
         <div id="sahitya-section">
-            
-
-          {/* Cards Grid */}
           {loading ? (
             <Loader />
           ) : filteredCategories.length === 0 ? (
             <div className="empty-search-state">
               <p>કોઈ મેળ ખાતું સાહિત્ય મળ્યું નથી.</p>
-              {searchTerm && (
-                <button
-                  type="button"
-                  className="font-btn"
-                  onClick={() => setSearchTerm('')}
-                >
-                  તમામ સાહિત્ય જુઓ
-                </button>
-              )}
             </div>
           ) : (
             <div className="desktop-grid">
@@ -103,15 +91,15 @@ const HomePage = () => {
                     <h3 className="desktop-card-title">{name}</h3>
                     <ArrowRight size={18} className="title-arrow-icon" />
                   </div>
-
-
                 </div>
               ))}
             </div>
           )}
         </div>
       </main>
-            <Footer />
+
+      {/* 4. Sticky Bottom Footer */}
+      <Footer />
     </div>
   );
 };

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Music, BookOpen, Video, Info, ArrowLeft } from 'lucide-react';
+import { Music, BookOpen, Video, Info } from 'lucide-react';
 import { getBhajanById } from '../services/api';
 import Header from '../components/common/Header';
 import Footer from '../components/common/Footer';
@@ -24,8 +24,6 @@ const BhajanDetailPage = () => {
       const res = await getBhajanById(id);
       const data = res.data.data || res.data;
       setBhajan(data);
-
-      // ખાતરી કરો કે ડિફોલ્ટ એક્ટિવ ટેબ 'lyrics' જ રહે
       setActiveTab('lyrics');
     } catch (err) {
       console.error('Error fetching bhajan details:', err);
@@ -41,38 +39,35 @@ const BhajanDetailPage = () => {
     return match && match[1] ? `https://www.youtube.com/embed/${match[1]}` : url;
   };
 
-  // Convert literal "\n" strings into real line breaks
   const formatText = (text) => {
     if (!text) return '';
     return text.replace(/\\n/g, '\n');
   };
 
-//dynamic tabs
+  // Icon-only Dynamic Tabs with Tooltips
   const availableTabs = [
-    { id: 'lyrics', label: 'ભજન લખાણ', icon: <Music size={18} /> },
+    { id: 'lyrics', label: 'ભજન લખાણ', icon: <Music size={22} /> },
     ...(bhajan?.bhajan_bhavarth?.trim()
-      ? [{ id: 'bhavarth', label: 'ભજન ભાવાર્થ', icon: <BookOpen size={18} /> }]
+      ? [{ id: 'bhavarth', label: 'ભજન ભાવાર્થ', icon: <BookOpen size={22} /> }]
       : []),
     ...(bhajan?.youtube_link?.trim()
-      ? [{ id: 'video', label: 'વિડીયો દર્શન', icon: <Video size={18} /> }]
+      ? [{ id: 'video', label: 'વિડીયો દર્શન', icon: <Video size={22} /> }]
       : []),
-    { id: 'info', label: 'સંપૂર્ણ માહિતી', icon: <Info size={18} /> },
+    { id: 'info', label: 'સંપૂર્ણ માહિતી', icon: <Info size={22} /> },
   ];
 
   return (
     <div className="user-app-layout">
-      {/* 1. Global Royal Header */}
       <Header />
 
-      <main className="main-desktop-container">       
-
+      <main className="main-desktop-container">
         {loading ? (
           <Loader />
         ) : !bhajan ? (
-          <p style={{ textAlign: 'center', color: '#8d6e63', padding: '60px 0' }}>ભજન મળ્યું નથી.</p>
+          <p style={{ textAlign: 'center', color: '#8d6e63', padding: '50px 0' }}>ભજન મળ્યું નથી.</p>
         ) : (
           <div className="bhajan-desktop-stage">
-            {/* 2. Sticky Stage Header */}
+            {/* Sticky Stage Header & Icon-only Tabs */}
             <div className="stage-sticky-header">
               <div className="stage-title-header">
                 <h2>{bhajan.bhajan_name?.trim()}</h2>
@@ -89,22 +84,26 @@ const BhajanDetailPage = () => {
                 </div>
               </div>
 
-              {/* Segmented Tab Bar - */}
-              <div className="desktop-tab-bar">
+              {/* Icon-Only Tab Bar */}
+              <div className="desktop-tab-bar icon-only-tab-bar">
                 {availableTabs.map((tab) => (
                   <button
                     key={tab.id}
-                    className={`tab-pill-btn ${activeTab === tab.id ? 'active' : ''}`}
+                    className={`tab-pill-btn icon-tab-btn ${activeTab === tab.id ? 'active' : ''}`}
                     onClick={() => setActiveTab(tab.id)}
+                    title={tab.label}
+                    aria-label={tab.label}
+                    data-tooltip={tab.label}
                   >
                     {tab.icon}
-                    <span>{tab.label}</span>
+                    {/* Hover Tooltip Popup */}
+                    <span className="tab-hover-tooltip">{tab.label}</span>
                   </button>
                 ))}
               </div>
             </div>
 
-            {/* 3. Scrollable Tab Content Body */}
+            {/* Scrollable Content */}
             <div className="stage-content-body">
               {/* Lyrics Tab */}
               {activeTab === 'lyrics' && (
@@ -119,15 +118,15 @@ const BhajanDetailPage = () => {
                 </div>
               )}
 
-              {/* Bhavarth Tab  */}
+              {/* Bhavarth Tab */}
               {activeTab === 'bhavarth' && bhajan.bhajan_bhavarth && (
                 <div className="bhavarth-container">
-                  <h4 style={{ color: '#bf360c', marginTop: 0, fontSize: '19px' }}>🙏 ભજન ભાવાર્થ / રહસ્ય:</h4>
+                  <h4 style={{ color: '#bf360c', marginTop: 0, fontSize: '18px' }}>🙏 ભજન ભાવાર્થ / રહસ્ય:</h4>
                   {formatText(bhajan.bhajan_bhavarth)}
                 </div>
               )}
 
-              {/* YouTube Video Tab  */}
+              {/* Video Tab */}
               {activeTab === 'video' && bhajan.youtube_link && (
                 <div className="video-responsive-frame">
                   <iframe
@@ -175,7 +174,6 @@ const BhajanDetailPage = () => {
         )}
       </main>
 
-      {/* 4. Taller & Enhanced Royal Footer */}
       <Footer />
     </div>
   );

@@ -76,28 +76,6 @@ const HeadingBhajansPage = () => {
           </div>
         </div>
 
-        {/* 3. Breadcrumb Back Bar */}
-        {/* <div className="subpage-back-bar">
-          <button
-            className="back-action-btn"
-            onClick={() => navigate(`/sahitya/${encodeURIComponent(sahityaName)}`)}
-          >
-            <ArrowLeft size={16} /> પાછા જાઓ
-          </button>
-          <span style={{ color: '#8d6e63', fontSize: '14px' }}>
-            / {sahityaName} / <strong style={{ color: '#2c1810' }}>{headingName}</strong>
-          </span>
-        </div> */}
-
-        {/* 4. Heading Details Title */}
-        {/* <div style={{ marginBottom: '24px' }}>
-          <h2 style={{ fontSize: '24px', color: '#bf360c', margin: '0 0 6px 0', fontWeight: 800 }}>
-            {headingName}
-          </h2>
-          <p style={{ margin: 0, color: '#795548', fontSize: '14.5px' }}>
-            {sahityaName} હેઠળના ઉપલબ્ધ ભજનોની યાદી ({filteredBhajans.length})
-          </p>
-        </div> */}
 
         {/* 5. Bhajans Grid (Arrow વગર) */}
         {loading ? (

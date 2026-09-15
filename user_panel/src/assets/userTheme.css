@@ -55,7 +55,7 @@ html, body {
 .royal-header-inner {
   max-width: 1240px;
   margin: 0 auto;
-  padding: 14px 24px;
+  padding: 12px 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -64,26 +64,26 @@ html, body {
 .royal-brand-group {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
   text-decoration: none;
 }
 
 .royal-brand-emblem {
-  width: 50px;
-  height: 50px;
-  border-radius: 14px;
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
   background: linear-gradient(135deg, #d84315 0%, #ff8f00 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   color: #ffffff;
-  box-shadow: 0 6px 18px rgba(216, 67, 21, 0.35);
+  box-shadow: 0 4px 14px rgba(216, 67, 21, 0.3);
   border: 2px solid #fff3e0;
 }
 
 .royal-brand-titles h1 {
   margin: 0;
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 800;
   background: linear-gradient(135deg, #b71c1c 0%, #e65100 60%, #ff8f00 100%);
   -webkit-background-clip: text;
@@ -93,10 +93,9 @@ html, body {
 
 .royal-brand-titles p {
   margin: 2px 0 0 0;
-  font-size: 12.5px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--text-muted);
-  letter-spacing: 0.5px;
 }
 
 .header-shloka-badge {
@@ -105,31 +104,28 @@ html, body {
   gap: 8px;
   background: #fff3e0;
   border: 1px solid #ffe0b2;
-  padding: 7px 16px;
+  padding: 6px 14px;
   border-radius: 50px;
   color: #bf360c;
-  font-size: 13.5px;
+  font-size: 13px;
   font-weight: 700;
-  box-shadow: 0 2px 8px rgba(230, 81, 0, 0.08);
 }
 
-/* ================= 3. Scrollable Middle Content ================= */
+/* ================= 3. Scrollable Middle Content (Stretches to fill) ================= */
 .main-desktop-container {
   flex: 1;
   width: 100%;
   max-width: 1240px;
   margin: 0 auto;
-  padding: 20px 24px 28px 24px;
+  padding: 16px 20px;
   overflow-y: auto;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
 }
 
 .main-desktop-container::-webkit-scrollbar {
-  width: 8px;
-}
-
-.main-desktop-container::-webkit-scrollbar-track {
-  background: #fbf5ed;
+  width: 6px;
 }
 
 .main-desktop-container::-webkit-scrollbar-thumb {
@@ -137,266 +133,211 @@ html, body {
   border-radius: 10px;
 }
 
-.main-desktop-container::-webkit-scrollbar-thumb:hover {
-  background: var(--primary-saffron);
-}
-
-/* ================= 4. Home Page Hero & Navigation ================= */
-.home-hero-banner {
-  background: linear-gradient(135deg, #ffffff 0%, #fff7ed 100%);
-  border: 1.5px solid var(--border-gold);
-  border-radius: var(--radius-lg);
-  padding: 28px 32px;
-  margin-bottom: 28px;
-  box-shadow: 0 10px 30px rgba(160, 64, 0, 0.05);
-}
-
-.home-hero-top {
+/* ================= 4. Standalone Clean Search Bar ================= */
+.standalone-search-container {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 20px;
+  justify-content: flex-start;
   margin-bottom: 20px;
+  width: 100%;
+  flex-shrink: 0;
 }
 
-.hero-welcome-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: #fff8e1;
-  color: #e65100;
-  padding: 5px 14px;
-  border-radius: 50px;
-  font-size: 12.5px;
-  font-weight: 700;
-  margin-bottom: 8px;
-  border: 1px solid #ffe0b2;
+.wide-search-wrapper {
+  max-width: 680px;
+  width: 100%;
+  position: relative;
 }
 
-.home-nav-pills {
+.wide-search-input {
+  width: 100%;
+  padding: 13px 44px 13px 48px !important;
+  font-size: 15px !important;
+  background: #ffffff !important;
+  border: 1.5px solid var(--border-gold) !important;
+  border-radius: 50px !important;
+  box-shadow: 0 3px 12px rgba(160, 64, 0, 0.05) !important;
+  transition: all 0.25s ease !important;
+}
+
+.wide-search-input:focus {
+  border-color: var(--primary-saffron) !important;
+  box-shadow: 0 4px 18px rgba(216, 67, 21, 0.15) !important;
+  background: #ffffff !important;
+}
+
+.wide-search-wrapper .search-icon {
+  position: absolute;
+  left: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--primary-saffron);
+}
+
+.search-clear-btn {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #fff3e0;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
   display: flex;
   align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-  padding-top: 16px;
-  border-top: 1px solid #f6e3cf;
+  justify-content: center;
+  color: #bf360c;
+  cursor: pointer;
+  padding: 0;
 }
 
-.nav-pill-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 18px;
+/* ================= 5. Cards & Balanced Padding ================= */
+#sahitya-section {
+  width: 100%;
+}
+
+.desktop-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+/* Updated Card with Equal and Symmetrical Padding */
+.desktop-card {
   background: #ffffff;
   border: 1.5px solid var(--border-gold);
-  border-radius: 50px;
-  font-size: 13.5px;
-  font-weight: 600;
-  color: var(--text-muted);
+  border-radius: 14px;
+  padding: 16px 20px; /* પરફેક્ટ એકસરખું પેડિંગ */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   cursor: pointer;
+  box-shadow: 0 3px 10px rgba(160, 64, 0, 0.04);
   transition: all 0.25s ease;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+  min-height: auto;
 }
 
-.nav-pill-btn:hover, .nav-pill-btn.active {
-  background: linear-gradient(135deg, #d84315 0%, #f57c00 100%);
-  color: #ffffff;
-  border-color: #d84315;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 14px rgba(216, 67, 21, 0.25);
+.desktop-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 22px rgba(160, 64, 0, 0.1);
+  border-color: var(--primary-saffron);
+}
+
+.card-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 12px;
+  margin: 0;
+}
+
+.desktop-card-title {
+  font-size: 16.5px;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.title-arrow-icon {
+  flex-shrink: 0;
+  color: var(--primary-saffron);
+  transition: transform 0.25s ease;
+}
+
+.desktop-card:hover .title-arrow-icon {
+  transform: translateX(4px);
+  color: #bf360c;
 }
 
 .subpage-back-bar {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
+  flex-shrink: 0;
 }
 
 .back-action-btn {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   background: #ffffff;
   border: 1.5px solid var(--border-gold);
-  padding: 8px 16px;
+  padding: 6px 14px;
   border-radius: 8px;
   color: var(--primary-saffron);
   font-weight: 700;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.back-action-btn:hover {
-  background: var(--primary-saffron);
-  color: #ffffff;
-}
-
-/* ================= 5. Search & Grid System ================= */
-.search-input-wrapper {
-  position: relative;
-  flex-grow: 1;
-  max-width: 440px;
-}
-
-.search-input-wrapper .search-icon {
-  position: absolute;
-  left: 16px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #bcaaa4;
-}
-
-.search-input-box {
-  width: 100%;
-  padding: 12px 18px 12px 46px;
-  border-radius: 12px;
-  border: 1.5px solid var(--border-gold);
-  background: #ffffff;
-  font-size: 14.5px;
-  color: var(--text-dark);
-  box-shadow: 0 2px 6px rgba(0,0,0,0.02);
-  outline: none;
-  transition: all 0.25s ease;
-}
-
-.search-input-box:focus {
-  border-color: var(--primary-saffron);
-  box-shadow: 0 0 0 4px rgba(216, 67, 21, 0.1);
-}
-
-.desktop-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 22px;
-}
-
-.desktop-card {
-  background: #ffffff;
-  border: 1.5px solid var(--border-gold);
-  border-radius: var(--radius-md);
-  padding: 22px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(160, 64, 0, 0.04);
-  transition: all 0.25s ease;
-  position: relative;
-  overflow: hidden;
-}
-
-.desktop-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 28px rgba(160, 64, 0, 0.12);
-  border-color: var(--primary-saffron);
-}
-
-.card-header-icon {
-  width: 46px;
-  height: 46px;
-  border-radius: 12px;
-  background: #fff3e0;
-  color: var(--primary-saffron);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 14px;
-}
-
-.desktop-card-title {
-  font-size: 17.5px;
-  font-weight: 700;
-  color: var(--text-dark);
-  margin: 0 0 6px 0;
-}
-
-.desktop-card-subtitle {
   font-size: 13.5px;
-  color: var(--text-muted);
-  margin: 0;
+  cursor: pointer;
 }
 
-.card-footer-action {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 18px;
-  padding-top: 12px;
-  border-top: 1px solid #faeee0;
-  font-size: 13.5px;
-  font-weight: 700;
-  color: var(--primary-saffron);
-}
-
-/* ================= 6. Sticky Stage with Full Wide Layout (Bhajan Details) ================= */
+/* ================= 6. Bhajan Detail Stage Box (Stretches Full Height to Footer) ================= */
 .bhajan-desktop-stage {
   background: #ffffff;
   border: 1.5px solid var(--border-gold);
-  border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(160, 64, 0, 0.06);
+  border-radius: 18px;
+  box-shadow: 0 8px 26px rgba(160, 64, 0, 0.06);
   overflow: hidden;
-  width: 100%; 
-  max-width: 1200px; 
+  width: 100%;
+  max-width: 1200px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 270px); 
-  min-height: 480px;
+  flex: 1; /* નીચે ફૂટર સુધી સંપૂર્ણ ખેંચાશે */
+  height: 100%;
+  min-height: 0; /* અંદરના કન્ટેન્ટને ઓવરફ્લો થવા દેશે */
 }
 
-/* Title & Tabs: કાયમી ઉપર Sticky રહેશે */
+/* Stage Header & Tabs: Sticky on top */
 .stage-sticky-header {
   position: sticky;
   top: 0;
   z-index: 20;
   background: #ffffff;
   flex-shrink: 0;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.03);
 }
 
 .stage-title-header {
-  padding: 22px 32px 18px 32px;
+  padding: 16px 24px 12px 24px;
   background: linear-gradient(135deg, #fffaf3 0%, #fff1df 100%);
   border-bottom: 1.5px solid var(--border-gold);
   text-align: center;
 }
 
 .stage-title-header h2 {
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 800;
   color: #bf360c;
-  margin: 0 0 12px 0;
-  letter-spacing: -0.2px;
+  margin: 0 0 8px 0;
 }
 
 .stage-badge-group {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 10px;
 }
 
 .pill-badge {
   background: #ffffff;
   color: #6d4c41;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
-  padding: 6px 18px;
+  padding: 4px 14px;
   border-radius: 50px;
   border: 1px solid var(--border-gold);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
 }
 
-/* Tab Bar - પહોળી અને સ્પષ્ટ */
+/* Segmented Tabs */
 .desktop-tab-bar {
   display: flex;
   background: #fffdfa;
   border-bottom: 1.5px solid var(--border-gold);
-  padding: 10px 24px;
-  gap: 12px;
+  padding: 8px 16px;
+  gap: 10px;
 }
 
 .tab-pill-btn {
@@ -404,14 +345,14 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  padding: 12px 20px;
+  gap: 8px;
+  padding: 10px 14px;
   border: none;
   background: transparent;
   color: #795548;
-  font-size: 15.5px;
+  font-size: 14.5px;
   font-weight: 600;
-  border-radius: 12px;
+  border-radius: 10px;
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -424,18 +365,19 @@ html, body {
 .tab-pill-btn.active {
   background: linear-gradient(135deg, #d84315 0%, #f57c00 100%);
   color: #ffffff;
-  box-shadow: 0 4px 14px rgba(216, 67, 21, 0.25);
+  box-shadow: 0 3px 10px rgba(216, 67, 21, 0.22);
 }
 
+/* Internal Scroll Area for Lyrics/Meaning */
 .stage-content-body {
   flex: 1;
   overflow-y: auto;
-  padding: 28px 48px 40px 48px;
+  padding: 24px 36px;
   background: #ffffff;
 }
 
 .stage-content-body::-webkit-scrollbar {
-  width: 8px;
+  width: 7px;
 }
 
 .stage-content-body::-webkit-scrollbar-thumb {
@@ -443,60 +385,49 @@ html, body {
   border-radius: 10px;
 }
 
-.stage-content-body::-webkit-scrollbar-thumb:hover {
-  background: var(--primary-saffron);
-}
-
 .font-controls-bar {
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
-  margin-bottom: 18px;
+  gap: 8px;
+  margin-bottom: 14px;
   position: sticky;
   top: 0;
   background: rgba(255, 255, 255, 0.96);
-  padding: 6px 0 10px 0;
+  padding: 4px 0 8px 0;
   z-index: 10;
 }
 
 .font-btn {
   background: #fff8e1;
   border: 1.5px solid var(--border-gold);
-  border-radius: 8px;
-  padding: 6px 16px;
-  font-size: 14px;
+  border-radius: 6px;
+  padding: 4px 12px;
+  font-size: 13px;
   font-weight: bold;
   color: #d84315;
   cursor: pointer;
-  transition: all 0.2s;
-}
-
-.font-btn:hover {
-  background: #d84315;
-  color: #ffffff;
 }
 
 .lyrics-text-container {
   white-space: pre-line;
   text-align: center;
-  line-height: 2.4;
+  line-height: 2.3;
   color: #23120b;
   font-weight: 500;
-  letter-spacing: 0.3px;
-  max-width: 900px;
+  max-width: 860px;
   margin: 0 auto;
 }
 
 .bhavarth-container {
   white-space: pre-line;
-  line-height: 2.1;
+  line-height: 2;
   color: #3e2723;
-  font-size: 18px;
+  font-size: 17px;
   background: #fffdfa;
-  padding: 28px 36px;
-  border-radius: 16px;
+  padding: 22px 28px;
+  border-radius: 14px;
   border: 1px solid var(--border-gold);
-  max-width: 960px;
+  max-width: 900px;
   margin: 0 auto;
 }
 
@@ -505,8 +436,8 @@ html, body {
   padding-bottom: 56.25%;
   height: 0;
   overflow: hidden;
-  border-radius: 14px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
 }
 
 .video-responsive-frame iframe {
@@ -528,8 +459,8 @@ html, body {
 }
 
 .info-detail-table td {
-  padding: 16px 12px;
-  font-size: 16.5px;
+  padding: 14px 10px;
+  font-size: 15.5px;
 }
 
 .info-detail-table td:first-child {
@@ -538,7 +469,7 @@ html, body {
   width: 35%;
 }
 
-/* ================= 7. Enhanced Footer (Taller & Bigger Fonts) ================= */
+/* ================= 7. Sticky Bottom Footer ================= */
 .royal-footer {
   flex-shrink: 0;
   background: #24140e;
@@ -551,7 +482,7 @@ html, body {
 
 .footer-bottom-bar {
   padding: 12px 16px;
-  padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px)); /* iPhone/Android હોમ બાર માટે */
+  padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
   text-align: center;
   background: #190c07;
   font-size: 13px;
@@ -568,208 +499,98 @@ html, body {
   font-size: 13.5px;
 }
 
-.footer-top-inner {
-  max-width: 1240px;
-  margin: 0 auto;
-  padding: 24px 24px 18px 24px;
-  display: grid;
-  grid-template-columns: 2fr 1fr 1.2fr;
-  gap: 32px;
-}
-
-.footer-brand h3 {
-  color: #ffca28;
-  font-size: 19px;
-  margin: 0 0 8px 0;
-  font-weight: 700;
-}
-
-.footer-brand p {
-  color: #d7ccc8;
-  font-size: 14px;
-  line-height: 1.65;
-  max-width: 440px;
-  margin: 0;
-}
-
-.footer-column h4 {
-  color: #ffffff;
+.empty-search-state {
+  text-align: center;
+  padding: 50px 20px;
+  color: #8d6e63;
   font-size: 16px;
-  margin: 0 0 10px 0;
-  border-left: 3.5px solid var(--accent-gold);
-  padding-left: 10px;
-  font-weight: 700;
 }
 
-.footer-links {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.footer-links a {
-  color: #d1c1b7;
-  text-decoration: none;
-  font-size: 14.5px;
-  transition: color 0.2s;
-}
-
-.footer-links a:hover {
-  color: #ffca28;
-  text-decoration: underline;
-}
-
-
-@media (max-width: 860px) {
-  .footer-top-inner {
-    grid-template-columns: 1fr;
-    gap: 20px;
-    padding: 18px 20px;
+@media (max-width: 768px) {
+  .stage-content-body {
+    padding: 18px 16px;
+  }
+  .desktop-tab-bar {
+    padding: 6px 8px;
+    gap: 6px;
+  }
+  .tab-pill-btn {
+    padding: 8px 6px;
+    font-size: 12.5px;
   }
 }
 
-/* ================= Standalone Clean Search Bar ================= */
-.standalone-search-container {
+/* ================= Icon-Only Tab Bar & Hover Tooltip ================= */
+.icon-only-tab-bar {
   display: flex;
-  justify-content: left;
-  margin-bottom: 28px;
-  width: 100%;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
 }
 
-.wide-search-wrapper {
-  max-width: 720px;
-  width: 100%;
+.icon-tab-btn {
   position: relative;
-}
-
-.wide-search-input {
-  width: 100%;
-  padding: 15px 44px 15px 50px !important;
-  font-size: 16px !important;
-  background: #ffffff !important;
-  border: 1.8px solid var(--border-gold) !important;
-  border-radius: 50px !important;
-  box-shadow: 0 4px 18px rgba(160, 64, 0, 0.06) !important;
-  transition: all 0.25s ease !important;
-}
-
-.wide-search-input:focus {
-  border-color: var(--primary-saffron) !important;
-  box-shadow: 0 6px 24px rgba(216, 67, 21, 0.16) !important;
-  background: #ffffff !important;
-}
-
-.wide-search-wrapper .search-icon {
-  left: 20px !important;
-  color: var(--primary-saffron) !important;
-}
-
-.search-clear-btn {
-  position: absolute;
-  right: 18px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: #fff3e0;
-  border: none;
-  border-radius: 50%;
-  width: 26px;
-  height: 26px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #bf360c;
-  cursor: pointer;
-  padding: 0;
-  transition: all 0.2s;
-}
-
-.search-clear-btn:hover {
-  background: var(--primary-saffron);
-  color: #ffffff;
-}
-
-/* ================= Enhanced Section Heading ================= */
-.section-title-wrapper {
-  margin-bottom: 24px;
-}
-
-.section-title-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-bottom: 8px;
-}
-
-.section-icon-badge {
-  font-size: 22px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.section-main-heading {
-  margin: 0;
-  font-size: 23px;
-  font-weight: 800;
-  color: #2c1810;
-  letter-spacing: -0.2px;
-}
-
-.section-count-pill {
-  background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
-  color: #bf360c;
-  font-size: 13px;
-  font-weight: 700;
-  padding: 4px 14px;
-  border-radius: 50px;
-  border: 1px solid #ffd180;
-  box-shadow: 0 2px 6px rgba(230, 81, 0, 0.08);
-}
-
-.section-heading-divider {
-  width: 70px;
-  height: 3.5px;
-  background: linear-gradient(90deg, #d84315 0%, #ffb300 100%);
-  border-radius: 4px;
-  margin-top: 4px;
-}
-
-.empty-search-state {
-  text-align: center;
-  padding: 60px 20px;
-  color: #8d6e63;
-  font-size: 17px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-}
-
-/* Title & Arrow Inline Row Alignment */
-.card-title-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 6px;
-}
-
-.card-title-row .desktop-card-title {
-  margin: 0;
   flex: 1;
+  max-width: 120px;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 !important;
+  border-radius: 12px;
+  transition: all 0.25s ease;
 }
 
-.card-title-row .title-arrow-icon {
-  flex-shrink: 0;
-  color: var(--primary-saffron);
-  transition: transform 0.25s ease, color 0.2s ease;
+/* Tooltip Hint on Hover */
+.tab-hover-tooltip {
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  bottom: -34px;
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  background: #24140e;
+  color: #ffca28;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  padding: 4px 10px;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  pointer-events: none;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 50;
+  border: 1px solid rgba(255, 179, 0, 0.3);
 }
 
-.desktop-card:hover .title-arrow-icon {
-  transform: translateX(4px);
-  color: #bf360c;
+/* Tooltip Triangle Arrow */
+.tab-hover-tooltip::before {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 0 5px 5px 5px;
+  border-style: solid;
+  border-color: transparent transparent #24140e transparent;
+}
+
+/* Show Tooltip on Hover / Focus */
+.icon-tab-btn:hover .tab-hover-tooltip,
+.icon-tab-btn:focus .tab-hover-tooltip {
+  visibility: visible;
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+@media (max-width: 768px) {
+  .icon-only-tab-bar {
+    gap: 8px;
+    padding: 8px 12px;
+  }
+  .icon-tab-btn {
+    height: 42px;
+    max-width: none;
+  }
 }
