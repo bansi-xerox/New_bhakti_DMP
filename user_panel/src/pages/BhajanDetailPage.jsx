@@ -183,7 +183,7 @@ const BhajanDetailPage = () => {
         )}
       </main>
 
-     
+       <Footer />
     </div>
   );
 };
