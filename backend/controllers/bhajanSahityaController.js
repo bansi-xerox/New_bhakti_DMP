@@ -1,35 +1,51 @@
 const BhajanSahitya = require('../models/BhajanSahitya');
 
-// 1. Create a new Bhajan Record with duplicate check
+// 1. Create a new Bhajan Record
 exports.createBhajan = async (req, res) => {
   try {
     const { sahitya_name, heading_name, bhajan_name } = req.body;
 
+    
+    const cleanHeading = (heading_name && heading_name.trim()) ? heading_name.trim() : null;
+
     // Check if duplicate entry already exists
     const existingBhajan = await BhajanSahitya.findOne({
-      sahitya_name,
-      heading_name: heading_name || null,
-      bhajan_name
+      sahitya_name: sahitya_name?.trim(),
+      heading_name: cleanHeading,
+      bhajan_name: bhajan_name?.trim()
     });
 
     if (existingBhajan) {
       return res.status(400).json({
         success: false,
-        message: 'આ ભજન (સાહિત્ય, શીર્ષક અને નામ સાથે) પહેલેથી જ અસ્તિત્વમાં છે!'
+        message: 'આ ભજન (સાહિત્ય અને નામ સાથે) પહેલેથી જ અસ્તિત્વમાં છે!'
       });
     }
 
-    const newBhajan = await BhajanSahitya.create(req.body);
+    const newBhajan = await BhajanSahitya.create({
+      ...req.body,
+      heading_name: cleanHeading
+    });
+
     res.status(201).json({ success: true, message: 'Bhajan added successfully', data: newBhajan });
   } catch (error) {
+    // જો MongoDB Unique index error (11000) આવે તો સ્પષ્ટ મેસેજ આપો
+    if (error.code === 11000) {
+      return res.status(400).json({
+        success: false,
+        message: 'આ સાહિત્ય અને ભજન નામ સાથેનો રેકોર્ડ પહેલેથી અસ્તિત્વમાં છે!'
+      });
+    }
     res.status(500).json({ success: false, message: 'Error adding record', error: error.message });
   }
 };
 
+// 2. Get All Bhajans
 exports.getAllBhajans = async (req, res) => {
   try {
     const bhajans = await BhajanSahitya.find()
-      .select('sahitya_name heading_name bhajan_name bhajan_kadi bhajan_rag page_no youtube_link'); 
+      .select('sahitya_name heading_name bhajan_name bhajan_kadi bhajan_rag page_no youtube_link')
+      .sort({ _id: -1 }); 
     res.status(200).json({ success: true, data: bhajans });
   } catch (error) {
     return res.status(500).json({
@@ -40,7 +56,7 @@ exports.getAllBhajans = async (req, res) => {
   }
 };
 
-// Dedicated Search Endpoint for Bhajan Sahitya
+// 3. Search Bhajans
 exports.searchBhajans = async (req, res) => {
   try {
     const { q, page = 1, limit = 10 } = req.query;
@@ -97,6 +113,7 @@ exports.searchBhajans = async (req, res) => {
   }
 };
 
+// 4. Get Bhajan by ID
 exports.getBhajanById = async (req, res) => {
   try {
     const bhajan = await BhajanSahitya.findById(req.params.id);
@@ -107,17 +124,19 @@ exports.getBhajanById = async (req, res) => {
   }
 };
 
-// 4. Update a Bhajan Record with duplicate check
+// 5. Update Bhajan Record
 exports.updateBhajan = async (req, res) => {
   try {
     const { sahitya_name, heading_name, bhajan_name } = req.body;
 
-    // Check if another record with the same combination already exists (excluding current id)
+    const cleanHeading = (heading_name && heading_name.trim()) ? heading_name.trim() : null;
+
+    // Check duplicate excluding current id
     const existingBhajan = await BhajanSahitya.findOne({
       _id: { $ne: req.params.id },
-      sahitya_name,
-      heading_name: heading_name || null,
-      bhajan_name
+      sahitya_name: sahitya_name?.trim(),
+      heading_name: cleanHeading,
+      bhajan_name: bhajan_name?.trim()
     });
 
     if (existingBhajan) {
@@ -129,7 +148,10 @@ exports.updateBhajan = async (req, res) => {
 
     const updatedBhajan = await BhajanSahitya.findByIdAndUpdate(
       req.params.id, 
-      req.body, 
+      {
+        ...req.body,
+        heading_name: cleanHeading
+      }, 
       { new: true, runValidators: true }
     );
     
@@ -137,11 +159,17 @@ exports.updateBhajan = async (req, res) => {
     
     res.status(200).json({ success: true, message: 'Bhajan updated successfully', data: updatedBhajan });
   } catch (error) {
+    if (error.code === 11000) {
+      return res.status(400).json({
+        success: false,
+        message: 'આ સાહિત્ય અને ભજન નામ સાથેનો રેકોર્ડ પહેલેથી અસ્તિત્વમાં છે!'
+      });
+    }
     res.status(500).json({ success: false, message: 'Error updating record', error: error.message });
   }
 };
 
-// 5. Delete a Bhajan Record
+// 6. Delete Bhajan
 exports.deleteBhajan = async (req, res) => {
   try {
     const deletedBhajan = await BhajanSahitya.findByIdAndDelete(req.params.id);
