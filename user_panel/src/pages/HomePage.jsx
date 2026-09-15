@@ -73,16 +73,7 @@ const HomePage = () => {
 
         {/* 3. Enhanced Royal Section Header */}
         <div id="sahitya-section">
-          <div className="section-title-wrapper">
-            <div className="section-title-left">
-              <span className="section-icon-badge">📖</span>
-              <h3 className="section-main-heading">ઉપલબ્ધ સાહિત્ય વિભાગો</h3>
-              <span className="section-count-pill">
-                {filteredCategories.length} {filteredCategories.length === 1 ? 'વિભાગ' : 'વિભાગો'}
-              </span>
-            </div>
-            <div className="section-heading-divider" />
-          </div>
+            
 
           {/* Cards Grid */}
           {loading ? (

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Music, ArrowRight, ArrowLeft } from 'lucide-react';
+import { Music, ArrowLeft } from 'lucide-react';
 import { getAllBhajans } from '../services/api';
 import Header from '../components/common/Header';
 import Footer from '../components/common/Footer';
@@ -52,17 +52,17 @@ const HeadingBhajansPage = () => {
           </span>
         </div>
 
-        {/* Heading Section Title */}
+        {/* Heading Title */}
         <div style={{ marginBottom: '24px' }}>
           <h2 style={{ fontSize: '24px', color: '#bf360c', margin: '0 0 6px 0', fontWeight: 800 }}>
-             {headingName}
+            {headingName}
           </h2>
           <p style={{ margin: 0, color: '#795548', fontSize: '14.5px' }}>
             {sahityaName} હેઠળના ઉપલબ્ધ ભજનોની યાદી ({bhajans.length})
           </p>
         </div>
 
-        {/* Content Section */}
+        {/* 3. Content Grid (ભજનમાં Arrow નથી) */}
         {loading ? (
           <Loader />
         ) : bhajans.length === 0 ? (
@@ -77,21 +77,21 @@ const HeadingBhajansPage = () => {
                 className="desktop-card"
                 onClick={() => navigate(`/bhajan/${b._id}`)}
               >
-                <div className="card-title-row">
+                <div>
+                  
+                  {/* for bahjan without Arrow  */}
                   <h4 className="desktop-card-title">{b.bhajan_name?.trim()}</h4>
                   <p className="desktop-card-subtitle">
                     {b.bhajan_rag ? `રાગ: ${b.bhajan_rag}` : 'ભજન વિગતવાર વાંચો'}
                   </p>
-                    <ArrowRight size={18} className="title-arrow-icon" />
                 </div>
-                
               </div>
             ))}
           </div>
         )}
       </main>
 
-     
+      <Footer />
     </div>
   );
 };
