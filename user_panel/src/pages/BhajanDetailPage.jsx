@@ -22,7 +22,11 @@ const BhajanDetailPage = () => {
   const fetchBhajan = async () => {
     try {
       const res = await getBhajanById(id);
-      setBhajan(res.data.data || res.data);
+      const data = res.data.data || res.data;
+      setBhajan(data);
+
+      // ખાતરી કરો કે ડિફોલ્ટ એક્ટિવ ટેબ 'lyrics' જ રહે
+      setActiveTab('lyrics');
     } catch (err) {
       console.error('Error fetching bhajan details:', err);
     } finally {
@@ -43,10 +47,15 @@ const BhajanDetailPage = () => {
     return text.replace(/\\n/g, '\n');
   };
 
-  const tabs = [
+//dynamic tabs
+  const availableTabs = [
     { id: 'lyrics', label: 'ભજન લખાણ', icon: <Music size={18} /> },
-    { id: 'bhavarth', label: 'ભજન ભાવાર્થ', icon: <BookOpen size={18} /> },
-    { id: 'video', label: 'વિડીયો દર્શન', icon: <Video size={18} /> },
+    ...(bhajan?.bhajan_bhavarth?.trim()
+      ? [{ id: 'bhavarth', label: 'ભજન ભાવાર્થ', icon: <BookOpen size={18} /> }]
+      : []),
+    ...(bhajan?.youtube_link?.trim()
+      ? [{ id: 'video', label: 'વિડીયો દર્શન', icon: <Video size={18} /> }]
+      : []),
     { id: 'info', label: 'સંપૂર્ણ માહિતી', icon: <Info size={18} /> },
   ];
 
@@ -57,14 +66,14 @@ const BhajanDetailPage = () => {
 
       <main className="main-desktop-container">
         {/* Subpage Breadcrumb Back Bar */}
-        {/* <div className="subpage-back-bar">
+        <div className="subpage-back-bar">
           <button className="back-action-btn" onClick={() => navigate(-1)}>
             <ArrowLeft size={16} /> પાછા જાઓ
           </button>
           <span style={{ color: '#8d6e63', fontSize: '14.5px' }}>
             / {bhajan?.bhajan_name?.trim() || 'વિગત'}
           </span>
-        </div> */}
+        </div>
 
         {loading ? (
           <Loader />
@@ -72,7 +81,7 @@ const BhajanDetailPage = () => {
           <p style={{ textAlign: 'center', color: '#8d6e63', padding: '60px 0' }}>ભજન મળ્યું નથી.</p>
         ) : (
           <div className="bhajan-desktop-stage">
-            {/* 2. Sticky Stage Header (Title & Segmented Tabs અંદર ફિક્સ રહેશે) */}
+            {/* 2. Sticky Stage Header */}
             <div className="stage-sticky-header">
               <div className="stage-title-header">
                 <h2>{bhajan.bhajan_name?.trim()}</h2>
@@ -89,9 +98,9 @@ const BhajanDetailPage = () => {
                 </div>
               </div>
 
-              {/* Segmented Tab Bar */}
+              {/* Segmented Tab Bar - */}
               <div className="desktop-tab-bar">
-                {tabs.map((tab) => (
+                {availableTabs.map((tab) => (
                   <button
                     key={tab.id}
                     className={`tab-pill-btn ${activeTab === tab.id ? 'active' : ''}`}
@@ -104,7 +113,7 @@ const BhajanDetailPage = () => {
               </div>
             </div>
 
-            {/* 3. Scrollable Tab Content Body (માત્ર આ જ ભાગ અંદર સ્ક્રોલ થશે) */}
+            {/* 3. Scrollable Tab Content Body */}
             <div className="stage-content-body">
               {/* Lyrics Tab */}
               {activeTab === 'lyrics' && (
@@ -119,31 +128,23 @@ const BhajanDetailPage = () => {
                 </div>
               )}
 
-              {/* Bhavarth Tab */}
-              {activeTab === 'bhavarth' && (
+              {/* Bhavarth Tab  */}
+              {activeTab === 'bhavarth' && bhajan.bhajan_bhavarth && (
                 <div className="bhavarth-container">
                   <h4 style={{ color: '#bf360c', marginTop: 0, fontSize: '19px' }}>🙏 ભજન ભાવાર્થ / રહસ્ય:</h4>
-                  {formatText(bhajan.bhajan_bhavarth) || 'આ ભજનનો ભાવાર્થ ઉપલબ્ધ નથી.'}
+                  {formatText(bhajan.bhajan_bhavarth)}
                 </div>
               )}
 
-              {/* YouTube Video Tab */}
-              {activeTab === 'video' && (
-                <div>
-                  {bhajan.youtube_link ? (
-                    <div className="video-responsive-frame">
-                      <iframe
-                        src={getEmbedUrl(bhajan.youtube_link)}
-                        title="YouTube video player"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowFullScreen
-                      />
-                    </div>
-                  ) : (
-                    <p style={{ textAlign: 'center', color: '#8d6e63', padding: '50px 0', fontSize: '16px' }}>
-                      આ ભજન માટે વિડીયો લિંક ઉપલબ્ધ નથી.
-                    </p>
-                  )}
+              {/* YouTube Video Tab  */}
+              {activeTab === 'video' && bhajan.youtube_link && (
+                <div className="video-responsive-frame">
+                  <iframe
+                    src={getEmbedUrl(bhajan.youtube_link)}
+                    title="YouTube video player"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                  />
                 </div>
               )}
 
@@ -183,7 +184,8 @@ const BhajanDetailPage = () => {
         )}
       </main>
 
-       <Footer />
+      {/* 4. Taller & Enhanced Royal Footer */}
+      <Footer />
     </div>
   );
 };

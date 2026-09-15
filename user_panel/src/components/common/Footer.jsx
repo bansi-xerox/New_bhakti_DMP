@@ -17,7 +17,7 @@ const Footer = () => {
               textDecoration: 'none',
               transition: 'all 0.2s ease',
             }}
-            onMouseEnter={(e) => (e.target.style.textDecoration = 'underline')}
+            onMouseEnter={(e) => (e.target.style.textDecoration = 'bold')}
             onMouseLeave={(e) => (e.target.style.textDecoration = 'none')}
           >
             Devam TechHub

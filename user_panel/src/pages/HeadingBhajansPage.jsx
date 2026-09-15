@@ -125,9 +125,6 @@ const HeadingBhajansPage = () => {
               >
                 <div>
                   <h4 className="desktop-card-title">{b.bhajan_name?.trim()}</h4>
-                  <p className="desktop-card-subtitle">
-                    {b.bhajan_rag ? `રાગ: ${b.bhajan_rag}` : ''}
-                  </p>
                 </div>
               </div>
             ))}
