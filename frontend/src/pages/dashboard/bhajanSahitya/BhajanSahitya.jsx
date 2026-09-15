@@ -146,7 +146,7 @@ const BhajanSahitya = () => {
           box-shadow: 0 4px 18px rgba(0,0,0,0.03);
         }
 
-        /* Table Border & Clean Look (Both Horizontal and Vertical Borders with Shading Orange) */
+        /* Table Border & Clean Look */
         .table-custom th, .table-custom td {
           border: 1px solid #fbd3bc !important;
           vertical-align: middle;
@@ -156,7 +156,7 @@ const BhajanSahitya = () => {
           background-color: #fef5ee !important;
         }
 
-        /* --- Custom Orange Scrollbar --- */
+        /* Custom Orange Scrollbar */
         .custom-scrollbar::-webkit-scrollbar {
           width: 8px;
           height: 8px;
@@ -174,16 +174,18 @@ const BhajanSahitya = () => {
         }
       `}</style>
 
-     <div
-       className="w-100 d-flex flex-column gap-3"
-       style={{
-         backgroundColor: '#fdf9f1',
-         height: '100vh',
-         padding: '16px',         // Leaves exactly 16px of space on all 4 sides (Top, Right, Bottom, Left)
-         boxSizing: 'border-box',
-         overflow: 'hidden'       // Prevents outer scrolling, forcing inner elements to fit & scroll
-       }}
-     >
+      {/* Main Container: height 100% and flex-grow-1 ensures bottom 16px space is always visible */}
+      <div
+        className="w-100 d-flex flex-column gap-3 flex-grow-1"
+        style={{
+          backgroundColor: '#fdf9f1',
+          height: '100%',
+          maxHeight: '100%',
+          padding: '16px',
+          boxSizing: 'border-box',
+          overflow: 'hidden'
+        }}
+      >
         
         {/* Top Header & Action Row */}
         <div className="premium-card p-3 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 flex-shrink-0">
@@ -210,7 +212,7 @@ const BhajanSahitya = () => {
           </div>
         </div>
 
-        {/* Data Table Card with Proper Shading Orange Border */}
+        {/* Data Table Card */}
         <div className="premium-card overflow-hidden flex-grow-1 d-flex flex-column" style={{ minHeight: 0, borderColor: '#fbd3bc' }}>
           <div className="card-body p-0 overflow-auto flex-grow-1 custom-scrollbar">
             <table className="table table-hover align-middle mb-0 table-custom" style={{ minWidth: '900px' }}>
