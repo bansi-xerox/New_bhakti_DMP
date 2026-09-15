@@ -77,16 +77,14 @@ const HeadingBhajansPage = () => {
                 className="desktop-card"
                 onClick={() => navigate(`/bhajan/${b._id}`)}
               >
-                <div>
+                <div className="card-title-row">
                   <h4 className="desktop-card-title">{b.bhajan_name?.trim()}</h4>
                   <p className="desktop-card-subtitle">
                     {b.bhajan_rag ? `રાગ: ${b.bhajan_rag}` : 'ભજન વિગતવાર વાંચો'}
                   </p>
+                    <ArrowRight size={18} className="title-arrow-icon" />
                 </div>
-                <div className="card-footer-action">
-                  <span>વાંચો & સાંભળો</span>
-                  <ArrowRight size={16} />
-                </div>
+                
               </div>
             ))}
           </div>

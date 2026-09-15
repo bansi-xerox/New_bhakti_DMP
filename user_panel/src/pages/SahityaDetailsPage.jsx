@@ -77,13 +77,10 @@ const SahityaDetailsPage = () => {
                         )
                       }
                     >
-                      <div>
+                      <div className="card-title-row">
 
                         <h4 className="desktop-card-title">{heading}</h4>
-                      </div>
-                      <div className="card-footer-action">
-                        <span>ભજનો જુઓ</span>
-                        <ArrowRight size={16} />
+                        <ArrowRight size={18} className="title-arrow-icon" />
                       </div>
                     </div>
                   ))}

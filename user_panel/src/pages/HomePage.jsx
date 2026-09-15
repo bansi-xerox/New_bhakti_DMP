@@ -108,9 +108,9 @@ const HomePage = () => {
                   className="desktop-card"
                   onClick={() => navigate(`/sahitya/${encodeURIComponent(name)}`)}
                 >
-                  <div>
-                    {/* <ArrowRight size={16} /> */}
+                  <div className="card-title-row">
                     <h3 className="desktop-card-title">{name}</h3>
+                    <ArrowRight size={18} className="title-arrow-icon" />
                   </div>
 
 
