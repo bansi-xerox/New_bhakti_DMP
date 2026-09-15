@@ -55,7 +55,7 @@ const HeadingBhajansPage = () => {
         {/* Heading Section Title */}
         <div style={{ marginBottom: '24px' }}>
           <h2 style={{ fontSize: '24px', color: '#bf360c', margin: '0 0 6px 0', fontWeight: 800 }}>
-            🎵 {headingName}
+             {headingName}
           </h2>
           <p style={{ margin: 0, color: '#795548', fontSize: '14.5px' }}>
             {sahityaName} હેઠળના ઉપલબ્ધ ભજનોની યાદી ({bhajans.length})
@@ -78,9 +78,6 @@ const HeadingBhajansPage = () => {
                 onClick={() => navigate(`/bhajan/${b._id}`)}
               >
                 <div>
-                  <div className="card-header-icon">
-                    <Music size={24} />
-                  </div>
                   <h4 className="desktop-card-title">{b.bhajan_name?.trim()}</h4>
                   <p className="desktop-card-subtitle">
                     {b.bhajan_rag ? `રાગ: ${b.bhajan_rag}` : 'ભજન વિગતવાર વાંચો'}

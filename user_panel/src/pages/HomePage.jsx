@@ -109,17 +109,11 @@ const HomePage = () => {
                   onClick={() => navigate(`/sahitya/${encodeURIComponent(name)}`)}
                 >
                   <div>
-                    <div className="card-header-icon">
-                      <BookOpen size={24} />
-                    </div>
+                    {/* <ArrowRight size={16} /> */}
                     <h3 className="desktop-card-title">{name}</h3>
-                    <p className="desktop-card-subtitle">સંપૂર્ણ ભજન અને કીર્તન સંગ્રહ</p>
                   </div>
 
-                  <div className="card-footer-action">
-                    <span>વિભાગ ખોલો</span>
-                    <ArrowRight size={16} />
-                  </div>
+
                 </div>
               ))}
             </div>

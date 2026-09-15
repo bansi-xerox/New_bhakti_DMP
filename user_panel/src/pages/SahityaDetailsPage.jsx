@@ -64,7 +64,7 @@ const SahityaDetailsPage = () => {
             {headings.length > 0 && (
               <section style={{ marginBottom: '36px' }}>
                 <h3 style={{ fontSize: '19px', color: '#bf360c', marginBottom: '16px' }}>
-                  📁 વિભાગો / શીર્ષક ({headings.length})
+                  વિભાગો / શીર્ષક ({headings.length})
                 </h3>
                 <div className="desktop-grid">
                   {headings.map((heading, idx) => (
@@ -78,11 +78,8 @@ const SahityaDetailsPage = () => {
                       }
                     >
                       <div>
-                        <div className="card-header-icon" style={{ background: '#fff3e0' }}>
-                          <Folder size={24} color="#f57c00" />
-                        </div>
+
                         <h4 className="desktop-card-title">{heading}</h4>
-                        <p className="desktop-card-subtitle">આ વિભાગ હેઠળના ભજનો જુઓ</p>
                       </div>
                       <div className="card-footer-action">
                         <span>ભજનો જુઓ</span>
@@ -128,7 +125,7 @@ const SahityaDetailsPage = () => {
         )}
       </main>
 
-      
+
     </div>
   );
 };
