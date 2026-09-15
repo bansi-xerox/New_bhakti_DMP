@@ -73,16 +73,7 @@ const HomePage = () => {
 
         {/* 3. Enhanced Royal Section Header */}
         <div id="sahitya-section">
-          <div className="section-title-wrapper">
-            <div className="section-title-left">
-              <span className="section-icon-badge">📖</span>
-              <h3 className="section-main-heading">ઉપલબ્ધ સાહિત્ય વિભાગો</h3>
-              <span className="section-count-pill">
-                {filteredCategories.length} {filteredCategories.length === 1 ? 'વિભાગ' : 'વિભાગો'}
-              </span>
-            </div>
-            <div className="section-heading-divider" />
-          </div>
+            
 
           {/* Cards Grid */}
           {loading ? (
@@ -108,25 +99,19 @@ const HomePage = () => {
                   className="desktop-card"
                   onClick={() => navigate(`/sahitya/${encodeURIComponent(name)}`)}
                 >
-                  <div>
-                    <div className="card-header-icon">
-                      <BookOpen size={24} />
-                    </div>
+                  <div className="card-title-row">
                     <h3 className="desktop-card-title">{name}</h3>
-                    <p className="desktop-card-subtitle">સંપૂર્ણ ભજન અને કીર્તન સંગ્રહ</p>
+                    <ArrowRight size={18} className="title-arrow-icon" />
                   </div>
 
-                  <div className="card-footer-action">
-                    <span>વિભાગ ખોલો</span>
-                    <ArrowRight size={16} />
-                  </div>
+
                 </div>
               ))}
             </div>
           )}
         </div>
       </main>
-
+            <Footer />
     </div>
   );
 };

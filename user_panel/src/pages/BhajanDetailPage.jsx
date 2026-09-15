@@ -57,14 +57,14 @@ const BhajanDetailPage = () => {
 
       <main className="main-desktop-container">
         {/* Subpage Breadcrumb Back Bar */}
-        <div className="subpage-back-bar">
+        {/* <div className="subpage-back-bar">
           <button className="back-action-btn" onClick={() => navigate(-1)}>
             <ArrowLeft size={16} /> પાછા જાઓ
           </button>
           <span style={{ color: '#8d6e63', fontSize: '14.5px' }}>
             / {bhajan?.bhajan_name?.trim() || 'વિગત'}
           </span>
-        </div>
+        </div> */}
 
         {loading ? (
           <Loader />
@@ -183,7 +183,7 @@ const BhajanDetailPage = () => {
         )}
       </main>
 
-     
+       <Footer />
     </div>
   );
 };

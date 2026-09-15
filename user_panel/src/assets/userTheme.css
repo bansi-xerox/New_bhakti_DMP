@@ -739,3 +739,28 @@ html, body {
   align-items: center;
   gap: 12px;
 }
+
+/* Title & Arrow Inline Row Alignment */
+.card-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.card-title-row .desktop-card-title {
+  margin: 0;
+  flex: 1;
+}
+
+.card-title-row .title-arrow-icon {
+  flex-shrink: 0;
+  color: var(--primary-saffron);
+  transition: transform 0.25s ease, color 0.2s ease;
+}
+
+.desktop-card:hover .title-arrow-icon {
+  transform: translateX(4px);
+  color: #bf360c;
+}
