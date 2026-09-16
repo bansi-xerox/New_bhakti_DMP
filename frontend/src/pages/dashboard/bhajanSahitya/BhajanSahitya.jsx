@@ -336,13 +336,15 @@ const BhajanSahitya = () => {
           </div>
         </div>
         {/* Reusable Custom Modal */}
+    {/* Reusable Custom Modal */}
        <Modal
           isOpen={isModalOpen}
           onClose={closeModal}
           title={isEditing ? 'ભજનમાં સુધારો કરો (Edit)' : 'નવું ભજન ઉમેરો (Add New)'}
           size="lg"
         >
-          <form onSubmit={handleSubmit} className="row g-3">
+          {/* Changed g-3 to g-2 to reduce the space uniformly */}
+          <form onSubmit={handleSubmit} className="row g-2">
             <div className="col-md-6">
               <Input
                 name="sahitya_name"
@@ -425,7 +427,7 @@ const BhajanSahitya = () => {
               />
             </div>
 
-            <div className="col-12 d-flex justify-content-end gap-2 mt-3 pt-3">
+            <div className="col-12 d-flex justify-content-end gap-2 pt-1">
               <Button type="button" onClick={closeModal} className="btn btn-light px-4 py-2 text-muted fw-bold">
                 રદ કરો
               </Button>
