@@ -336,13 +336,14 @@ const BhajanSahitya = () => {
           </div>
         </div>
         {/* Reusable Custom Modal */}
-        <Modal
+       <Modal
           isOpen={isModalOpen}
           onClose={closeModal}
           title={isEditing ? 'ભજનમાં સુધારો કરો (Edit)' : 'નવું ભજન ઉમેરો (Add New)'}
           size="lg"
         >
-          <form onSubmit={handleSubmit} className="row g-2">
+          {/* Changed g-2 to g-3 for increased spacing between input rows */}
+          <form onSubmit={handleSubmit} className="row g-3">
             <div className="col-md-6">
               <Input
                 name="sahitya_name"
