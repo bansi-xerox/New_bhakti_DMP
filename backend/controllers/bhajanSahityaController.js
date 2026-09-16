@@ -4,7 +4,6 @@ const BhajanSahitya = require('../models/BhajanSahitya');
 exports.createBhajan = async (req, res) => {
   try {
     const { sahitya_name, heading_name, bhajan_name } = req.body;
-
     
     const cleanHeading = (heading_name && heading_name.trim()) ? heading_name.trim() : null;
 
@@ -29,7 +28,6 @@ exports.createBhajan = async (req, res) => {
 
     res.status(201).json({ success: true, message: 'Bhajan added successfully', data: newBhajan });
   } catch (error) {
-    // જો MongoDB Unique index error (11000) આવે તો સ્પષ્ટ મેસેજ આપો
     if (error.code === 11000) {
       return res.status(400).json({
         success: false,
@@ -56,7 +54,7 @@ exports.getAllBhajans = async (req, res) => {
   }
 };
 
-// 3. Search Bhajans
+// 3. Search Bhajans (Restricted to specified 5 fields only)
 exports.searchBhajans = async (req, res) => {
   try {
     const { q, page = 1, limit = 10 } = req.query;
@@ -69,13 +67,15 @@ exports.searchBhajans = async (req, res) => {
     }
 
     const regex = new RegExp(q.trim(), 'i');
+    
+    // Strict search criteria limited only to the 5 requested fields
     const query = {
       $or: [
-        { bhajan_name: regex },
         { sahitya_name: regex },
         { heading_name: regex },
-        { bhajan_rag: regex },
-        { bhajan_kadi: regex }
+        { bhajan_name: regex },
+        { bhajan_kadi: regex },
+        { bhajan_rag: regex }
       ]
     };
 
@@ -85,7 +85,7 @@ exports.searchBhajans = async (req, res) => {
 
     const totalItems = await BhajanSahitya.countDocuments(query);
     const bhajans = await BhajanSahitya.find(query)
-      .select('sahitya_name heading_name bhajan_name bhajan_kadi bhajan_rag page_no')
+      .select('sahitya_name heading_name bhajan_name bhajan_kadi bhajan_rag page_no youtube_link')
       .sort({ _id: -1 })
       .skip(skip)
       .limit(pageSize);
@@ -131,7 +131,6 @@ exports.updateBhajan = async (req, res) => {
 
     const cleanHeading = (heading_name && heading_name.trim()) ? heading_name.trim() : null;
 
-    // Check duplicate excluding current id
     const existingBhajan = await BhajanSahitya.findOne({
       _id: { $ne: req.params.id },
       sahitya_name: sahitya_name?.trim(),
