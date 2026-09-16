@@ -412,7 +412,7 @@ const BhajanSahitya = () => {
           min-height: 0;
           overflow: hidden;
           background-color: #ffffff;
-          border: 1px solid #fbd3bc;
+          border: 1px solid #d49a7a !important;;
           border-radius: 14px;
         }
 
@@ -431,10 +431,10 @@ const BhajanSahitya = () => {
           border-spacing: 0 !important;
         }
 
-        .table-custom th,
+       .table-custom th,
         .table-custom td {
-          border-right: 1px solid #fbd3bc !important;
-          border-bottom: 1px solid #fbd3bc !important;
+          border-right: 1px solid #d49a7a !important;
+          border-bottom: 1px solid #d49a7a !important;
           vertical-align: middle !important;
         }
 
