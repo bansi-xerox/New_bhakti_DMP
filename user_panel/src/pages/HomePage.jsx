@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BookOpen, Search, ArrowRight, X } from 'lucide-react';
+import { Search, ArrowRight, X } from 'lucide-react';
 import { getAllBhajans } from '../services/api';
 import Header from '../components/common/Header';
 import Footer from '../components/common/Footer';
@@ -47,7 +47,7 @@ const HomePage = () => {
       <Header />
 
       <main className="main-desktop-container">
-        {/* 2. Standalone Modern Searchbar (Hero removed) */}
+        {/* 2. Standalone Modern Searchbar */}
         <div className="standalone-search-container">
           <div className="search-input-wrapper wide-search-wrapper">
             <Search className="search-icon" size={20} />
@@ -65,40 +65,19 @@ const HomePage = () => {
                 onClick={() => setSearchTerm('')}
                 aria-label="Clear Search"
               >
-                <X size={18} />
+                <X size={16} />
               </button>
             )}
           </div>
         </div>
 
-        {/* 3. Enhanced Royal Section Header */}
+        {/* 3. Cards Grid (Balanced Padding) */}
         <div id="sahitya-section">
-          <div className="section-title-wrapper">
-            <div className="section-title-left">
-              <span className="section-icon-badge">📖</span>
-              <h3 className="section-main-heading">ઉપલબ્ધ સાહિત્ય વિભાગો</h3>
-              <span className="section-count-pill">
-                {filteredCategories.length} {filteredCategories.length === 1 ? 'વિભાગ' : 'વિભાગો'}
-              </span>
-            </div>
-            <div className="section-heading-divider" />
-          </div>
-
-          {/* Cards Grid */}
           {loading ? (
             <Loader />
           ) : filteredCategories.length === 0 ? (
             <div className="empty-search-state">
               <p>કોઈ મેળ ખાતું સાહિત્ય મળ્યું નથી.</p>
-              {searchTerm && (
-                <button
-                  type="button"
-                  className="font-btn"
-                  onClick={() => setSearchTerm('')}
-                >
-                  તમામ સાહિત્ય જુઓ
-                </button>
-              )}
             </div>
           ) : (
             <div className="desktop-grid">
@@ -108,17 +87,9 @@ const HomePage = () => {
                   className="desktop-card"
                   onClick={() => navigate(`/sahitya/${encodeURIComponent(name)}`)}
                 >
-                  <div>
-                    <div className="card-header-icon">
-                      <BookOpen size={24} />
-                    </div>
+                  <div className="card-title-row">
                     <h3 className="desktop-card-title">{name}</h3>
-                    <p className="desktop-card-subtitle">સંપૂર્ણ ભજન અને કીર્તન સંગ્રહ</p>
-                  </div>
-
-                  <div className="card-footer-action">
-                    <span>વિભાગ ખોલો</span>
-                    <ArrowRight size={16} />
+                    <ArrowRight size={18} className="title-arrow-icon" />
                   </div>
                 </div>
               ))}
@@ -127,6 +98,8 @@ const HomePage = () => {
         </div>
       </main>
 
+      {/* 4. Sticky Bottom Footer */}
+      <Footer />
     </div>
   );
 };

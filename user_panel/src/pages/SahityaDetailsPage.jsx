@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Folder, Music, ArrowRight, ArrowLeft } from 'lucide-react';
+import { ArrowRight, Search, X } from 'lucide-react';
 import { getAllBhajans } from '../services/api';
 import Header from '../components/common/Header';
 import Footer from '../components/common/Footer';
@@ -8,8 +8,8 @@ import Loader from '../components/common/Loader';
 
 const SahityaDetailsPage = () => {
   const { sahityaName } = useParams();
-  const [headings, setHeadings] = useState([]);
-  const [directBhajans, setDirectBhajans] = useState([]);
+  const [combinedItems, setCombinedItems] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -25,18 +25,27 @@ const SahityaDetailsPage = () => {
         (item) => item.sahitya_name?.trim() === sahityaName
       );
 
+      // ૧. Unique Headings ની યાદી
       const uniqueHeadings = [
         ...new Set(
           items
             .map((i) => i.heading_name?.trim())
             .filter(Boolean)
         ),
-      ];
+      ].map((heading) => ({
+        type: 'heading',
+        name: heading,
+      }));
 
-      const direct = items.filter((i) => !i.heading_name || i.heading_name.trim() === '');
+      // ૨. Direct Bhajans ની યાદી
+      const directBhajans = items
+        .filter((i) => !i.heading_name || i.heading_name.trim() === '')
+        .map((bhajan) => ({
+          type: 'bhajan',
+          data: bhajan,
+        }));
 
-      setHeadings(uniqueHeadings);
-      setDirectBhajans(direct);
+      setCombinedItems([...uniqueHeadings, ...directBhajans]);
     } catch (err) {
       console.error('Error fetching sahitya items:', err);
     } finally {
@@ -44,91 +53,112 @@ const SahityaDetailsPage = () => {
     }
   };
 
+  // Search Filter
+  const filteredItems = combinedItems.filter((item) => {
+    if (!searchTerm.trim()) return true;
+    const query = searchTerm.toLowerCase();
+
+    if (item.type === 'heading') {
+      return item.name.toLowerCase().includes(query);
+    }
+    const b = item.data;
+    return (
+      b.bhajan_name?.toLowerCase().includes(query) ||
+      b.bhajan_rag?.toLowerCase().includes(query)
+    );
+  });
+
   return (
     <div className="user-app-layout">
       <Header />
 
       <main className="main-desktop-container">
-        {/* Subpage Breadcrumb Back Bar */}
-        <div className="subpage-back-bar">
-          <button className="back-action-btn" onClick={() => navigate('/')}>
-            <ArrowLeft size={16} /> પાછા જાઓ
-          </button>
-          <span style={{ color: '#8d6e63', fontSize: '14px' }}>/ {sahityaName}</span>
+        {/* Standalone Modern Searchbar */}
+        <div className="standalone-search-container">
+          <div className="search-input-wrapper wide-search-wrapper">
+            <Search className="search-icon" size={20} />
+            <input
+              type="text"
+              className="search-input-box wide-search-input"
+              placeholder={`${sahityaName} માં શીર્ષક અથવા ભજન શોધો...`}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            {searchTerm && (
+              <button
+                type="button"
+                className="search-clear-btn"
+                onClick={() => setSearchTerm('')}
+                aria-label="Clear Search"
+              >
+                <X size={16} />
+              </button>
+            )}
+          </div>
         </div>
 
         {loading ? (
           <Loader />
+        ) : filteredItems.length === 0 ? (
+          <div className="empty-search-state">
+            <p>કોઈ મેળ ખાતી વિગતો મળી નથી.</p>
+            {searchTerm && (
+              <button
+                type="button"
+                className="font-btn"
+                onClick={() => setSearchTerm('')}
+              >
+                બધું સાહિત્ય દર્શાવો
+              </button>
+            )}
+          </div>
         ) : (
-          <>
-            {headings.length > 0 && (
-              <section style={{ marginBottom: '36px' }}>
-                <h3 style={{ fontSize: '19px', color: '#bf360c', marginBottom: '16px' }}>
-                  📁 વિભાગો / શીર્ષક ({headings.length})
-                </h3>
-                <div className="desktop-grid">
-                  {headings.map((heading, idx) => (
-                    <div
-                      key={idx}
-                      className="desktop-card"
-                      onClick={() =>
-                        navigate(
-                          `/sahitya/${encodeURIComponent(sahityaName)}/heading/${encodeURIComponent(heading)}`
-                        )
-                      }
-                    >
-                      <div>
-                        <div className="card-header-icon" style={{ background: '#fff3e0' }}>
-                          <Folder size={24} color="#f57c00" />
-                        </div>
-                        <h4 className="desktop-card-title">{heading}</h4>
-                        <p className="desktop-card-subtitle">આ વિભાગ હેઠળના ભજનો જુઓ</p>
-                      </div>
-                      <div className="card-footer-action">
-                        <span>ભજનો જુઓ</span>
-                        <ArrowRight size={16} />
-                      </div>
+          <div className="desktop-grid">
+            {filteredItems.map((item, idx) => {
+              // if heading (with arrow):
+              if (item.type === 'heading') {
+                return (
+                  <div
+                    key={`heading-${idx}`}
+                    className="desktop-card"
+                    onClick={() =>
+                      navigate(
+                        `/sahitya/${encodeURIComponent(sahityaName)}/heading/${encodeURIComponent(item.name)}`
+                      )
+                    }
+                  >
+                    <div className="card-title-row">
+                      <h4 className="desktop-card-title">{item.name}</h4>
+                      <ArrowRight size={18} className="title-arrow-icon" />
                     </div>
-                  ))}
-                </div>
-              </section>
-            )}
+                  </div>
+                );
+              }
 
-            {directBhajans.length > 0 && (
-              <section>
-                <h3 style={{ fontSize: '19px', color: '#e65100', marginBottom: '16px' }}>
-                  🎵 ભજનો ({directBhajans.length})
-                </h3>
-                <div className="desktop-grid">
-                  {directBhajans.map((b) => (
-                    <div
-                      key={b._id}
-                      className="desktop-card"
-                      onClick={() => navigate(`/bhajan/${b._id}`)}
-                    >
-                      <div>
-                        <div className="card-header-icon">
-                          <Music size={24} />
-                        </div>
-                        <h4 className="desktop-card-title">{b.bhajan_name?.trim()}</h4>
-                        <p className="desktop-card-subtitle">
-                          {b.bhajan_rag ? `રાગ: ${b.bhajan_rag}` : 'ભજન વિગતવાર વાંચો'}
-                        </p>
-                      </div>
-                      <div className="card-footer-action">
-                        <span>વાંચો & સાંભળો</span>
-                        <ArrowRight size={16} />
-                      </div>
-                    </div>
-                  ))}
+              // if bhajan without arrow:
+              const b = item.data;
+              return (
+                <div
+                  key={b._id || `bhajan-${idx}`}
+                  className="desktop-card"
+                  onClick={() => navigate(`/bhajan/${b._id}`)}
+                >
+                  <div className="card-title-row">
+                    <h4 className="desktop-card-title">{b.bhajan_name?.trim()}</h4>
+                    {b.bhajan_rag && (
+                      <span style={{ fontSize: '13px', color: '#8d6e63' }}>
+                        {b.bhajan_rag}
+                      </span>
+                    )}
+                  </div>
                 </div>
-              </section>
-            )}
-          </>
+              );
+            })}
+          </div>
         )}
       </main>
 
-      
+      <Footer />
     </div>
   );
 };

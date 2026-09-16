@@ -14,7 +14,6 @@ const Header = () => {
           </div>
           <div className="royal-brand-titles">
             <h1>ભજન કીર્તન પોર્ટલ</h1>
-            <p>પવિત્ર ભક્તિ સાહિત્ય સંગ્રહ</p>
           </div>
         </Link>
 

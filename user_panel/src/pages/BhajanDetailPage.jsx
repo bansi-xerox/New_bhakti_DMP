@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Music, BookOpen, Video, Info, ArrowLeft } from 'lucide-react';
+import { Music, BookOpen, Video } from 'lucide-react';
 import { getBhajanById } from '../services/api';
 import Header from '../components/common/Header';
 import Footer from '../components/common/Footer';
@@ -22,7 +22,9 @@ const BhajanDetailPage = () => {
   const fetchBhajan = async () => {
     try {
       const res = await getBhajanById(id);
-      setBhajan(res.data.data || res.data);
+      const data = res.data.data || res.data;
+      setBhajan(data);
+      setActiveTab('lyrics');
     } catch (err) {
       console.error('Error fetching bhajan details:', err);
     } finally {
@@ -37,76 +39,111 @@ const BhajanDetailPage = () => {
     return match && match[1] ? `https://www.youtube.com/embed/${match[1]}` : url;
   };
 
-  // Convert literal "\n" strings into real line breaks
   const formatText = (text) => {
     if (!text) return '';
     return text.replace(/\\n/g, '\n');
   };
 
-  const tabs = [
-    { id: 'lyrics', label: 'ભજન લખાણ', icon: <Music size={18} /> },
-    { id: 'bhavarth', label: 'ભજન ભાવાર્થ', icon: <BookOpen size={18} /> },
-    { id: 'video', label: 'વિડીયો દર્શન', icon: <Video size={18} /> },
-    { id: 'info', label: 'સંપૂર્ણ માહિતી', icon: <Info size={18} /> },
+  const hasValue = (val) => {
+    if (val === null || val === undefined) return false;
+    const str = String(val).trim();
+    return str !== '' && str !== '-';
+  };
+
+  const availableTabs = [
+    { id: 'lyrics', label: 'ભજન લખાણ', icon: <Music size={22} /> },
+    ...(bhajan?.bhajan_bhavarth?.trim() && bhajan.bhajan_bhavarth.trim() !== '-'
+      ? [{ id: 'bhavarth', label: 'ભજન ભાવાર્થ', icon: <BookOpen size={22} /> }]
+      : []),
+    ...(bhajan?.youtube_link?.trim() && bhajan.youtube_link.trim() !== '-'
+      ? [{ id: 'video', label: 'વિડીયો દર્શન', icon: <Video size={22} /> }]
+      : []),
   ];
 
   return (
     <div className="user-app-layout">
-      {/* 1. Global Royal Header */}
       <Header />
 
       <main className="main-desktop-container">
-        {/* Subpage Breadcrumb Back Bar */}
-        <div className="subpage-back-bar">
-          <button className="back-action-btn" onClick={() => navigate(-1)}>
-            <ArrowLeft size={16} /> પાછા જાઓ
-          </button>
-          <span style={{ color: '#8d6e63', fontSize: '14.5px' }}>
-            / {bhajan?.bhajan_name?.trim() || 'વિગત'}
-          </span>
-        </div>
-
         {loading ? (
           <Loader />
         ) : !bhajan ? (
-          <p style={{ textAlign: 'center', color: '#8d6e63', padding: '60px 0' }}>ભજન મળ્યું નથી.</p>
+          <p style={{ textAlign: 'center', color: '#8d6e63', padding: '50px 0' }}>ભજન મળ્યું નથી.</p>
         ) : (
           <div className="bhajan-desktop-stage">
-            {/* 2. Sticky Stage Header (Title & Segmented Tabs અંદર ફિક્સ રહેશે) */}
+            {/* Sticky Header with Rich Aesthetic Info Card */}
             <div className="stage-sticky-header">
-              <div className="stage-title-header">
-                <h2>{bhajan.bhajan_name?.trim()}</h2>
-                <div className="stage-badge-group">
-                  {bhajan.sahitya_name && (
-                    <span className="pill-badge">સાહિત્ય: {bhajan.sahitya_name.trim()}</span>
-                  )}
-                  {bhajan.bhajan_rag && (
-                    <span className="pill-badge">રાગ: {bhajan.bhajan_rag.trim()}</span>
-                  )}
-                  {bhajan.page_no && (
-                    <span className="pill-badge">પૃષ્ઠ: {bhajan.page_no}</span>
+              <div className="stage-title-header rich-info-stage">
+                
+                {/* 1. Top Badges:*/}
+                <div className="rich-info-top-pills">
+                  <div className="rich-info-pills-left">
+                    {hasValue(bhajan.sahitya_name) && (
+                      <span className="rich-pill sahitya-pill">
+                        
+                        <span>{bhajan.sahitya_name.trim()}</span>
+                      </span>
+                    )}
+                    {hasValue(bhajan.heading_name) && (
+                      <span className="rich-pill heading-pill">
+                       
+                        <span>{bhajan.heading_name.trim()}</span>
+                      </span>
+                    )}
+                  </div>
+
+                  {hasValue(bhajan.page_no) && (
+                    <span className="rich-pill page-pill">
+                      પૃષ્ઠ: {bhajan.page_no}
+                    </span>
                   )}
                 </div>
+
+                {/* 2. bhajan name-kadi */}
+                <div className="rich-bhajan-title-wrapper">
+                  <h2 className="rich-bhajan-title">
+                    {bhajan.bhajan_name?.trim() || ''}
+                  </h2>
+                  {hasValue(bhajan.bhajan_kadi) && (
+                    <span className="rich-bhajan-kadi">
+                      "{bhajan.bhajan_kadi.trim()}"
+                    </span>
+                  )}
+                </div>
+
+                {/* 3. rag badge */}
+                {hasValue(bhajan.bhajan_rag) && (
+                  <div className="rich-rag-container">
+                    <span className="rich-rag-badge">
+                      <span className="rag-label">રાગ:</span>
+                      <strong className="rag-value">{bhajan.bhajan_rag.trim()}</strong>
+                    </span>
+                  </div>
+                )}
               </div>
 
-              {/* Segmented Tab Bar */}
-              <div className="desktop-tab-bar">
-                {tabs.map((tab) => (
-                  <button
-                    key={tab.id}
-                    className={`tab-pill-btn ${activeTab === tab.id ? 'active' : ''}`}
-                    onClick={() => setActiveTab(tab.id)}
-                  >
-                    {tab.icon}
-                    <span>{tab.label}</span>
-                  </button>
-                ))}
+              {/* Segmented Icon Tabs */}
+              <div className="desktop-tab-bar icon-only-tab-bar">
+                {availableTabs.map((tab) => {
+                  const isActive = activeTab === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      className={`tab-pill-btn icon-tab-btn ${isActive ? 'active' : ''}`}
+                      onClick={() => setActiveTab(tab.id)}
+                      title={tab.label}
+                      aria-label={tab.label}
+                    >
+                      {tab.icon}
+                      <span className="tab-hover-tooltip">{tab.label}</span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
-            {/* 3. Scrollable Tab Content Body (માત્ર આ જ ભાગ અંદર સ્ક્રોલ થશે) */}
+            {/* Content Body */}
             <div className="stage-content-body">
-              {/* Lyrics Tab */}
               {activeTab === 'lyrics' && (
                 <div>
                   <div className="font-controls-bar">
@@ -119,71 +156,29 @@ const BhajanDetailPage = () => {
                 </div>
               )}
 
-              {/* Bhavarth Tab */}
-              {activeTab === 'bhavarth' && (
-                <div className="bhavarth-container">
-                  <h4 style={{ color: '#bf360c', marginTop: 0, fontSize: '19px' }}>🙏 ભજન ભાવાર્થ / રહસ્ય:</h4>
-                  {formatText(bhajan.bhajan_bhavarth) || 'આ ભજનનો ભાવાર્થ ઉપલબ્ધ નથી.'}
+              {activeTab === 'bhavarth' && bhajan.bhajan_bhavarth && (
+                <div className="bhavarth-clean-content">
+                  <h4>ભજન ભાવાર્થ:</h4>
+                  <p>{formatText(bhajan.bhajan_bhavarth)}</p>
                 </div>
               )}
 
-              {/* YouTube Video Tab */}
-              {activeTab === 'video' && (
-                <div>
-                  {bhajan.youtube_link ? (
-                    <div className="video-responsive-frame">
-                      <iframe
-                        src={getEmbedUrl(bhajan.youtube_link)}
-                        title="YouTube video player"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowFullScreen
-                      />
-                    </div>
-                  ) : (
-                    <p style={{ textAlign: 'center', color: '#8d6e63', padding: '50px 0', fontSize: '16px' }}>
-                      આ ભજન માટે વિડીયો લિંક ઉપલબ્ધ નથી.
-                    </p>
-                  )}
+              {activeTab === 'video' && bhajan.youtube_link && (
+                <div className="video-responsive-frame">
+                  <iframe
+                    src={getEmbedUrl(bhajan.youtube_link)}
+                    title="YouTube video player"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                  />
                 </div>
-              )}
-
-              {/* Info Tab */}
-              {activeTab === 'info' && (
-                <table className="info-detail-table">
-                  <tbody>
-                    <tr>
-                      <td>સાહિત્યનું નામ</td>
-                      <td>{bhajan.sahitya_name?.trim() || '-'}</td>
-                    </tr>
-                    <tr>
-                      <td>શીર્ષક / વિભાગ</td>
-                      <td>{bhajan.heading_name?.trim() || '-'}</td>
-                    </tr>
-                    <tr>
-                      <td>ભજનનું નામ</td>
-                      <td>{bhajan.bhajan_name?.trim() || '-'}</td>
-                    </tr>
-                    <tr>
-                      <td>મુખ્ય કડી</td>
-                      <td>{bhajan.bhajan_kadi?.trim() || '-'}</td>
-                    </tr>
-                    <tr>
-                      <td>ભજનનો રાગ / ઢાળ</td>
-                      <td>{bhajan.bhajan_rag?.trim() || '-'}</td>
-                    </tr>
-                    <tr>
-                      <td>પૃષ્ઠ ક્રમાંક</td>
-                      <td>{bhajan.page_no || '-'}</td>
-                    </tr>
-                  </tbody>
-                </table>
               )}
             </div>
           </div>
         )}
       </main>
 
-     
+      <Footer />
     </div>
   );
 };

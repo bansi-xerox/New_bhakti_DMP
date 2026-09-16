@@ -92,7 +92,6 @@ const ImageIcon = ({ size = 20, className = "" }) => (
   </svg>
 );
 
-// const BASE_SERVER_URL = 'http://localhost:5000/uploads/';
 const BASE_SERVER_URL = 'https://new-bhakti-dmp.onrender.com/uploads/';
 const formatMediaUrl = (path) => {
   if (!path) return "";
@@ -101,7 +100,7 @@ const formatMediaUrl = (path) => {
   }
   return `${BASE_SERVER_URL}${path.replace(/^\/+/, "")}`;
 };
-
+//hello
 const Gallery = () => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -111,27 +110,24 @@ const Gallery = () => {
 
   const clickTimeoutRef = useRef(null);
 
-const handleSingleClick = (item, mediaUrl, isPhoto) => {
-  // Clear any existing timer
-  if (clickTimeoutRef.current) {
-    clearTimeout(clickTimeoutRef.current);
-  }
-  // Set a timer to open the big image. If they double click, this gets cancelled.
-  clickTimeoutRef.current = setTimeout(() => {
-    setPreviewMedia({ ...item, mediaUrl, isPhoto });
-  }, 250);
-};
+  const handleSingleClick = (item, mediaUrl, isPhoto) => {
+    if (clickTimeoutRef.current) {
+      clearTimeout(clickTimeoutRef.current);
+    }
+    clickTimeoutRef.current = setTimeout(() => {
+      setPreviewMedia({ ...item, mediaUrl, isPhoto });
+    }, 250);
+  };
 
-const handleDoubleClick = (e, item) => {
-  e.stopPropagation();
-  // Cancel the single click preview from opening
-  if (clickTimeoutRef.current) {
-    clearTimeout(clickTimeoutRef.current);
-  }
-  setPreviewMedia(null);
-  setSelectedForEdit(item);
-  setIsModalOpen(true);
-};
+  const handleDoubleClick = (e, item) => {
+    e.stopPropagation();
+    if (clickTimeoutRef.current) {
+      clearTimeout(clickTimeoutRef.current);
+    }
+    setPreviewMedia(null);
+    setSelectedForEdit(item);
+    setIsModalOpen(true);
+  };
 
   // Layout States
   const [expandedMainFolder, setExpandedMainFolder] = useState('All');
@@ -140,15 +136,11 @@ const handleDoubleClick = (e, item) => {
   const [filterType, setFilterType] = useState('ALL');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedIds, setSelectedIds] = useState([]);
-  // Search & Pagination States
-
 
   const loadGallery = useCallback(async () => {
     try {
       setLoading(true);
-
       const res = await getGalleryItems();
-
       if (res.data?.success) {
         setItems(res.data.data || []);
       }
@@ -158,9 +150,11 @@ const handleDoubleClick = (e, item) => {
       setLoading(false);
     }
   }, []);
+
   useEffect(() => {
     loadGallery();
   }, [loadGallery]);
+
   const folders = useMemo(() => {
     const main = [
       ...new Set(items.map((i) => i.main_folder_name).filter(Boolean)),
@@ -257,18 +251,26 @@ const handleDoubleClick = (e, item) => {
   };
 
   return (
-    <div className="container-fluid p-0 p-0 p-0 d-flex flex-column" style={{ minHeight: '100%', backgroundColor: 'transparent' }}>
+    <div
+      className="w-100 d-flex flex-column flex-grow-1"
+      style={{
+        backgroundColor: '#fdf9f1',
+        height: '100%',
+        maxHeight: '100%',
+        padding: '16px',          // ચોમેર ૧૬px સરખી જગ્યા આપશે
+        boxSizing: 'border-box',
+        overflow: 'hidden'
+      }}
+    >
       <style>{`
-
-/* --- Lightbox Zoom Animation --- */
         @keyframes zoomIn {
           from {
             opacity: 0;
-            transform: scale(0.5); /* Starts zoomed out */
+            transform: scale(0.5);
           }
           to {
             opacity: 1;
-            transform: scale(1); /* Zooms in to original size */
+            transform: scale(1);
           }
         }
         
@@ -276,7 +278,7 @@ const handleDoubleClick = (e, item) => {
           animation: zoomIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
 
-.theme-orange-gradient { 
+        .theme-orange-gradient { 
           background: linear-gradient(135deg, #f97316 0%, #ea580c 100%) !important; 
           color: white !important; border: none !important;
           transition: all 0.3s ease;
@@ -293,16 +295,17 @@ const handleDoubleClick = (e, item) => {
           box-shadow: 0 4px 18px rgba(0,0,0,0.03);
         }
         
-    .gallery-layout { 
-        display: flex; 
-        gap: 1.5rem; 
-        height: calc(100vh - 32px); /* Ensures equal spacing for top & bottom */
-        margin: 16px;                 /* Equal margin on all four sides */
-        width: calc(100% - 32px);
-        align-items: stretch; 
-        overflow: hidden; 
-        box-sizing: border-box;
-      }
+        .gallery-layout { 
+          display: flex; 
+          gap: 1.5rem; 
+          height: 100%;             /* 100vh ની જગ્યાએ 100% */
+          max-height: 100%;
+          width: 100%;              /* માર્જિન વગર પૂર્ણ પહોળાઈ */
+          margin: 0;
+          align-items: stretch; 
+          overflow: hidden; 
+          box-sizing: border-box;
+        }
 
         .gallery-inner-sidebar { 
           width: 280px; 
@@ -312,12 +315,12 @@ const handleDoubleClick = (e, item) => {
         }
         
         .gallery-main-area { 
-            flex: 1; 
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-            min-width: 0; 
-            overflow: hidden; 
+          flex: 1; 
+          display: flex;
+          flex-direction: column;
+          gap: 1.5rem; 
+          min-width: 0; 
+          overflow: hidden; 
         }
 
         .folder-btn { 
@@ -402,30 +405,23 @@ const handleDoubleClick = (e, item) => {
         .media-checkbox { position: absolute; top: 0.5rem; left: 0.5rem; z-index: 2; width: 1.1rem; height: 1.1rem; }
         .media-delete-btn { position: absolute; top: 0.5rem; right: 0.5rem; z-index: 2; }
 
-        /* --- Custom Orange Scrollbar --- */
-        
-        /* For Chrome, Safari, and Edge */
+        /* Scrollbar styles */
         ::-webkit-scrollbar {
           width: 8px;
           height: 8px;
         }
-        
         ::-webkit-scrollbar-track {
           background: #fff7ed;
           border-radius: 10px;
         }
-        
         ::-webkit-scrollbar-thumb {
           background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
           border-radius: 10px;
           border: 2px solid #fff7ed;
         }
-        
         ::-webkit-scrollbar-thumb:hover {
           background: #c2410c;
         }
-
-        /* For Firefox */
         .gallery-inner-sidebar, .overflow-auto {
           scrollbar-width: thin;
           scrollbar-color: #ea580c #fff7ed;
@@ -433,14 +429,10 @@ const handleDoubleClick = (e, item) => {
       `}</style>
 
       <div className="gallery-layout">
-
         {/* --- LEFT SIDEBAR: FOLDER TREE --- */}
         <div className="gallery-inner-sidebar premium-card">
-
           <div className="mb-4">
             <h5 className="fw-bolder text-dark mb-3">Albums</h5>
-
-            {/* CLEANER ADD BUTTON: Just a PLUS icon and text */}
             <button
               className="btn theme-orange-gradient w-100 border-0 shadow-sm d-flex align-items-center justify-content-center gap-2"
               style={{ padding: '0.75rem 1rem', borderRadius: '10px' }}
@@ -448,7 +440,6 @@ const handleDoubleClick = (e, item) => {
               title="Add Media"
             >
               <PlusIcon size={22} className="flex-shrink-0" />
-
               <div className="text-start lh-1">
                 <div className="fw-bold mb-1" style={{ fontSize: '14px', letterSpacing: '0.3px' }}>
                   Add Photos & Videos
@@ -509,10 +500,8 @@ const handleDoubleClick = (e, item) => {
 
         {/* --- RIGHT SIDE: MAIN CONTENT & GRID --- */}
         <div className="gallery-main-area">
-
           {/* HEADER ACTION BAR */}
           <div className="premium-card p-3 d-flex flex-wrap justify-content-between align-items-center gap-3">
-
             <div className="d-flex flex-column pe-2">
               <h4 className="fw-bolder mb-1 text-dark text-nowrap">
                 {selectedFolder === 'All' ? 'All Media' : `${selectedFolder}`}
@@ -521,7 +510,6 @@ const handleDoubleClick = (e, item) => {
               <span className="text-secondary small fw-medium">{filteredItems.length} items found</span>
             </div>
 
-            {/* BIG PROMINENT SEARCH BAR */}
             <div className="search-wrapper mx-auto">
               <span className="search-icon-left">
                 <SearchIcon size={18} />
@@ -544,15 +532,13 @@ const handleDoubleClick = (e, item) => {
               )}
             </div>
 
-            {/* FILTERS & BULK ACTIONS */}
             <div className="d-flex flex-wrap gap-2 align-items-center ms-auto">
               <div className="btn-group btn-group-sm bg-light border rounded-3 p-1">
                 {['ALL', 'Photos', 'Videos'].map((t) => (
                   <button
                     key={t}
                     type="button"
-                    className={`btn btn-sm rounded-2 fw-bold px-3 ${filterType === t ? 'btn-white bg-white theme-orange-text shadow-sm' : 'btn-light text-secondary border-0'
-                      }`}
+                    className={`btn btn-sm rounded-2 fw-bold px-3 ${filterType === t ? 'btn-white bg-white theme-orange-text shadow-sm' : 'btn-light text-secondary border-0'}`}
                     onClick={() => setFilterType(t)}
                   >
                     {t}
@@ -560,32 +546,29 @@ const handleDoubleClick = (e, item) => {
                 ))}
               </div>
 
-              {/* NEW: Move and Delete Buttons (Visible only when items are selected) */}
-{selectedIds.length > 0 && (
-  <div className="d-flex align-items-center gap-2 ms-2">
-    {/* BULK MOVE BUTTON */}
-    <button
-      type="button"
-      className="btn btn-warning btn-sm fw-bold px-3 py-1 rounded-3 shadow-sm d-flex align-items-center gap-2 text-dark"
-      onClick={() => {
-        const itemsToMove = filteredItems.filter(i => selectedIds.includes(i.id));
-        setSelectedForEdit(itemsToMove); 
-        setIsModalOpen(true);
-      }}
-    >
-      <FolderOpenIcon size={16} /> Move ({selectedIds.length})
-    </button>
+              {selectedIds.length > 0 && (
+                <div className="d-flex align-items-center gap-2 ms-2">
+                  <button
+                    type="button"
+                    className="btn btn-warning btn-sm fw-bold px-3 py-1 rounded-3 shadow-sm d-flex align-items-center gap-2 text-dark"
+                    onClick={() => {
+                      const itemsToMove = filteredItems.filter(i => selectedIds.includes(i.id));
+                      setSelectedForEdit(itemsToMove); 
+                      setIsModalOpen(true);
+                    }}
+                  >
+                    <FolderOpenIcon size={16} /> Move ({selectedIds.length})
+                  </button>
 
-    {/* BULK DELETE BUTTON */}
-    <button
-      type="button"
-      className="btn btn-danger btn-sm fw-bold px-3 py-1 rounded-3 shadow-sm d-flex align-items-center gap-2"
-      onClick={handleBulkDelete}
-    >
-      <Trash2Icon size={16} /> ({selectedIds.length})
-    </button>
-  </div>
-)}
+                  <button
+                    type="button"
+                    className="btn btn-danger btn-sm fw-bold px-3 py-1 rounded-3 shadow-sm d-flex align-items-center gap-2"
+                    onClick={handleBulkDelete}
+                  >
+                    <Trash2Icon size={16} /> ({selectedIds.length})
+                  </button>
+                </div>
+              )}
             </div>
           </div>
 
@@ -625,41 +608,39 @@ const handleDoubleClick = (e, item) => {
                         <video src={mediaUrl} muted preload="metadata" />
                       )}
 
-                 {/* Hover Overlay with Delete & Checkbox */}
-<div
-  className="media-overlay"
-  style={{
-    opacity: isSelected ? 1 : undefined,
-    backgroundColor: isSelected ? 'rgba(0,0,0,0.3)' : undefined
-  }}
->
-  <input
-    type="checkbox"
-    className="form-check-input media-checkbox shadow-sm cursor-pointer"
-    checked={isSelected}
-    onChange={(e) => toggleSelectId(e, item.id)}
-    onClick={(e) => e.stopPropagation()}
-    style={{ width: '1.25rem', height: '1.25rem' }} 
-  />
+                      <div
+                        className="media-overlay"
+                        style={{
+                          opacity: isSelected ? 1 : undefined,
+                          backgroundColor: isSelected ? 'rgba(0,0,0,0.3)' : undefined
+                        }}
+                      >
+                        <input
+                          type="checkbox"
+                          className="form-check-input media-checkbox shadow-sm cursor-pointer"
+                          checked={isSelected}
+                          onChange={(e) => toggleSelectId(e, item.id)}
+                          onClick={(e) => e.stopPropagation()}
+                          style={{ width: '1.25rem', height: '1.25rem' }} 
+                        />
 
-  {/* ONLY show the individual dustbin if the item is NOT selected AND we aren't in bulk selection mode */}
-  {!isSelected && selectedIds.length === 0 && (
-    <button
-      type="button"
-      className="btn btn-danger btn-sm rounded-circle media-delete-btn p-0 d-flex align-items-center justify-content-center shadow"
-      style={{ width: '28px', height: '28px' }}
-      onClick={(e) => handleDeleteSingle(e, item)}
-    >
-      <Trash2Icon size={14} />
-    </button>
-  )}
+                        {!isSelected && selectedIds.length === 0 && (
+                          <button
+                            type="button"
+                            className="btn btn-danger btn-sm rounded-circle media-delete-btn p-0 d-flex align-items-center justify-content-center shadow"
+                            style={{ width: '28px', height: '28px' }}
+                            onClick={(e) => handleDeleteSingle(e, item)}
+                          >
+                            <Trash2Icon size={14} />
+                          </button>
+                        )}
 
-  {!isPhoto && (
-    <div className="position-absolute top-50 start-50 translate-middle text-white" style={{ pointerEvents: 'none' }}>
-      <PlayIcon fill="white" size={28} />
-    </div>
-  )}
-</div>
+                        {!isPhoto && (
+                          <div className="position-absolute top-50 start-50 translate-middle text-white" style={{ pointerEvents: 'none' }}>
+                            <PlayIcon fill="white" size={28} />
+                          </div>
+                        )}
+                      </div>
                     </div>
                   );
                 })}
@@ -669,7 +650,7 @@ const handleDoubleClick = (e, item) => {
         </div>
       </div>
 
-      {/* FULL SCREEN LIGHTBOX MODAL */}
+      {/* LIGHTBOX MODAL */}
       {previewMedia && (
         <div
           className="modal fade show d-block"
@@ -681,20 +662,16 @@ const handleDoubleClick = (e, item) => {
             className="modal-dialog modal-dialog-centered modal-xl modal-zoom-anim"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* INLINE STYLE ADDED HERE: Guaranteed solid black background */}
             <div
               className="modal-content border-0 rounded-4 overflow-hidden shadow-lg"
               style={{ backgroundColor: '#000000' }}
             >
-
-              {/* Header Section */}
               <div className="d-flex justify-content-between align-items-center text-white p-3">
                 <div>
                   <h5 className="fw-bold mb-0 d-flex align-items-center gap-2">
                     {previewMedia.isPhoto ? <ImageIcon size={20} /> : <PlayIcon size={20} />}
                     {(previewMedia.photo_path || previewMedia.video_path || '').split('/').pop()}
                   </h5>
-
                 </div>
                 <button
                   type="button"
@@ -708,7 +685,6 @@ const handleDoubleClick = (e, item) => {
                 </button>
               </div>
 
-              {/* Image/Video Section */}
               <div className="modal-body p-0 text-center">
                 {previewMedia.isPhoto ? (
                   <img
@@ -733,7 +709,6 @@ const handleDoubleClick = (e, item) => {
       )}
 
       {/* UPLOAD / EDIT MODAL */}
-      {/* UPLOAD / EDIT MODAL */}
       <GalleryModal
         isOpen={isModalOpen}
         onClose={() => {
@@ -742,7 +717,7 @@ const handleDoubleClick = (e, item) => {
         }}
         onSuccess={() => {
           loadGallery();
-          setSelectedIds([]); // Clear checkboxes after a successful move
+          setSelectedIds([]);
         }}
         initialData={selectedForEdit}
       />
