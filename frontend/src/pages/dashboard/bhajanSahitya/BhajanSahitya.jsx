@@ -204,18 +204,15 @@ const BhajanSahitya = () => {
         }
       `}</style>
 
-      <div
-        className="w-100 d-flex flex-column gap-3 flex-grow-1"
-        style={{
-          backgroundColor: '#fdf9f1',
-          height: '100%',
-          maxHeight: '100%',
-          padding: '16px',
-          boxSizing: 'border-box',
-          overflow: 'hidden'
-        }}
-      >
-
+     <div
+  className="w-100 d-flex flex-column gap-3"
+  style={{
+    backgroundColor: '#fdf9f1',
+    minHeight: '100vh',
+    padding: '16px',
+    boxSizing: 'border-box'
+  }}
+>
         {/* Top Header & Action Row */}
         <div className="premium-card p-3 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 flex-shrink-0">
           <div>
@@ -255,8 +252,14 @@ const BhajanSahitya = () => {
         </div>
 
         {/* Data Table Card */}
-        <div className="premium-card overflow-hidden flex-grow-1 d-flex flex-column" style={{ minHeight: 0, borderColor: '#fbd3bc' }}>
-          <div className="card-body p-0 overflow-auto flex-grow-1 custom-scrollbar">
+      <div 
+  className="premium-card overflow-hidden d-flex flex-column" 
+  style={{ 
+    borderColor: '#fbd3bc',
+    maxHeight: 'calc(100vh - 140px)' 
+  }}
+>
+  <div className="card-body p-0 overflow-auto custom-scrollbar">
             <table className="table table-hover align-middle mb-0 table-custom" style={{ minWidth: '900px' }}>
               <thead style={{ position: 'sticky', top: 0, zIndex: 1 }}>
                 <tr>
