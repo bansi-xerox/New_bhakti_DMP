@@ -412,7 +412,7 @@ const BhajanSahitya = () => {
               />
             </div>
 
-            <div className="col-12">
+            <div className="col-12 mb-1">
               <textarea
                 required
                 name="bhajan"
@@ -423,7 +423,7 @@ const BhajanSahitya = () => {
                 placeholder="ભજનનો પાઠ *"
               />
             </div>
-            <div className="col-12">
+            <div className="col-12 mb-1">
               <textarea
                 name="bhajan_bhavarth"
                 value={formData.bhajan_bhavarth}
