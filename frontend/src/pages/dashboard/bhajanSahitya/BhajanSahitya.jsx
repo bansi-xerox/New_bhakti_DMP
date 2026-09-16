@@ -406,15 +406,15 @@ const BhajanSahitya = () => {
            TABLE
            ===================================================== */
 
-        .table-custom-wrapper {
-          width: 100%;
-          flex: 1;
-          min-height: 0;
-          overflow: hidden;
-          background-color: #ffffff;
-          border: 1px solid #d49a7a !important;;
-          border-radius: 14px;
-        }
+       .table-custom-wrapper {
+        width: 100%;
+        flex: 1;
+        min-height: 0;
+        overflow: hidden;
+        background-color: #ffffff;
+        border: 1px solid #8f8f8f !important;
+        border-radius: 14px;
+      }
 
         .table-responsive-wrapper {
           width: 100%;
@@ -433,9 +433,9 @@ const BhajanSahitya = () => {
 
        .table-custom th,
         .table-custom td {
-          border-right: 1px solid #d49a7a !important;
-          border-bottom: 1px solid #d49a7a !important;
-          vertical-align: middle !important;
+        border-right: 1px solid #8f8f8f !important;
+        border-bottom: 1px solid #8f8f8f !important;
+        vertical-align: middle !important;
         }
 
         .table-custom th:last-child,
