@@ -342,7 +342,7 @@ const BhajanSahitya = () => {
           title={isEditing ? 'ભજનમાં સુધારો કરો (Edit)' : 'નવું ભજન ઉમેરો (Add New)'}
           size="lg"
         >
-          <form onSubmit={handleSubmit} className="row g-1">
+          <form onSubmit={handleSubmit} className="row g-3">
             <div className="col-md-6">
               <Input
                 name="sahitya_name"
