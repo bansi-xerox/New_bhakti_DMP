@@ -179,12 +179,12 @@ const BhajanSahitya = () => {
        style={{
          backgroundColor: '#fdf9f1',
          height: '100vh',
-         padding: '16px',         // Leaves exactly 16px of space on all 4 sides (Top, Right, Bottom, Left)
+         padding: '16px',        // Leaves exactly 16px of space on all 4 sides (Top, Right, Bottom, Left)
          boxSizing: 'border-box',
          overflow: 'hidden'       // Prevents outer scrolling, forcing inner elements to fit & scroll
        }}
      >
-        
+       
         {/* Top Header & Action Row */}
         <div className="premium-card p-3 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 flex-shrink-0">
           <div>
@@ -298,7 +298,14 @@ const BhajanSahitya = () => {
         >
           <form onSubmit={handleSubmit} className="row g-3">
             <div className="col-md-6">
-              <Input label="સાહિત્યનું નામ *" name="sahitya_name" value={formData.sahitya_name} onChange={handleInputChange} required />
+              <Input 
+                label="સાહિત્યનું નામ *" 
+                name="sahitya_name" 
+                value={formData.sahitya_name} 
+                onChange={handleInputChange} 
+                placeholder="સાહિત્યનું નામ દાખલ કરો..." 
+                required 
+              />
             </div>
             <div className="col-md-6">
               <Input
@@ -306,16 +313,36 @@ const BhajanSahitya = () => {
                 name="heading_name"
                 value={formData.heading_name}
                 onChange={handleInputChange}
+                placeholder="શીર્ષકનું નામ દાખલ કરો..."
               />
             </div>
             <div className="col-md-6">
-              <Input label="ભજનનું નામ *" name="bhajan_name" value={formData.bhajan_name} onChange={handleInputChange} required />
+              <Input 
+                label="ભજનનું નામ *" 
+                name="bhajan_name" 
+                value={formData.bhajan_name} 
+                onChange={handleInputChange} 
+                placeholder="ભજનનું નામ દાખલ કરો..." 
+                required 
+              />
             </div>
             <div className="col-md-6">
-              <Input label="ભજનની કડી" name="bhajan_kadi" value={formData.bhajan_kadi} onChange={handleInputChange} />
+              <Input 
+                label="ભજનની કડી" 
+                name="bhajan_kadi" 
+                value={formData.bhajan_kadi} 
+                onChange={handleInputChange} 
+                placeholder="દા.ત. ગુરુ ગોવિંદ દોઉ ખડે..." 
+              />
             </div>
             <div className="col-md-6">
-              <Input label="ભજનનો રાગ" name="bhajan_rag" value={formData.bhajan_rag} onChange={handleInputChange} />
+              <Input 
+                label="ભજનનો રાગ" 
+                name="bhajan_rag" 
+                value={formData.bhajan_rag} 
+                onChange={handleInputChange} 
+                placeholder="દા.ત. રાગ ભૈરવી" 
+              />
             </div>
             <div className="col-md-6">
               <Input
@@ -323,20 +350,42 @@ const BhajanSahitya = () => {
                 name="page_no"
                 value={formData.page_no}
                 onChange={handleInputChange}
-                placeholder="5-10"
+                placeholder="દા.ત. 5-10"
               />
             </div>
             <div className="col-md-12">
-              <Input label="YouTube Link" type="url" name="youtube_link" value={formData.youtube_link} onChange={handleInputChange} placeholder="https://youtube.com/..." />
+              <Input 
+                label="YouTube Link" 
+                type="url" 
+                name="youtube_link" 
+                value={formData.youtube_link} 
+                onChange={handleInputChange} 
+                placeholder="https://youtube.com/..." 
+              />
             </div>
 
             <div className="col-12 mt-3">
               <label className="form-label fw-bold text-secondary small">ભજનનો પાઠ *</label>
-              <textarea required name="bhajan" value={formData.bhajan} onChange={handleInputChange} rows="5" className="form-control" />
+              <textarea 
+                required 
+                name="bhajan" 
+                value={formData.bhajan} 
+                onChange={handleInputChange} 
+                rows="5" 
+                className="form-control" 
+                placeholder="અહીં સંપૂર્ણ ભજન લખો..."
+              />
             </div>
             <div className="col-12 mt-3">
               <label className="form-label fw-bold text-secondary small">ભજનનો અર્થ</label>
-              <textarea name="bhajan_bhavarth" value={formData.bhajan_bhavarth} onChange={handleInputChange} rows="3" className="form-control" />
+              <textarea 
+                name="bhajan_bhavarth" 
+                value={formData.bhajan_bhavarth} 
+                onChange={handleInputChange} 
+                rows="3" 
+                className="form-control" 
+                placeholder="અહીં ભજનનો ભાવાર્થ/અર્થ લખો..."
+              />
             </div>
 
             <div className="col-12 d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
