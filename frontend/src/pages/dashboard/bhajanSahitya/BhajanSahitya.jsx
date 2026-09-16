@@ -67,7 +67,7 @@ const BhajanSahitya = () => {
     try {
       let response;
       if (query && query.trim() !== '') {
-        response = await searchBhajans(query.trim()); 
+        response = await searchBhajans(query.trim());
       } else {
         response = await getAllBhajans();
       }
@@ -174,7 +174,7 @@ const BhajanSahitya = () => {
         .premium-card {
           background-color: white;
           border-radius: 12px;
-          border: 1px solid rgba(242, 101, 34, 0.2);
+          border: 1px solid #fbd3bc;
           box-shadow: 0 4px 18px rgba(0,0,0,0.03);
         }
 
@@ -204,15 +204,15 @@ const BhajanSahitya = () => {
         }
       `}</style>
 
-     <div
-  className="w-100 d-flex flex-column gap-3"
-  style={{
-    backgroundColor: '#fdf9f1',
-    minHeight: '100vh',
-    padding: '16px',
-    boxSizing: 'border-box'
-  }}
->
+      <div
+        className="w-100 d-flex flex-column gap-3"
+        style={{
+          backgroundColor: '#fdf9f1',
+          minHeight: '100vh',
+          padding: '16px',
+          boxSizing: 'border-box'
+        }}
+      >
         {/* Top Header & Action Row */}
         <div className="premium-card p-3 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 flex-shrink-0">
           <div>
@@ -232,10 +232,10 @@ const BhajanSahitya = () => {
                 value={searchQuery}
                 onChange={handleSearchChange}
                 placeholder="સાહિત્ય, શીર્ષક, ભજન કે રાગ દ્વારા શોધો..."
-                style={{ 
-                  borderRadius: '50px', 
-                  paddingLeft: '42px', 
-                  paddingRight: '20px', 
+                style={{
+                  borderRadius: '50px',
+                  paddingLeft: '42px',
+                  paddingRight: '20px',
                   borderColor: '#fbd3bc',
                   fontSize: '13px'
                 }}
@@ -252,14 +252,14 @@ const BhajanSahitya = () => {
         </div>
 
         {/* Data Table Card */}
-      <div 
-  className="premium-card overflow-hidden d-flex flex-column" 
-  style={{ 
-    borderColor: '#fbd3bc',
-    maxHeight: 'calc(100vh - 140px)' 
-  }}
->
-  <div className="card-body p-0 overflow-auto custom-scrollbar">
+        <div
+          className="premium-card overflow-hidden d-flex flex-column"
+          style={{
+            borderColor: '#fbd3bc',
+            maxHeight: 'calc(100vh - 140px)'
+          }}
+        >
+          <div className="card-body p-0 overflow-auto custom-scrollbar">
             <table className="table table-hover align-middle mb-0 table-custom" style={{ minWidth: '900px' }}>
               <thead style={{ position: 'sticky', top: 0, zIndex: 1 }}>
                 <tr>
@@ -335,7 +335,7 @@ const BhajanSahitya = () => {
             </table>
           </div>
         </div>
-{/* Reusable Custom Modal */}
+        {/* Reusable Custom Modal */}
         <Modal
           isOpen={isModalOpen}
           onClose={closeModal}
@@ -344,12 +344,12 @@ const BhajanSahitya = () => {
         >
           <form onSubmit={handleSubmit} className="row g-2">
             <div className="col-md-6 mb-2">
-              <Input 
-                name="sahitya_name" 
-                value={formData.sahitya_name} 
-                onChange={handleInputChange} 
-                placeholder="સાહિત્યનું નામ *" 
-                required 
+              <Input
+                name="sahitya_name"
+                value={formData.sahitya_name}
+                onChange={handleInputChange}
+                placeholder="સાહિત્યનું નામ *"
+                required
               />
             </div>
             <div className="col-md-6 mb-2">
@@ -361,28 +361,28 @@ const BhajanSahitya = () => {
               />
             </div>
             <div className="col-md-6 mb-2">
-              <Input 
-                name="bhajan_name" 
-                value={formData.bhajan_name} 
-                onChange={handleInputChange} 
-                placeholder="ભજનનું નામ *" 
-                required 
+              <Input
+                name="bhajan_name"
+                value={formData.bhajan_name}
+                onChange={handleInputChange}
+                placeholder="ભજનનું નામ *"
+                required
               />
             </div>
             <div className="col-md-6 mb-2">
-              <Input 
-                name="bhajan_kadi" 
-                value={formData.bhajan_kadi} 
-                onChange={handleInputChange} 
-                placeholder="ભજનની કડી" 
+              <Input
+                name="bhajan_kadi"
+                value={formData.bhajan_kadi}
+                onChange={handleInputChange}
+                placeholder="ભજનની કડી"
               />
             </div>
             <div className="col-md-6 mb-2">
-              <Input 
-                name="bhajan_rag" 
-                value={formData.bhajan_rag} 
-                onChange={handleInputChange} 
-                placeholder="ભજનનો રાગ" 
+              <Input
+                name="bhajan_rag"
+                value={formData.bhajan_rag}
+                onChange={handleInputChange}
+                placeholder="ભજનનો રાગ"
               />
             </div>
             <div className="col-md-6 mb-2">
@@ -394,33 +394,33 @@ const BhajanSahitya = () => {
               />
             </div>
             <div className="col-md-12 mb-2">
-              <Input 
-                type="url" 
-                name="youtube_link" 
-                value={formData.youtube_link} 
-                onChange={handleInputChange} 
-                placeholder="YouTube Link" 
+              <Input
+                type="url"
+                name="youtube_link"
+                value={formData.youtube_link}
+                onChange={handleInputChange}
+                placeholder="YouTube Link"
               />
             </div>
 
-            <div className="col-12 mb-2">
-              <textarea 
-                required 
-                name="bhajan" 
-                value={formData.bhajan} 
-                onChange={handleInputChange} 
-                rows="4" 
-                className="form-control" 
+            <div className="col-12 mb-4">
+              <textarea
+                required
+                name="bhajan"
+                value={formData.bhajan}
+                onChange={handleInputChange}
+                rows="4"
+                className="form-control"
                 placeholder="ભજનનો પાઠ *"
               />
             </div>
-            <div className="col-12 mb-2">
-              <textarea 
-                name="bhajan_bhavarth" 
-                value={formData.bhajan_bhavarth} 
-                onChange={handleInputChange} 
-                rows="3" 
-                className="form-control" 
+            <div className="col-12 mb-4">
+              <textarea
+                name="bhajan_bhavarth"
+                value={formData.bhajan_bhavarth}
+                onChange={handleInputChange}
+                rows="3"
+                className="form-control"
                 placeholder="ભજનનો ભાવાર્થ"
               />
             </div>
