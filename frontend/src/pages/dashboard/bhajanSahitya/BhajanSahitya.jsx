@@ -79,7 +79,6 @@ const BhajanSahitya = () => {
     fetchBhajans(searchQuery);
   };
 
-  // Fixed: Typing and Enter key both will perform search seamlessly
   const handleSearchChange = (val) => {
     setSearchQuery(val);
     fetchBhajans(val);
@@ -326,73 +325,65 @@ const BhajanSahitya = () => {
           <form onSubmit={handleSubmit} className="row g-3">
             <div className="col-md-6">
               <Input 
-                label="સાહિત્યનું નામ *" 
                 name="sahitya_name" 
                 value={formData.sahitya_name} 
                 onChange={handleInputChange} 
-                placeholder="સાહિત્યનું નામ દાખલ કરો..." 
+                placeholder="સાહિત્યનું નામ દાખલ કરો *" 
                 required 
               />
             </div>
             <div className="col-md-6">
               <Input
-                label="શીર્ષકનું નામ"
                 name="heading_name"
                 value={formData.heading_name}
                 onChange={handleInputChange}
-                placeholder="શીર્ષકનું નામ દાખલ કરો..."
+                placeholder="શીર્ષકનું નામ દાખલ કરો"
               />
             </div>
             <div className="col-md-6">
               <Input 
-                label="ભજનનું નામ *" 
                 name="bhajan_name" 
                 value={formData.bhajan_name} 
                 onChange={handleInputChange} 
-                placeholder="ભજનનું નામ દાખલ કરો..." 
+                placeholder="ભજનનું નામ દાખલ કરો *" 
                 required 
               />
             </div>
             <div className="col-md-6">
               <Input 
-                label="ભજનની કડી" 
                 name="bhajan_kadi" 
                 value={formData.bhajan_kadi} 
                 onChange={handleInputChange} 
-                placeholder="દા.ત. ગુરુ ગોવિંદ દોઉ ખડે..." 
+                placeholder="ભજનની કડી (દા.ત. ગુરુ ગોવિંદ...)" 
               />
             </div>
             <div className="col-md-6">
               <Input 
-                label="ભજનનો રાગ" 
                 name="bhajan_rag" 
                 value={formData.bhajan_rag} 
                 onChange={handleInputChange} 
-                placeholder="દા.ત. રાગ ભૈરવી" 
+                placeholder="ભજનનો રાગ (દા.ત. રાગ ભૈરવી)" 
               />
             </div>
             <div className="col-md-6">
               <Input
-                label="પૃષ્ઠ ક્રમાંક"
                 name="page_no"
                 value={formData.page_no}
                 onChange={handleInputChange}
-                placeholder="દા.ત. 5-10"
+                placeholder="પૃષ્ઠ ક્રમાંક (દા.ત. 5-10)"
               />
             </div>
             <div className="col-md-12">
               <Input 
-                label="YouTube Link" 
                 type="url" 
                 name="youtube_link" 
                 value={formData.youtube_link} 
                 onChange={handleInputChange} 
-                placeholder="https://youtube.com/..." 
+                placeholder="YouTube Link (https://youtube.com/...)" 
               />
             </div>
 
-            <div className="col-12 mt-3">
-              <label className="form-label fw-bold text-secondary small">ભજનનો પાઠ *</label>
+            <div className="col-12 mt-2">
               <textarea 
                 required 
                 name="bhajan" 
@@ -400,18 +391,17 @@ const BhajanSahitya = () => {
                 onChange={handleInputChange} 
                 rows="5" 
                 className="form-control" 
-                placeholder="અહીં સંપૂર્ણ ભજન લખો..."
+                placeholder="ભજનનો પાઠ દાખલ કરો *"
               />
             </div>
-            <div className="col-12 mt-3">
-              <label className="form-label fw-bold text-secondary small">ભજનનો અર્થ</label>
+            <div className="col-12 mt-2">
               <textarea 
                 name="bhajan_bhavarth" 
                 value={formData.bhajan_bhavarth} 
                 onChange={handleInputChange} 
                 rows="3" 
                 className="form-control" 
-                placeholder="અહીં ભજનનો ભાવાર્થ/અર્થ લખો..."
+                placeholder="ભજનનો અર્થ/ભાવાર્થ દાખલ કરો"
               />
             </div>
 
