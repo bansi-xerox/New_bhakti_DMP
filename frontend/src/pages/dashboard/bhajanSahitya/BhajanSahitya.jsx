@@ -193,11 +193,14 @@ const BhajanSahitya = () => {
         }
         
         /* Keep only subtle horizontal dividers between rows */
-       .table-custom th, .table-custom td {
-          border: 1px solid #fbd3bc !important;
+        .table-custom th, .table-custom td  {
+          border-top: 1px solid #fbd3bc !important;
+          border-bottom: none !important;
+          border-left: none !important;
+          border-right: none !important;
           vertical-align: middle;
         }
-
+        
         .table-responsive-wrapper {
           overflow-x: auto;
           overflow-y: auto;
