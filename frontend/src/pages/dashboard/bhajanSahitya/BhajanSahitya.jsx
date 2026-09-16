@@ -185,27 +185,19 @@ const BhajanSahitya = () => {
           box-shadow: 0 4px 18px rgba(0,0,0,0.03);
         }
 
-        /* --- Clean Table Style (No outer square box border) --- */
+        /* --- Restored Grid Borders (Horizontal & Vertical) --- */
         .table-custom {
-          border-collapse: separate;
-          border-spacing: 0;
+          border-collapse: collapse;
           margin-bottom: 0 !important;
         }
-        
-        /* Keep only subtle horizontal dividers between rows */
-        .table-custom td {
-          border-top: 1px solid #fbd3bc !important;
-          border-bottom: none !important;
-          border-left: none !important;
-          border-right: none !important;
+
+        .table-custom th, .table-custom td {
+          border: 1px solid #fbd3bc !important;
           vertical-align: middle;
         }
-        
+
         .table-custom th {
-          border-top: none !important;
           border-bottom: 2px solid #f26522 !important;
-          border-left: none !important;
-          border-right: none !important;
           background-color: #fef5ee !important;
         }
 
