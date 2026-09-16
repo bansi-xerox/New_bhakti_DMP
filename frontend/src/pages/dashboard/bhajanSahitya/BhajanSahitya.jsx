@@ -170,13 +170,13 @@ const BhajanSahitya = () => {
         .delete-btn-wrapper { display: none; }
         .serial-cell:hover .serial-number { display: none; }
         .serial-cell:hover .delete-btn-wrapper { display: inline-block; }
-.modal-body .row > div {
-  margin-bottom: 4px !important;
-}
-
-.modal-body .row > div:last-child {
-  margin-bottom: 0 !important;
-}
+        
+        .modal-body .row > div {
+          margin-bottom: 4px !important;
+        }
+        .modal-body .row > div:last-child {
+          margin-bottom: 0 !important;
+        }
 
         .premium-card {
           background-color: white;
@@ -192,6 +192,13 @@ const BhajanSahitya = () => {
         .table-custom th {
           border-bottom: 2px solid #f26522 !important;
           background-color: #fef5ee !important;
+        }
+
+        /* --- Scrollbar Styling & Fix --- */
+        .table-responsive-wrapper {
+          overflow: auto;
+          max-height: calc(100vh - 180px);
+          position: relative;
         }
 
         .custom-scrollbar::-webkit-scrollbar {
@@ -261,12 +268,10 @@ const BhajanSahitya = () => {
         {/* Data Table Card */}
         <div
           className="premium-card overflow-hidden d-flex flex-column"
-          style={{
-            borderColor: '#fbd3bc',
-            maxHeight: 'calc(100vh - 140px)'
-          }}
+          style={{ borderColor: '#fbd3bc' }}
         >
-          <div className="card-body p-0 overflow-auto custom-scrollbar">
+
+          <div className="table-responsive-wrapper custom-scrollbar p-2">
             <table className="table table-hover align-middle mb-0 table-custom" style={{ minWidth: '900px' }}>
               <thead style={{ position: 'sticky', top: 0, zIndex: 1 }}>
                 <tr>
@@ -343,8 +348,8 @@ const BhajanSahitya = () => {
           </div>
         </div>
         {/* Reusable Custom Modal */}
-    {/* Reusable Custom Modal */}
-       <Modal
+        {/* Reusable Custom Modal */}
+        <Modal
           isOpen={isModalOpen}
           onClose={closeModal}
           title={isEditing ? 'ભજનમાં સુધારો કરો (Edit)' : 'નવું ભજન ઉમેરો (Add New)'}
