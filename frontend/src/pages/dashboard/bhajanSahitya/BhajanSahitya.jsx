@@ -166,7 +166,7 @@ const BhajanSahitya = () => {
 
   return (
     <>
-      <style>{`
+    <style>{`
         .delete-btn-wrapper { display: none; }
         .serial-cell:hover .serial-number { display: none; }
         .serial-cell:hover .delete-btn-wrapper { display: inline-block; }
@@ -185,20 +185,34 @@ const BhajanSahitya = () => {
           box-shadow: 0 4px 18px rgba(0,0,0,0.03);
         }
 
-        .table-custom th, .table-custom td {
-          border: 1px solid #fbd3bc !important;
+        /* --- Clean Table Style (No outer square box border) --- */
+        .table-custom {
+          border-collapse: separate;
+          border-spacing: 0;
+          margin-bottom: 0 !important;
+        }
+        
+        /* Keep only subtle horizontal dividers between rows */
+        .table-custom td {
+          border-top: 1px solid #fbd3bc !important;
+          border-bottom: none !important;
+          border-left: none !important;
+          border-right: none !important;
           vertical-align: middle;
         }
+        
         .table-custom th {
+          border-top: none !important;
           border-bottom: 2px solid #f26522 !important;
+          border-left: none !important;
+          border-right: none !important;
           background-color: #fef5ee !important;
         }
 
-        /* --- Scrollbar Styling & Fix --- */
         .table-responsive-wrapper {
-          overflow: auto;
+          overflow-x: auto;
+          overflow-y: auto;
           max-height: calc(100vh - 180px);
-          position: relative;
         }
 
         .custom-scrollbar::-webkit-scrollbar {
@@ -266,87 +280,86 @@ const BhajanSahitya = () => {
         </div>
 
         {/* Data Table Card */}
-        <div
-          className="premium-card overflow-hidden d-flex flex-column"
-          style={{ borderColor: '#fbd3bc' }}
-        >
+      <div
+        className="premium-card overflow-hidden d-flex flex-column"
+        style={{ borderColor: '#fbd3bc' }}
+      >
+        <div className="table-responsive-wrapper custom-scrollbar">
+          <table className="table table-hover align-middle table-custom" style={{ minWidth: '900px' }}>
+            <thead style={{ position: 'sticky', top: 0, zIndex: 1 }}>
+              <tr>
+                <th className="py-3 px-4 text-secondary" style={{ width: '80px' }}>ક્રમ</th>
+                <th className="py-3 px-4 text-secondary">સાહિત્યનું નામ</th>
+                <th className="py-3 px-4 text-secondary">શીર્ષકનું નામ</th>
+                <th className="py-3 px-4 text-secondary">ભજનનું નામ</th>
+                <th className="py-3 px-4 text-secondary">ભજનની કડી</th>
+                <th className="py-3 px-4 text-secondary">ભજનનો રાગ</th>
+                <th className="py-3 px-4 text-secondary">પૃષ્ઠ ક્રમાંક</th>
+                <th className="py-3 px-4 text-secondary text-center">YouTube Link</th>
+              </tr>
+            </thead>
+            <tbody>
+              {bhajans.length > 0 ? (
+                bhajans.map((item, index) => (
+                  <tr
+                    key={item._id}
+                    onDoubleClick={() => openEditModal(item._id)}
+                    title="Double-click to edit"
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <td className="py-3 px-4 serial-cell" style={{ width: '80px', minWidth: '80px' }}>
+                      <span className="serial-number text-secondary fw-bold">{index + 1}</span>
+                      <div className="delete-btn-wrapper">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDelete(item._id);
+                          }}
+                          className="btn btn-sm btn-danger border-0 p-1 d-flex align-items-center justify-content-center shadow-sm"
+                          style={{ width: '28px', height: '28px', borderRadius: '4px' }}
+                          title="Delete"
+                        >
+                          <Trash2Icon size={14} />
+                        </button>
+                      </div>
+                    </td>
 
-          <div className="table-responsive-wrapper custom-scrollbar p-2">
-            <table className="table table-hover align-middle mb-0 table-custom" style={{ minWidth: '900px' }}>
-              <thead style={{ position: 'sticky', top: 0, zIndex: 1 }}>
-                <tr>
-                  <th className="py-3 px-4 text-secondary" style={{ width: '80px' }}>ક્રમ</th>
-                  <th className="py-3 px-4 text-secondary">સાહિત્યનું નામ</th>
-                  <th className="py-3 px-4 text-secondary">શીર્ષકનું નામ</th>
-                  <th className="py-3 px-4 text-secondary">ભજનનું નામ</th>
-                  <th className="py-3 px-4 text-secondary">ભજનની કડી</th>
-                  <th className="py-3 px-4 text-secondary">ભજનનો રાગ</th>
-                  <th className="py-3 px-4 text-secondary">પૃષ્ઠ ક્રમાંક</th>
-                  <th className="py-3 px-4 text-secondary text-center">YouTube Link</th>
-                </tr>
-              </thead>
-              <tbody>
-                {bhajans.length > 0 ? (
-                  bhajans.map((item, index) => (
-                    <tr
-                      key={item._id}
-                      onDoubleClick={() => openEditModal(item._id)}
-                      title="Double-click to edit"
-                      style={{ cursor: 'pointer' }}
-                    >
-                      <td className="py-3 px-4 serial-cell" style={{ width: '80px', minWidth: '80px' }}>
-                        <span className="serial-number text-secondary fw-bold">{index + 1}</span>
-                        <div className="delete-btn-wrapper">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDelete(item._id);
-                            }}
-                            className="btn btn-sm btn-danger border-0 p-1 d-flex align-items-center justify-content-center shadow-sm"
-                            style={{ width: '28px', height: '28px', borderRadius: '4px' }}
-                            title="Delete"
-                          >
-                            <Trash2Icon size={14} />
-                          </button>
-                        </div>
-                      </td>
+                    <td className="py-3 px-4 text-dark">{item.sahitya_name}</td>
+                    <td className="py-3 px-4 text-muted">{item.heading_name || '-'}</td>
+                    <td className="py-3 px-4 fw-bold" style={{ color: '#f26522' }}>{item.bhajan_name}</td>
+                    <td className="py-3 px-4 text-muted text-truncate" style={{ maxWidth: '200px' }}>{item.bhajan_kadi}</td>
+                    <td className="py-3 px-4 text-muted">{item.bhajan_rag}</td>
+                    <td className="py-3 px-4 text-muted">{item.page_no}</td>
 
-                      <td className="py-3 px-4 text-dark">{item.sahitya_name}</td>
-                      <td className="py-3 px-4 text-muted">{item.heading_name || '-'}</td>
-                      <td className="py-3 px-4 fw-bold" style={{ color: '#f26522' }}>{item.bhajan_name}</td>
-                      <td className="py-3 px-4 text-muted text-truncate" style={{ maxWidth: '200px' }}>{item.bhajan_kadi}</td>
-                      <td className="py-3 px-4 text-muted">{item.bhajan_rag}</td>
-                      <td className="py-3 px-4 text-muted">{item.page_no}</td>
-
-                      <td className="py-3 px-4 text-center">
-                        {item.youtube_link ? (
-                          <a
-                            href={item.youtube_link}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={(e) => e.stopPropagation()}
-                            className="text-danger fw-bold text-decoration-none"
-                            title="Watch on YouTube"
-                          >
-                            ▶ Play
-                          </a>
-                        ) : (
-                          <span className="text-muted">-</span>
-                        )}
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="8" className="py-5 text-center text-muted">
-                      કોઈ ડેટા મળ્યો નથી. (No data found)
+                    <td className="py-3 px-4 text-center">
+                      {item.youtube_link ? (
+                        <a
+                          href={item.youtube_link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="text-danger fw-bold text-decoration-none"
+                          title="Watch on YouTube"
+                        >
+                          ▶ Play
+                        </a>
+                      ) : (
+                        <span className="text-muted">-</span>
+                      )}
                     </td>
                   </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="8" className="py-5 text-center text-muted">
+                    કોઈ ડેટા મળ્યો નથી. (No data found)
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
+      </div>
         {/* Reusable Custom Modal */}
         {/* Reusable Custom Modal */}
         <Modal
