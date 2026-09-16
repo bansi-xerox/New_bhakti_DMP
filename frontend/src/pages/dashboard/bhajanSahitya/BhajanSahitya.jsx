@@ -335,98 +335,97 @@ const BhajanSahitya = () => {
             </table>
           </div>
         </div>
-
-        {/* Reusable Custom Modal */}
+{/* Reusable Custom Modal */}
         <Modal
           isOpen={isModalOpen}
           onClose={closeModal}
           title={isEditing ? 'ભજનમાં સુધારો કરો (Edit)' : 'નવું ભજન ઉમેરો (Add New)'}
           size="lg"
         >
-          <form onSubmit={handleSubmit} className="row g-3">
-            <div className="col-md-6">
+          <form onSubmit={handleSubmit} className="row g-2">
+            <div className="col-md-6 mb-2">
               <Input 
                 name="sahitya_name" 
                 value={formData.sahitya_name} 
                 onChange={handleInputChange} 
-                placeholder="સાહિત્યનું નામ દાખલ કરો *" 
+                placeholder="સાહિત્યનું નામ *" 
                 required 
               />
             </div>
-            <div className="col-md-6">
+            <div className="col-md-6 mb-2">
               <Input
                 name="heading_name"
                 value={formData.heading_name}
                 onChange={handleInputChange}
-                placeholder="શીર્ષકનું નામ દાખલ કરો"
+                placeholder="શીર્ષકનું નામ"
               />
             </div>
-            <div className="col-md-6">
+            <div className="col-md-6 mb-2">
               <Input 
                 name="bhajan_name" 
                 value={formData.bhajan_name} 
                 onChange={handleInputChange} 
-                placeholder="ભજનનું નામ દાખલ કરો *" 
+                placeholder="ભજનનું નામ *" 
                 required 
               />
             </div>
-            <div className="col-md-6">
+            <div className="col-md-6 mb-2">
               <Input 
                 name="bhajan_kadi" 
                 value={formData.bhajan_kadi} 
                 onChange={handleInputChange} 
-                placeholder="ભજનની કડી (દા.ત. ગુરુ ગોવિંદ...)" 
+                placeholder="ભજનની કડી" 
               />
             </div>
-            <div className="col-md-6">
+            <div className="col-md-6 mb-2">
               <Input 
                 name="bhajan_rag" 
                 value={formData.bhajan_rag} 
                 onChange={handleInputChange} 
-                placeholder="ભજનનો રાગ (દા.ત. રાગ ભૈરવી)" 
+                placeholder="ભજનનો રાગ" 
               />
             </div>
-            <div className="col-md-6">
+            <div className="col-md-6 mb-2">
               <Input
                 name="page_no"
                 value={formData.page_no}
                 onChange={handleInputChange}
-                placeholder="પૃષ્ઠ ક્રમાંક (દા.ત. 5-10)"
+                placeholder="પૃષ્ઠ ક્રમાંક"
               />
             </div>
-            <div className="col-md-12">
+            <div className="col-md-12 mb-2">
               <Input 
                 type="url" 
                 name="youtube_link" 
                 value={formData.youtube_link} 
                 onChange={handleInputChange} 
-                placeholder="YouTube Link (https://youtube.com/...)" 
+                placeholder="YouTube Link" 
               />
             </div>
 
-            <div className="col-12 mt-2">
+            <div className="col-12 mb-2">
               <textarea 
                 required 
                 name="bhajan" 
                 value={formData.bhajan} 
                 onChange={handleInputChange} 
-                rows="5" 
+                rows="4" 
                 className="form-control" 
-                placeholder="ભજનનો પાઠ દાખલ કરો *"
+                placeholder="ભજનનો પાઠ *"
               />
             </div>
-            <div className="col-12 mt-2">
+            <div className="col-12 mb-2">
               <textarea 
                 name="bhajan_bhavarth" 
                 value={formData.bhajan_bhavarth} 
                 onChange={handleInputChange} 
                 rows="3" 
                 className="form-control" 
-                placeholder="ભજનનો અર્થ/ભાવાર્થ દાખલ કરો"
+                placeholder="ભજનનો ભાવાર્થ"
               />
             </div>
 
-            <div className="col-12 d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+            <div className="col-12 d-flex justify-content-end gap-2 mt-3 pt-3 border-top">
               <Button type="button" onClick={closeModal} className="btn btn-light px-4 py-2 text-muted fw-bold">
                 રદ કરો
               </Button>
@@ -436,7 +435,6 @@ const BhajanSahitya = () => {
             </div>
           </form>
         </Modal>
-
       </div>
     </>
   );
