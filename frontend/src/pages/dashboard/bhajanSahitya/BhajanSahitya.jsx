@@ -13,7 +13,7 @@ import {
   createBhajan,
   updateBhajan,
   deleteBhajan,
-  searchBhajans // <-- Make sure searchBhajans is imported from api services
+  searchBhajans
 } from '../../../services/api';
 
 // Import SweetAlert Utility Functions
@@ -60,7 +60,8 @@ const BhajanSahitya = () => {
     try {
       let response;
       if (query && query.trim() !== '') {
-        response = await searchBhajans({ q: query.trim() });
+        // Fix: Pass query directly based on how api.js handles it (either string or object)
+        response = await searchBhajans(query.trim()); 
       } else {
         response = await getAllBhajans();
       }
@@ -79,7 +80,6 @@ const BhajanSahitya = () => {
     fetchBhajans(searchQuery);
   };
 
-  // Optional: Real-time search handling when input changes or clears
   const handleSearchChange = (val) => {
     setSearchQuery(val);
     if (!val || val.trim() === '') {
@@ -176,7 +176,6 @@ const BhajanSahitya = () => {
           box-shadow: 0 4px 18px rgba(0,0,0,0.03);
         }
 
-        /* Table Border & Clean Look */
         .table-custom th, .table-custom td {
           border: 1px solid #fbd3bc !important;
           vertical-align: middle;
@@ -186,7 +185,6 @@ const BhajanSahitya = () => {
           background-color: #fef5ee !important;
         }
 
-        /* Custom Orange Scrollbar */
         .custom-scrollbar::-webkit-scrollbar {
           width: 8px;
           height: 8px;
