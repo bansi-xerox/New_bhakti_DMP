@@ -343,7 +343,7 @@ const BhajanSahitya = () => {
           size="lg"
         >
           <form onSubmit={handleSubmit} className="row g-2">
-            <div className="col-md-6 mb-1">
+            <div className="col-md-6">
               <Input
                 name="sahitya_name"
                 value={formData.sahitya_name}
@@ -352,7 +352,7 @@ const BhajanSahitya = () => {
                 required
               />
             </div>
-            <div className="col-md-6 mb-1">
+            <div className="col-md-6">
               <Input
                 name="heading_name"
                 value={formData.heading_name}
@@ -360,7 +360,7 @@ const BhajanSahitya = () => {
                 placeholder="શીર્ષકનું નામ"
               />
             </div>
-            <div className="col-md-6 mb-1">
+            <div className="col-md-6">
               <Input
                 name="bhajan_name"
                 value={formData.bhajan_name}
@@ -369,7 +369,7 @@ const BhajanSahitya = () => {
                 required
               />
             </div>
-            <div className="col-md-6 mb-1">
+            <div className="col-md-6">
               <Input
                 name="bhajan_kadi"
                 value={formData.bhajan_kadi}
@@ -377,7 +377,7 @@ const BhajanSahitya = () => {
                 placeholder="ભજનની કડી"
               />
             </div>
-            <div className="col-md-6 mb-1">
+            <div className="col-md-6">
               <Input
                 name="bhajan_rag"
                 value={formData.bhajan_rag}
@@ -385,7 +385,7 @@ const BhajanSahitya = () => {
                 placeholder="ભજનનો રાગ"
               />
             </div>
-            <div className="col-md-6 mb-1">
+            <div className="col-md-6">
               <Input
                 name="page_no"
                 value={formData.page_no}
@@ -393,7 +393,7 @@ const BhajanSahitya = () => {
                 placeholder="પૃષ્ઠ ક્રમાંક"
               />
             </div>
-            <div className="col-md-12 mb-1">
+            <div className="col-md-12">
               <Input
                 type="url"
                 name="youtube_link"
@@ -403,7 +403,7 @@ const BhajanSahitya = () => {
               />
             </div>
 
-            <div className="col-12 mb-2">
+            <div className="col-12">
               <textarea
                 required
                 name="bhajan"
@@ -414,7 +414,7 @@ const BhajanSahitya = () => {
                 placeholder="ભજનનો પાઠ *"
               />
             </div>
-            <div className="col-12 mb-2">
+            <div className="col-12">
               <textarea
                 name="bhajan_bhavarth"
                 value={formData.bhajan_bhavarth}
