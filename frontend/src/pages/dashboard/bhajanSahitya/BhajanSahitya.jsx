@@ -174,7 +174,7 @@ const BhajanSahitya = () => {
         .premium-card {
           background-color: white;
           border-radius: 12px;
-          border: 1px solid #f26522;
+          border: 1px solid #fbd3bc;
           box-shadow: 0 4px 18px rgba(0,0,0,0.03);
         }
 
