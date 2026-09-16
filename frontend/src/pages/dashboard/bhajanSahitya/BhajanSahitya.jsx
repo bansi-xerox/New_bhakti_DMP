@@ -171,6 +171,10 @@ const BhajanSahitya = () => {
         .serial-cell:hover .serial-number { display: none; }
         .serial-cell:hover .delete-btn-wrapper { display: inline-block; }
 
+\        .modal-body .row > div {
+          margin-bottom: 6px !important;
+        }
+
         .premium-card {
           background-color: white;
           border-radius: 12px;
