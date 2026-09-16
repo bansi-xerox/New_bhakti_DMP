@@ -12,7 +12,8 @@ import {
   getBhajanById,
   createBhajan,
   updateBhajan,
-  deleteBhajan
+  deleteBhajan,
+  searchBhajans // <-- Make sure searchBhajans is imported from api services
 } from '../../../services/api';
 
 // Import SweetAlert Utility Functions
@@ -55,9 +56,14 @@ const BhajanSahitya = () => {
   const [formData, setFormData] = useState(initialFormState);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const fetchBhajans = useCallback(async () => {
+  const fetchBhajans = useCallback(async (query = '') => {
     try {
-      const response = await getAllBhajans();
+      let response;
+      if (query && query.trim() !== '') {
+        response = await searchBhajans({ q: query.trim() });
+      } else {
+        response = await getAllBhajans();
+      }
       setBhajans(response.data.data);
     } catch (error) {
       console.error("Error fetching data", error);
@@ -70,7 +76,15 @@ const BhajanSahitya = () => {
   }, [fetchBhajans]);
 
   const handleSearchSubmit = () => {
-    fetchBhajans();
+    fetchBhajans(searchQuery);
+  };
+
+  // Optional: Real-time search handling when input changes or clears
+  const handleSearchChange = (val) => {
+    setSearchQuery(val);
+    if (!val || val.trim() === '') {
+      fetchBhajans('');
+    }
   };
 
   const handleInputChange = (e) => {
@@ -83,7 +97,7 @@ const BhajanSahitya = () => {
     setIsModalOpen(true);
   };
 
- const openEditModal = async (id) => {
+  const openEditModal = async (id) => {
     try {
       const response = await getBhajanById(id);
       const data = response.data.data;
@@ -107,7 +121,7 @@ const BhajanSahitya = () => {
 
   const closeModal = () => setIsModalOpen(false);
 
- const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
 
@@ -125,7 +139,7 @@ const BhajanSahitya = () => {
         showSuccessAlert("Success", "ભજન સફળતાપૂર્વક ઉમેરાયું!");
       }
       closeModal();
-      fetchBhajans();
+      fetchBhajans(searchQuery);
     } catch (error) {
       console.error("Save error:", error);
       const errorMsg = error.response?.data?.message || "Failed to save record.";
@@ -141,7 +155,7 @@ const BhajanSahitya = () => {
       try {
         await deleteBhajan(id);
         showToastAlert("Record deleted successfully!");
-        fetchBhajans();
+        fetchBhajans(searchQuery);
       } catch (error) {
         showErrorAlert("Error", "Could not delete the record.");
       }
@@ -190,7 +204,6 @@ const BhajanSahitya = () => {
         }
       `}</style>
 
-      {/* Main Container: height 100% and flex-grow-1 ensures bottom 16px space is always visible */}
       <div
         className="w-100 d-flex flex-column gap-3 flex-grow-1"
         style={{
@@ -213,9 +226,9 @@ const BhajanSahitya = () => {
             <div style={{ width: '280px' }}>
               <SearchBar
                 value={searchQuery}
-                onChange={setSearchQuery}
+                onChange={handleSearchChange}
                 onSubmit={handleSearchSubmit}
-                placeholder="Search bhajans..."
+                placeholder="Search by sahitya, heading, name, kadi, rag..."
               />
             </div>
             <Button
