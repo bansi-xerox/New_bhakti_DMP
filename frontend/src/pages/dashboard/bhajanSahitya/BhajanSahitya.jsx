@@ -179,7 +179,8 @@ const BhajanSahitya = () => {
         }
 
         .table-custom th, .table-custom td {
-          border: 1px solid black !important;
+          border: 1px solid #fbd3bc !important;
+          vertical-align: middle;
         }
         .table-custom th {
           border-bottom: 2px solid #f26522 !important;
