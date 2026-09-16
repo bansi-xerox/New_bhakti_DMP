@@ -23,9 +23,23 @@ import {
   showToastAlert
 } from '../../../components/common/Alert';
 
-// --- Zero-Dependency Lucide-Style Trash Icon ---
+
+// =========================================================
+// Trash Icon
+// =========================================================
+
 const Trash2Icon = ({ size = 16, className = "" }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
     <path d="M3 6h18" />
     <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
     <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
@@ -34,20 +48,41 @@ const Trash2Icon = ({ size = 16, className = "" }) => (
   </svg>
 );
 
-// --- Zero-Dependency Lucide-Style Search Icon ---
+
+// =========================================================
+// Search Icon
+// =========================================================
+
 const SearchIcon = ({ size = 16, className = "" }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
     <circle cx="11" cy="11" r="8" />
     <line x1="21" y1="21" x2="16.65" y2="16.65" />
   </svg>
 );
 
+
+// =========================================================
+// Main Component
+// =========================================================
+
 const BhajanSahitya = () => {
+
   const [bhajans, setBhajans] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [currentId, setCurrentId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+
   const initialFormState = {
     sahitya_name: '',
     heading_name: '',
@@ -63,49 +98,92 @@ const BhajanSahitya = () => {
   const [formData, setFormData] = useState(initialFormState);
   const [searchQuery, setSearchQuery] = useState('');
 
+
+  // =========================================================
+  // Fetch Bhajans
+  // =========================================================
+
   const fetchBhajans = useCallback(async (query = '') => {
     try {
       let response;
+
       if (query && query.trim() !== '') {
         response = await searchBhajans(query.trim());
       } else {
         response = await getAllBhajans();
       }
+
       setBhajans(response.data.data);
+
     } catch (error) {
       console.error("Error fetching data", error);
-      showErrorAlert("Fetch Error", "Could not load bhajans.");
+      showErrorAlert(
+        "Fetch Error",
+        "Could not load bhajans."
+      );
     }
   }, []);
+
+
+  // =========================================================
+  // Initial Load
+  // =========================================================
 
   useEffect(() => {
     fetchBhajans();
   }, [fetchBhajans]);
 
-  // Live Search as you type
+
+  // =========================================================
+  // Live Search
+  // =========================================================
+
   const handleSearchChange = (e) => {
     const val = e.target.value;
+
     setSearchQuery(val);
     fetchBhajans(val);
   };
 
+
+  // =========================================================
+  // Input Change
+  // =========================================================
+
   const handleInputChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
   };
+
+
+  // =========================================================
+  // Open Add Modal
+  // =========================================================
 
   const openAddModal = () => {
     setFormData(initialFormState);
+    setCurrentId(null);
     setIsEditing(false);
     setIsModalOpen(true);
   };
 
+
+  // =========================================================
+  // Open Edit Modal
+  // =========================================================
+
   const openEditModal = async (id) => {
     try {
+
       const response = await getBhajanById(id);
       const data = response.data.data;
+
       setFormData({
         ...initialFormState,
         ...data,
+
         heading_name: data.heading_name || '',
         bhajan_kadi: data.bhajan_kadi || '',
         bhajan_rag: data.bhajan_rag || '',
@@ -113,17 +191,40 @@ const BhajanSahitya = () => {
         page_no: data.page_no || '',
         youtube_link: data.youtube_link || ''
       });
+
       setCurrentId(id);
       setIsEditing(true);
       setIsModalOpen(true);
-    } catch {
-      showErrorAlert("Error", "Could not fetch record details.");
+
+    } catch (error) {
+
+      console.error("Edit fetch error:", error);
+
+      showErrorAlert(
+        "Error",
+        "Could not fetch record details."
+      );
     }
   };
 
-  const closeModal = () => setIsModalOpen(false);
+
+  // =========================================================
+  // Close Modal
+  // =========================================================
+
+  const closeModal = () => {
+    if (!isLoading) {
+      setIsModalOpen(false);
+    }
+  };
+
+
+  // =========================================================
+  // Submit
+  // =========================================================
 
   const handleSubmit = async (e) => {
+
     e.preventDefault();
     setIsLoading(true);
 
@@ -133,36 +234,86 @@ const BhajanSahitya = () => {
     };
 
     try {
+
       if (isEditing) {
+
         await updateBhajan(currentId, payload);
-        showSuccessAlert("Success", "ભજન સફળતાપૂર્વક અપડેટ થયું!");
+
+        showSuccessAlert(
+          "Success",
+          "ભજન સફળતાપૂર્વક અપડેટ થયું!"
+        );
+
       } else {
+
         await createBhajan(payload);
-        showSuccessAlert("Success", "ભજન સફળતાપૂર્વક ઉમેરાયું!");
+
+        showSuccessAlert(
+          "Success",
+          "ભજન સફળતાપૂર્વક ઉમેરાયું!"
+        );
       }
+
       closeModal();
       fetchBhajans(searchQuery);
+
     } catch (error) {
+
       console.error("Save error:", error);
-      const errorMsg = error.response?.data?.message || "Failed to save record.";
-      showErrorAlert("Error", errorMsg);
+
+      const errorMsg =
+        error.response?.data?.message ||
+        "Failed to save record.";
+
+      showErrorAlert(
+        "Error",
+        errorMsg
+      );
+
     } finally {
       setIsLoading(false);
     }
   };
 
+
+  // =========================================================
+  // Delete
+  // =========================================================
+
   const handleDelete = async (id) => {
-    const result = await confirmMediaDelete("શું તમે ખરેખર આ રેકોર્ડ કાઢી નાખવા માંગો છો?");
+
+    const result = await confirmMediaDelete(
+      "શું તમે ખરેખર આ રેકોર્ડ કાઢી નાખવા માંગો છો?"
+    );
+
     if (result.isConfirmed) {
+
       try {
+
         await deleteBhajan(id);
-        showToastAlert("Record deleted successfully!");
+
+        showToastAlert(
+          "Record deleted successfully!"
+        );
+
         fetchBhajans(searchQuery);
+
       } catch (error) {
-        showErrorAlert("Error", "Could not delete the record.");
+
+        console.error("Delete error:", error);
+
+        showErrorAlert(
+          "Error",
+          "Could not delete the record."
+        );
       }
     }
   };
+
+
+  // =========================================================
+  // UI
+  // =========================================================
 
   return (
     <>
@@ -177,12 +328,54 @@ const BhajanSahitya = () => {
         .modal-body .row > div:last-child {
           margin-bottom: 0 !important;
         }
+      <style>{`
+
+        /* =====================================================
+           DELETE BUTTON
+           ===================================================== */
+
+        .delete-btn-wrapper {
+          display: none;
+        }
+
+        .serial-cell:hover .serial-number {
+          display: none;
+        }
+
+        .serial-cell:hover .delete-btn-wrapper {
+          display: inline-block;
+        }
+
+
+        /* =====================================================
+           PREMIUM CARD
+           ===================================================== */
 
         .premium-card {
-          background-color: white;
+          background-color: #ffffff;
+          border-radius: 14px;
+          border: 1px solid #fbd3bc;
+          box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
+        }
+
+
+        /* =====================================================
+           TABLE
+           ===================================================== */
+
+        .table-custom-wrapper {
           border-radius: 12px;
           border: 1px solid #fbd3bc;
-          box-shadow: 0 4px 18px rgba(0,0,0,0.03);
+          overflow: hidden;
+          background-color: #ffffff;
+          width: 100%;
+        }
+
+        .table-custom {
+          border-collapse: separate !important;
+          border-spacing: 0 !important;
+          margin-bottom: 0 !important;
+          width: 100%;
         }
 
         /* --- Restored Grid Borders (Horizontal & Vertical) --- */
@@ -191,9 +384,17 @@ const BhajanSahitya = () => {
           margin-bottom: 0 !important;
         }
 
-        .table-custom th, .table-custom td {
-          border: 1px solid #fbd3bc !important;
+        .table-custom th,
+        .table-custom td {
+          border-right: 1px solid #fbd3bc;
+          border-bottom: 1px solid #fbd3bc !important;
           vertical-align: middle;
+        }
+
+
+        .table-custom th:last-child,
+        .table-custom td:last-child {
+          border-right: none;
         }
 
         .table-custom th {
@@ -207,52 +408,478 @@ const BhajanSahitya = () => {
           max-height: calc(100vh - 180px);
         }
 
+
+        /* =====================================================
+           MODAL FORM - MAIN
+           ===================================================== */
+
+       .modal-premium-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 4px !important;
+  padding: 0 !important;
+}
+
+.modal-premium-form > .modal-field {
+  margin: 0 !important;
+  padding: 0 !important;
+  gap: 0 !important;
+}
+
+
+        /* =====================================================
+           TWO COLUMN ROW
+           ===================================================== */
+
+        .modal-form-row {
+          width: 100%;
+
+          display: grid;
+          grid-template-columns:
+            minmax(0, 1fr)
+            minmax(0, 1fr);
+
+          /* Horizontal gap between two fields */
+          column-gap: 15px;
+
+          /* No extra row margin */
+          margin: 0 !important;
+          padding: 0 !important;
+        }
+
+        .modal-field {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+        /* =====================================================
+           FULL WIDTH FIELD
+           ===================================================== */
+
+        .modal-form-full {
+          width: 100%;
+          margin: 0 !important;
+          padding: 0 !important;
+        }
+
+
+        /* =====================================================
+           INPUT WRAPPER RESET
+           
+           This is important because Input component may have
+           Bootstrap mb-3 / form-group spacing.
+           ===================================================== */
+
+        .modal-premium-form .mb-3,
+        .modal-premium-form .mb-2,
+        .modal-premium-form .form-group,
+        .modal-premium-form .form-floating {
+          margin-bottom: 0 !important;
+          margin-top: 0 !important;
+        }
+
+
+        /* =====================================================
+           INPUT + TEXTAREA COMMON STYLE
+           ===================================================== */
+
+        .modal-premium-form input,
+        .modal-premium-form .form-control {
+
+          width: 100% !important;
+          box-sizing: border-box !important;
+
+          margin: 0 !important;
+
+          border: 1px solid #e3e7eb !important;
+
+          border-radius: 10px !important;
+
+          background-color: #fbfcfe !important;
+
+          color: #1e293b !important;
+
+          font-size: 13.5px !important;
+
+          font-weight: 500 !important;
+
+          outline: none !important;
+
+          box-shadow:
+            0 1px 2px rgba(15, 23, 42, 0.02) !important;
+
+          transition:
+            border-color 0.2s ease,
+            background-color 0.2s ease,
+            box-shadow 0.2s ease !important;
+        }
+
+        .modal-premium-form textarea {
+  display: block !important;
+  width: 100% !important;
+  margin: 0 !important;
+  min-height: 105px !important;
+  padding: 10px 13px !important;
+  box-sizing: border-box !important;
+  resize: vertical !important;
+}
+
+.modal-premium-form .bhavarth-textarea {
+  min-height: 85px !important;
+}
+
+
+        /* =====================================================
+           NORMAL INPUT
+           ===================================================== */
+
+        .modal-premium-form input,
+        .modal-premium-form .form-control:not(textarea) {
+
+          height: 42px !important;
+          min-height: 42px !important;
+
+          padding: 8px 13px !important;
+
+          line-height: 24px !important;
+        }
+
+
+        /* =====================================================
+           TEXTAREA - BHAJAN
+           ===================================================== */
+
+        .modal-premium-form textarea {
+
+          min-height: 96px !important;
+
+          padding: 10px 13px !important;
+
+          line-height: 20px !important;
+
+          resize: vertical !important;
+        }
+
+
+        /* =====================================================
+           TEXTAREA - BHAVARTH
+           ===================================================== */
+
+        .modal-premium-form .bhavarth-textarea {
+
+          min-height: 78px !important;
+            padding: 10px 13px !important;
+        }
+
+
+        /* =====================================================
+           PLACEHOLDER
+           ===================================================== */
+
+        .modal-premium-form input::placeholder,
+        .modal-premium-form textarea::placeholder,
+        .modal-premium-form .form-control::placeholder {
+
+          color: #94a3b8 !important;
+
+          opacity: 1 !important;
+
+          font-size: 13px !important;
+
+          font-weight: 400 !important;
+        }
+
+
+        /* =====================================================
+           HOVER
+           ===================================================== */
+
+        .modal-premium-form input:hover,
+        .modal-premium-form textarea:hover,
+        .modal-premium-form .form-control:hover {
+
+          background-color: #ffffff !important;
+
+          border-color: #d5dbe2 !important;
+        }
+
+
+        /* =====================================================
+           FOCUS
+           ===================================================== */
+
+        .modal-premium-form input:focus,
+        .modal-premium-form textarea:focus,
+        .modal-premium-form .form-control:focus {
+
+          background-color: #ffffff !important;
+
+          border-color: #f26522 !important;
+
+          box-shadow:
+            0 0 0 3px rgba(242, 101, 34, 0.09),
+            0 2px 7px rgba(15, 23, 42, 0.04) !important;
+        }
+
+
+        /* =====================================================
+           ACTION BUTTONS
+           ===================================================== */
+
+        .modal-form-actions {
+
+          width: 100%;
+
+          display: flex;
+
+          align-items: center;
+
+          justify-content: flex-end;
+
+          gap: 8px;
+
+          margin: 2px 0 0 !important;
+
+          padding: 2px 0 0 !important;
+        }
+
+
+        /* =====================================================
+           CANCEL BUTTON
+           ===================================================== */
+
+        .modal-action-btn-cancel {
+
+          height: 40px !important;
+
+          min-width: 92px !important;
+
+          display: inline-flex !important;
+
+          align-items: center !important;
+
+          justify-content: center !important;
+
+          padding: 0 18px !important;
+
+          border-radius: 9px !important;
+
+          border: 1px solid #e2e8f0 !important;
+
+          background-color: #f8fafc !important;
+
+          color: #64748b !important;
+
+          font-size: 13px !important;
+
+          font-weight: 600 !important;
+
+          transition: all 0.2s ease !important;
+        }
+
+        .modal-action-btn-cancel:hover {
+
+          background-color: #f1f5f9 !important;
+
+          border-color: #d8dee7 !important;
+
+          color: #334155 !important;
+        }
+
+
+        /* =====================================================
+           SAVE BUTTON
+           ===================================================== */
+
+        .modal-action-btn-save {
+
+          height: 40px !important;
+
+          min-width: 92px !important;
+
+          display: inline-flex !important;
+
+          align-items: center !important;
+
+          justify-content: center !important;
+
+          padding: 0 20px !important;
+
+          border: none !important;
+
+          border-radius: 9px !important;
+
+          background:
+            linear-gradient(
+              135deg,
+              #f97316 0%,
+              #ea580c 100%
+            ) !important;
+
+          color: #ffffff !important;
+
+          font-size: 13px !important;
+
+          font-weight: 600 !important;
+
+          box-shadow:
+            0 3px 8px rgba(234, 88, 12, 0.18) !important;
+
+          transition:
+            transform 0.2s ease,
+            box-shadow 0.2s ease !important;
+        }
+
+        .modal-action-btn-save:hover {
+
+          transform: translateY(-1px);
+
+          box-shadow:
+            0 5px 13px rgba(234, 88, 12, 0.25) !important;
+        }
+
+        .modal-action-btn-save:active {
+
+          transform: translateY(0);
+        }
+
+
+        /* =====================================================
+           SCROLLBAR
+           ===================================================== */
+
         .custom-scrollbar::-webkit-scrollbar {
-          width: 8px;
-          height: 8px;
+
+          width: 6px;
+          height: 6px;
         }
+
         .custom-scrollbar::-webkit-scrollbar-track {
-          background: #fef8f4;
+
+          background: #f8fafc;
+
           border-radius: 10px;
         }
+
         .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: #f26522;
+
+          background: #f4a77c;
+
           border-radius: 10px;
         }
+
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: #d95316;
+
+          background: #f26522;
         }
+
+
+        /* =====================================================
+           MOBILE
+           ===================================================== */
+
+        @media (max-width: 767px) {
+
+          .modal-form-row {
+
+            grid-template-columns: 1fr;
+
+            row-gap: 10px;
+
+          }
+
+          .modal-premium-form {
+
+            gap: 4px !important;
+          }
+
+          .modal-form-actions {
+
+            gap: 7px;
+          }
+
+          .modal-action-btn-cancel,
+          .modal-action-btn-save {
+
+            flex: 1;
+
+            min-width: 0 !important;
+          }
+        }
+
       `}</style>
 
 
+
+      {/* =====================================================
+          MAIN PAGE
+          ===================================================== */}
+
       <div
-        className="w-100 d-flex flex-column gap-3"
+        className="w-100 d-flex flex-column gap-3 flex-grow-1"
         style={{
           backgroundColor: '#fdf9f1',
-          minHeight: '100vh',
+          height: '100%',
+          maxHeight: '100%',
           padding: '16px',
-          boxSizing: 'border-box'
+          boxSizing: 'border-box',
+          overflowY: 'auto'
         }}
       >
-        {/* Top Header & Action Row */}
-        <div className="premium-card p-3 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 flex-shrink-0">
+
+
+        {/* =====================================================
+            HEADER
+            ===================================================== */}
+
+        <div
+          className="premium-card p-3 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 flex-shrink-0"
+        >
+
           <div>
-            <h4 className="fw-bold mb-0 text-dark">Bhajan & Satsang Library</h4>
+            <h4 className="fw-bold mb-0 text-dark">
+              Bhajan & Satsang Library
+            </h4>
           </div>
 
+
           <div className="d-flex align-items-center gap-3">
-            <div style={{ width: '320px', position: 'relative' }}>
-              {/* Lucide-Style Search Icon */}
-              <span style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#888', display: 'flex', alignItems: 'center', pointerEvents: 'none' }}>
+
+            {/* Search */}
+
+            <div
+              style={{
+                width: '320px',
+                position: 'relative'
+              }}
+            >
+
+              <span
+                style={{
+                  position: 'absolute',
+                  left: '16px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  color: '#888',
+                  display: 'flex',
+                  alignItems: 'center',
+                  pointerEvents: 'none'
+                }}
+              >
                 <SearchIcon size={16} />
               </span>
-              {/* Live Search Input */}
+
               <input
                 type="text"
                 className="form-control shadow-sm"
                 value={searchQuery}
                 onChange={handleSearchChange}
-                placeholder="સાહિત્ય, શીર્ષક, ભજન, કડી કે રાગ શોધો... "
+                placeholder="સાહિત્ય, શીર્ષક, ભજન, કડી કે રાગ શોધો..."
                 style={{
                   borderRadius: '50px',
                   paddingLeft: '42px',
@@ -261,15 +888,27 @@ const BhajanSahitya = () => {
                   fontSize: '13px'
                 }}
               />
+
             </div>
+
+
+            {/* Add Button */}
+
             <Button
               onClick={openAddModal}
               className="btn px-4 py-2 fw-bold text-white shadow-sm"
-              style={{ backgroundColor: '#f26522', borderRadius: '50px', fontSize: '14px' }}
+              style={{
+                backgroundColor: '#f26522',
+                borderRadius: '50px',
+                fontSize: '14px',
+                border: 'none'
+              }}
             >
               + Add New Bhajan
             </Button>
+
           </div>
+
         </div>
 
         {/* Data Table Card */}
@@ -317,12 +956,178 @@ const BhajanSahitya = () => {
                       </div>
                     </td>
 
+        {/* =====================================================
+            TABLE
+            ===================================================== */}
+
+        <div
+          className="table-custom-wrapper shadow-sm"
+          style={{
+            height: 'fit-content',
+            maxHeight: 'calc(100% - 80px)',
+            display: 'flex',
+            flexDirection: 'column'
+          }}
+        >
+
+          <div className="p-0 overflow-auto custom-scrollbar">
+
+            <table
+              className="table table-hover align-middle table-custom"
+              style={{
+                minWidth: '900px'
+              }}
+            >
+
+              <thead
+                style={{
+                  position: 'sticky',
+                  top: 0,
+                  zIndex: 1
+                }}
+              >
+
+                <tr>
+
+                  <th
+                    className="py-3 px-4 text-secondary"
+                    style={{ width: '80px' }}
+                  >
+                    ક્રમ
+                  </th>
+
+                  <th className="py-3 px-4 text-secondary">
+                    સાહિત્યનું નામ
+                  </th>
+
+                  <th className="py-3 px-4 text-secondary">
+                    શીર્ષકનું નામ
+                  </th>
+
+                  <th className="py-3 px-4 text-secondary">
+                    ભજનનું નામ
+                  </th>
+
+                  <th className="py-3 px-4 text-secondary">
+                    ભજનની કડી
+                  </th>
+
+                  <th className="py-3 px-4 text-secondary">
+                    ભજનનો રાગ
+                  </th>
+
+                  <th className="py-3 px-4 text-secondary">
+                    પૃષ્ઠ ક્રમાંક
+                  </th>
+
+                  <th className="py-3 px-4 text-secondary text-center">
+                    YouTube Link
+                  </th>
+
+                </tr>
+
+              </thead>
+
+
+              <tbody>
+
+                {bhajans.length > 0 ? (
+
+                  bhajans.map((item, index) => (
+
+                    <tr
+                      key={item._id}
+                      onDoubleClick={() =>
+                        openEditModal(item._id)
+                      }
+                      title="Double-click to edit"
+                      style={{
+                        cursor: 'pointer'
+                      }}
+                    >
+
+                      {/* Serial / Delete */}
+
+                      <td
+                        className="py-3 px-4 serial-cell"
+                        style={{
+                          width: '80px',
+                          minWidth: '80px'
+                        }}
+                      >
+
+                        <span className="serial-number text-secondary fw-bold">
+                          {index + 1}
+                        </span>
+
+                        <div className="delete-btn-wrapper">
+
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDelete(item._id);
+                            }}
+                            className="btn btn-sm btn-danger border-0 p-1 d-flex align-items-center justify-content-center shadow-sm"
+                            style={{
+                              width: '28px',
+                              height: '28px',
+                              borderRadius: '4px'
+                            }}
+                            title="Delete"
+                          >
+                            <Trash2Icon size={14} />
+                          </button>
+
+                        </div>
+
+                      </td>
+
                     <td className="py-3 px-4 text-dark">{item.sahitya_name}</td>
                     <td className="py-3 px-4 text-muted">{item.heading_name || '-'}</td>
                     <td className="py-3 px-4 fw-bold" style={{ color: '#f26522' }}>{item.bhajan_name}</td>
                     <td className="py-3 px-4 text-muted text-truncate" style={{ maxWidth: '200px' }}>{item.bhajan_kadi}</td>
                     <td className="py-3 px-4 text-muted">{item.bhajan_rag}</td>
                     <td className="py-3 px-4 text-muted">{item.page_no}</td>
+
+                      <td className="py-3 px-4 text-dark">
+                        {item.sahitya_name}
+                      </td>
+
+
+                      <td className="py-3 px-4 text-muted">
+                        {item.heading_name || '-'}
+                      </td>
+
+
+                      <td
+                        className="py-3 px-4 fw-bold"
+                        style={{
+                          color: '#f26522'
+                        }}
+                      >
+                        {item.bhajan_name}
+                      </td>
+
+
+                      <td
+                        className="py-3 px-4 text-muted text-truncate"
+                        style={{
+                          maxWidth: '200px'
+                        }}
+                      >
+                        {item.bhajan_kadi || '-'}
+                      </td>
+
+
+                      <td className="py-3 px-4 text-muted">
+                        {item.bhajan_rag || '-'}
+                      </td>
+
+
+                      <td className="py-3 px-4 text-muted">
+                        {item.page_no || '-'}
+                      </td>
+
 
                     <td className="py-3 px-4 text-center">
                       {item.youtube_link ? (
@@ -356,14 +1161,91 @@ const BhajanSahitya = () => {
         {/* Reusable Custom Modal */}
         {/* Reusable Custom Modal */}
         <Modal
+                      <td className="py-3 px-4 text-center">
+
+                        {item.youtube_link ? (
+
+                          <a
+                            href={item.youtube_link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) =>
+                              e.stopPropagation()
+                            }
+                            className="text-danger fw-bold text-decoration-none"
+                            title="Watch on YouTube"
+                          >
+                            ▶ Play
+                          </a>
+
+                        ) : (
+
+                          <span className="text-muted">
+                            -
+                          </span>
+
+                        )}
+
+                      </td>
+
+                    </tr>
+
+                  ))
+
+                ) : (
+
+                  <tr>
+
+                    <td
+                      colSpan="8"
+                      className="py-5 text-center text-muted"
+                    >
+                      કોઈ ડેટા મળ્યો નથી. (No data found)
+                    </td>
+
+                  </tr>
+
+                )}
+
+              </tbody>
+
+            </table>
+
+          </div>
+
+        </div>
+
+
+        {/* =====================================================
+            ADD / EDIT MODAL
+            ===================================================== */}
+
+        <Modal
           isOpen={isModalOpen}
           onClose={closeModal}
-          title={isEditing ? 'ભજનમાં સુધારો કરો (Edit)' : 'નવું ભજન ઉમેરો (Add New)'}
+          title={
+            isEditing
+              ? 'ભજનમાં સુધારો કરો (Edit)'
+              : 'નવું ભજન ઉમેરો (Add New)'
+          }
           size="lg"
         >
           {/* Changed g-3 to g-2 to reduce the space uniformly */}
           <form onSubmit={handleSubmit} className="row">
             <div className="col-md-6">
+
+          <form
+            onSubmit={handleSubmit}
+            className="modal-premium-form"
+          >
+
+
+            {/* =================================================
+                ROW 1
+                ================================================= */}
+
+            <div className="modal-form-row">
+
               <Input
                 name="sahitya_name"
                 value={formData.sahitya_name}
@@ -371,16 +1253,23 @@ const BhajanSahitya = () => {
                 placeholder="સાહિત્યનું નામ *"
                 required
               />
-            </div>
-            <div className="col-md-6">
+
               <Input
                 name="heading_name"
                 value={formData.heading_name}
                 onChange={handleInputChange}
                 placeholder="શીર્ષકનું નામ"
               />
+
             </div>
-            <div className="col-md-6">
+
+
+            {/* =================================================
+                ROW 2
+                ================================================= */}
+
+            <div className="modal-form-row">
+
               <Input
                 name="bhajan_name"
                 value={formData.bhajan_name}
@@ -388,76 +1277,131 @@ const BhajanSahitya = () => {
                 placeholder="ભજનનું નામ *"
                 required
               />
-            </div>
-            <div className="col-md-6">
+
               <Input
                 name="bhajan_kadi"
                 value={formData.bhajan_kadi}
                 onChange={handleInputChange}
                 placeholder="ભજનની કડી"
               />
+
             </div>
-            <div className="col-md-6">
+
+
+            {/* =================================================
+                ROW 3
+                ================================================= */}
+
+            <div className="modal-form-row">
+
               <Input
                 name="bhajan_rag"
                 value={formData.bhajan_rag}
                 onChange={handleInputChange}
                 placeholder="ભજનનો રાગ"
               />
-            </div>
-            <div className="col-md-6">
+
               <Input
                 name="page_no"
                 value={formData.page_no}
                 onChange={handleInputChange}
                 placeholder="પૃષ્ઠ ક્રમાંક"
               />
+
             </div>
-            <div className="col-md-12">
+
+
+            {/* =================================================
+                YOUTUBE LINK
+                ================================================= */}
+
+            <div className="modal-form-full">
+
               <Input
                 type="url"
                 name="youtube_link"
                 value={formData.youtube_link}
                 onChange={handleInputChange}
-                placeholder="YouTube Link"
+                placeholder="YouTube Link (https://youtube.com/...)"
               />
+
             </div>
 
             <div className="col-12 mb-1">
+
+            {/* =================================================
+                BHAJAN
+                ================================================= */}
+
+            <div className="modal-form-full">
+
               <textarea
                 required
                 name="bhajan"
                 value={formData.bhajan}
                 onChange={handleInputChange}
-                rows="4"
-                className="form-control"
-                placeholder="ભજનનો પાઠ *"
+                rows={4}
+                className="form-control custom-scrollbar"
+                placeholder="ભજનનો પાઠ દાખલ કરો *"
               />
+
             </div>
             <div className="col-12 mb-1">
+
+
+            {/* =================================================
+                BHAVARTH
+                ================================================= */}
+
+            <div className="modal-form-full">
+
               <textarea
                 name="bhajan_bhavarth"
                 value={formData.bhajan_bhavarth}
                 onChange={handleInputChange}
-                rows="3"
-                className="form-control"
-                placeholder="ભજનનો ભાવાર્થ"
+                rows={4}
+                className="form-control custom-scrollbar bhavarth-textarea"
+                placeholder="ભજનનો અર્થ / ભાવાર્થ દાખલ કરો"
               />
+
             </div>
 
-            <div className="col-12 d-flex justify-content-end gap-2 pt-1">
-              <Button type="button" onClick={closeModal} className="btn btn-light px-4 py-2 text-muted fw-bold">
+
+            {/* =================================================
+                BUTTONS
+                ================================================= */}
+
+            <div className="modal-form-actions">
+
+              <Button
+                type="button"
+                onClick={closeModal}
+                className="modal-action-btn-cancel"
+              >
                 રદ કરો
               </Button>
-              <Button type="submit" loading={isLoading} className="btn px-4 py-2 fw-bold text-white shadow-sm" style={{ backgroundColor: '#f26522' }}>
-                {isEditing ? 'અપડેટ કરો' : 'સાચવો'}
+
+
+              <Button
+                type="submit"
+                loading={isLoading}
+                className="modal-action-btn-save"
+              >
+                {isEditing
+                  ? 'અપડેટ કરો'
+                  : 'સાચવો'}
               </Button>
+
             </div>
+
           </form>
+
         </Modal>
+
       </div>
     </>
   );
 };
+
 
 export default BhajanSahitya;
