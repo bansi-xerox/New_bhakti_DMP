@@ -425,7 +425,7 @@ const BhajanSahitya = () => {
               />
             </div>
 
-            <div className="col-12 d-flex justify-content-end gap-2 mt-3 pt-3 border-top">
+            <div className="col-12 d-flex justify-content-end gap-2 mt-3 pt-3">
               <Button type="button" onClick={closeModal} className="btn btn-light px-4 py-2 text-muted fw-bold">
                 રદ કરો
               </Button>
