@@ -207,23 +207,33 @@ const BhajanSahitya = () => {
           overflow: 'hidden'
         }}
       >
-        
+
         {/* Top Header & Action Row */}
         <div className="premium-card p-3 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 flex-shrink-0">
           <div>
             <h4 className="fw-bold mb-0 text-dark">Bhajan & Satsang Library</h4>
           </div>
-          
+
           <div className="d-flex align-items-center gap-3">
-            <div style={{ width: '280px' }}>
-              {/* Replaced Custom SearchBar with direct input to support live typing search */}
+            <div style={{ width: '320px', position: 'relative' }}>
+              {/* Search Icon */}
+              <span style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#999', pointerEvents: 'none' }}>
+                🔍
+              </span>
+              {/* Live Search Input with Proper Padding */}
               <input
                 type="text"
                 className="form-control shadow-sm"
                 value={searchQuery}
                 onChange={handleSearchChange}
-                placeholder="Search bhajans..."
-                style={{ borderRadius: '50px', paddingLeft: '16px', borderColor: '#fbd3bc' }}
+                placeholder="સાહિત્ય, શીર્ષક, ભજન કે રાગ દ્વારા શોધો..."
+                style={{ 
+                  borderRadius: '50px', 
+                  paddingLeft: '40px', 
+                  paddingRight: '20px', 
+                  borderColor: '#fbd3bc',
+                  fontSize: '13px'
+                }}
               />
             </div>
             <Button
