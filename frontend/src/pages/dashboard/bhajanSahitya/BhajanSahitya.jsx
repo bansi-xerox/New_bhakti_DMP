@@ -4,7 +4,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import Input from '../../../components/common/Input';
 import Button from '../../../components/common/Button';
 import Modal from '../../../components/common/Modal';
-import SearchBar from '../../../components/common/SearchBar';
 
 // Import API Functions
 import {
@@ -75,11 +74,9 @@ const BhajanSahitya = () => {
     fetchBhajans();
   }, [fetchBhajans]);
 
-  const handleSearchSubmit = () => {
-    fetchBhajans(searchQuery);
-  };
-
-  const handleSearchChange = (val) => {
+  // Live Search as you type
+  const handleSearchChange = (e) => {
+    const val = e.target.value;
     setSearchQuery(val);
     fetchBhajans(val);
   };
@@ -219,11 +216,14 @@ const BhajanSahitya = () => {
           
           <div className="d-flex align-items-center gap-3">
             <div style={{ width: '280px' }}>
-              <SearchBar
+              {/* Replaced Custom SearchBar with direct input to support live typing search */}
+              <input
+                type="text"
+                className="form-control shadow-sm"
                 value={searchQuery}
                 onChange={handleSearchChange}
-                onSubmit={handleSearchSubmit}
-                placeholder="Search by sahitya, heading, name, kadi, rag..."
+                placeholder="Search bhajans..."
+                style={{ borderRadius: '50px', paddingLeft: '16px', borderColor: '#fbd3bc' }}
               />
             </div>
             <Button
