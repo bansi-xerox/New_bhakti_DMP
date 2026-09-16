@@ -562,141 +562,91 @@ html, body {
 }
 
 
-/* ================= Professional & Attractive Info Section ================= */
-.rich-info-stage {
-  padding: 18px 24px 16px 24px !important;
-  background: linear-gradient(180deg, #fffcf8 0%, #fff7ee 100%) !important;
+/* ================= Clean, Centered & Uniform Typography ================= */
+.clean-info-stage {
+  padding: 16px 22px 14px 22px !important;
+  background: #ffffff !important;
   border-bottom: 1.5px solid var(--border-gold) !important;
   text-align: left !important;
 }
 
-/* 1. Top Badges */
-.rich-info-top-pills {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 10px;
+/* સાહિત્યનું નામ - શીર્ષકનું નામ (સેન્ટરમાં) */
+.center-sahitya-header {
+  text-align: center;
   margin-bottom: 12px;
-}
-
-.rich-info-pills-left {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.rich-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 13px;
+  font-size: 16px;
   font-weight: 700;
-  padding: 5px 14px;
-  border-radius: 50px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
-  transition: all 0.2s ease;
-}
-
-.sahitya-pill {
-  background: #fff3e0;
   color: #bf360c;
-  border: 1px solid #ffe0b2;
+  letter-spacing: 0.2px;
 }
 
-.heading-pill {
-  background: #fdf5e6;
-  color: #795548;
-  border: 1px solid #edd8be;
-}
-
-.page-pill {
-  background: #ffffff;
-  color: #bf360c;
-  border: 1.5px solid #ffcc80;
-  font-weight: 800;
-  letter-spacing: 0.3px;
-}
-
-.pill-icon {
-  opacity: 0.85;
-}
-
-/* 2. Main Bhajan Title & Kadi */
-.rich-bhajan-title-wrapper {
-  margin-bottom: 14px;
-  display: flex;
-  align-items: baseline;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.rich-bhajan-title {
-  font-size: 26px !important;
-  font-weight: 850 !important;
-  margin: 0 !important;
-  background: linear-gradient(135deg, #a51800 0%, #d84315 60%, #e65100 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  letter-spacing: -0.3px;
-  line-height: 1.35;
-}
-
-.rich-bhajan-kadi {
-  font-size: 15.5px;
-  font-weight: 600;
-  color: #795548;
-  font-style: italic;
-}
-
-/* 3. Rag Indicator Badge */
-.rich-rag-container {
-  display: flex;
-  align-items: center;
-}
-
-.rich-rag-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: rgba(255, 255, 255, 0.9);
-  padding: 4px 12px;
-  border-radius: 8px;
-  border: 1px dashed #d88d63;
-  font-size: 13.5px;
-}
-
-.rag-disc-icon {
+.center-sahitya-header .sahitya-txt {
   color: #d84315;
 }
 
-.rag-label {
-  color: #8d6e63;
+.center-sahitya-header .divider-hyphen {
+  color: #a1887f;
+  margin: 0 4px;
+}
+
+.center-sahitya-header .heading-txt {
+  color: #6d4c41;
+}
+
+/* માહિતી બોક્સ: સરખી સાઈઝ (15.5px) */
+.uniform-info-block {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  font-size: 15.5px;
+  color: #2c1810;
+}
+
+.info-row-split {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.info-item {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.label-bold {
+  font-weight: 700;
+  color: #3e2723;
+  font-size: 15.5px;
+}
+
+.val-normal {
+  font-weight: 400;
+  color: #4e342e;
+  font-size: 15.5px;
+}
+
+.page-item .val-normal {
+  color: #bf360c;
   font-weight: 600;
 }
 
-.rag-value {
-  color: #bf360c;
-  font-weight: 700;
-}
-
 @media (max-width: 768px) {
-  .rich-info-stage {
-    padding: 14px 16px 12px 16px !important;
+  .clean-info-stage {
+    padding: 12px 16px 10px 16px !important;
   }
-  .rich-bhajan-title {
-    font-size: 21px !important;
+  .center-sahitya-header {
+    font-size: 15px;
+    margin-bottom: 10px;
   }
-  .rich-bhajan-kadi {
-    font-size: 14px;
-  }
-  .rich-pill {
-    font-size: 12px;
-    padding: 4px 10px;
+  .uniform-info-block,
+  .label-bold,
+  .val-normal {
+    font-size: 14.5px;
   }
 }
-
 
 /* ================= 7. Sticky Bottom Footer ================= */
 .royal-footer {

@@ -71,55 +71,59 @@ const BhajanDetailPage = () => {
           <p style={{ textAlign: 'center', color: '#8d6e63', padding: '50px 0' }}>ભજન મળ્યું નથી.</p>
         ) : (
           <div className="bhajan-desktop-stage">
-            {/* Sticky Header with Rich Aesthetic Info Card */}
+            {/* Sticky Header with Clean Typography */}
             <div className="stage-sticky-header">
-              <div className="stage-title-header rich-info-stage">
+              <div className="stage-title-header clean-info-stage">
                 
-                {/* 1. Top Badges:*/}
-                <div className="rich-info-top-pills">
-                  <div className="rich-info-pills-left">
+                {/* 1. સાહિત્યનું નામ - શીર્ષકનું નામ (Border/Background વગર સેન્ટરમાં) */}
+                {(hasValue(bhajan.sahitya_name) || hasValue(bhajan.heading_name)) && (
+                  <div className="center-sahitya-header">
                     {hasValue(bhajan.sahitya_name) && (
-                      <span className="rich-pill sahitya-pill">
-                        
-                        <span>{bhajan.sahitya_name.trim()}</span>
-                      </span>
+                      <span className="sahitya-txt">{bhajan.sahitya_name.trim()}</span>
+                    )}
+                    {hasValue(bhajan.sahitya_name) && hasValue(bhajan.heading_name) && (
+                      <span className="divider-hyphen"> - </span>
                     )}
                     {hasValue(bhajan.heading_name) && (
-                      <span className="rich-pill heading-pill">
-                       
-                        <span>{bhajan.heading_name.trim()}</span>
-                      </span>
+                      <span className="heading-txt">{bhajan.heading_name.trim()}</span>
+                    )}
+                  </div>
+                )}
+
+                {/* 2. ભજન વિગતોની યાદી (Labels Bold, Values Normal, Uniform Size) */}
+                <div className="uniform-info-block">
+                  {/* ભજન અને પૃષ્ઠ */}
+                  <div className="info-row-split">
+                    {hasValue(bhajan.bhajan_name) && (
+                      <div className="info-item">
+                        <strong className="label-bold">ભજન:</strong>
+                        <span className="val-normal">{bhajan.bhajan_name.trim()}</span>
+                      </div>
+                    )}
+                    {hasValue(bhajan.page_no) && (
+                      <div className="info-item page-item">
+                        <strong className="label-bold">પૃષ્ઠ:</strong>
+                        <span className="val-normal">{bhajan.page_no}</span>
+                      </div>
                     )}
                   </div>
 
-                  {hasValue(bhajan.page_no) && (
-                    <span className="rich-pill page-pill">
-                      પૃષ્ઠ: {bhajan.page_no}
-                    </span>
-                  )}
-                </div>
-
-                {/* 2. bhajan name-kadi */}
-                <div className="rich-bhajan-title-wrapper">
-                  <h2 className="rich-bhajan-title">
-                    {bhajan.bhajan_name?.trim() || ''}
-                  </h2>
+                  {/* કડી */}
                   {hasValue(bhajan.bhajan_kadi) && (
-                    <span className="rich-bhajan-kadi">
-                      "{bhajan.bhajan_kadi.trim()}"
-                    </span>
+                    <div className="info-item">
+                      <strong className="label-bold">કડી:</strong>
+                      <span className="val-normal">{bhajan.bhajan_kadi.trim()}</span>
+                    </div>
+                  )}
+
+                  {/* રાગ */}
+                  {hasValue(bhajan.bhajan_rag) && (
+                    <div className="info-item">
+                      <strong className="label-bold">રાગ:</strong>
+                      <span className="val-normal">{bhajan.bhajan_rag.trim()}</span>
+                    </div>
                   )}
                 </div>
-
-                {/* 3. rag badge */}
-                {hasValue(bhajan.bhajan_rag) && (
-                  <div className="rich-rag-container">
-                    <span className="rich-rag-badge">
-                      <span className="rag-label">રાગ:</span>
-                      <strong className="rag-value">{bhajan.bhajan_rag.trim()}</strong>
-                    </span>
-                  </div>
-                )}
               </div>
 
               {/* Segmented Icon Tabs */}
@@ -144,6 +148,7 @@ const BhajanDetailPage = () => {
 
             {/* Content Body */}
             <div className="stage-content-body">
+              {/* 1. ભજન લખાણ */}
               {activeTab === 'lyrics' && (
                 <div>
                   <div className="font-controls-bar">
@@ -156,6 +161,7 @@ const BhajanDetailPage = () => {
                 </div>
               )}
 
+              {/* 2. ભજન ભાવાર્થ */}
               {activeTab === 'bhavarth' && bhajan.bhajan_bhavarth && (
                 <div className="bhavarth-clean-content">
                   <h4>ભજન ભાવાર્થ:</h4>
@@ -163,6 +169,7 @@ const BhajanDetailPage = () => {
                 </div>
               )}
 
+              {/* 3. વિડીયો દર્શન */}
               {activeTab === 'video' && bhajan.youtube_link && (
                 <div className="video-responsive-frame">
                   <iframe
