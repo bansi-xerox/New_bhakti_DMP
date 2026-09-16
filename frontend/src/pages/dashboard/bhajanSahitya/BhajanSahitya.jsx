@@ -205,11 +205,11 @@ const BhajanSahitya = () => {
       `}</style>
 
       <div
-        className="w-100 d-flex flex-column gap-3 flex-grow-1"
+        className="w-100 d-flex flex-column gap-3"
         style={{
           backgroundColor: '#fdf9f1',
-          height: '100%',
-          maxHeight: '100%',
+          height: '100vh',
+          maxHeight: '100vh',
           padding: '16px',
           boxSizing: 'border-box',
           overflow: 'hidden'
@@ -256,7 +256,7 @@ const BhajanSahitya = () => {
 
         {/* Data Table Card */}
         <div className="premium-card overflow-hidden flex-grow-1 d-flex flex-column" style={{ minHeight: 0, borderColor: '#fbd3bc' }}>
-          <div className="card-body p-0 overflow-auto flex-grow-1 custom-scrollbar">
+          <div className="card-body p-0 overflow-auto flex-grow-1 custom-scrollbar" style={{ height: '100%' }}>
             <table className="table table-hover align-middle mb-0 table-custom" style={{ minWidth: '900px' }}>
               <thead style={{ position: 'sticky', top: 0, zIndex: 1 }}>
                 <tr>
