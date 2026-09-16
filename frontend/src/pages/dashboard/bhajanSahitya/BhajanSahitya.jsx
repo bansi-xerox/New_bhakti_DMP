@@ -170,10 +170,13 @@ const BhajanSahitya = () => {
         .delete-btn-wrapper { display: none; }
         .serial-cell:hover .serial-number { display: none; }
         .serial-cell:hover .delete-btn-wrapper { display: inline-block; }
+.modal-body .row > div {
+  margin-bottom: 4px !important;
+}
 
-\        .modal-body .row > div {
-          margin-bottom: 6px !important;
-        }
+.modal-body .row > div:last-child {
+  margin-bottom: 0 !important;
+}
 
         .premium-card {
           background-color: white;
@@ -348,7 +351,7 @@ const BhajanSahitya = () => {
           size="lg"
         >
           {/* Changed g-3 to g-2 to reduce the space uniformly */}
-          <form onSubmit={handleSubmit} className="row g-2">
+          <form onSubmit={handleSubmit} className="row">
             <div className="col-md-6">
               <Input
                 name="sahitya_name"
