@@ -34,6 +34,14 @@ const Trash2Icon = ({ size = 16, className = "" }) => (
   </svg>
 );
 
+// --- Zero-Dependency Lucide-Style Search Icon ---
+const SearchIcon = ({ size = 16, className = "" }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <circle cx="11" cy="11" r="8" />
+    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+  </svg>
+);
+
 const BhajanSahitya = () => {
   const [bhajans, setBhajans] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -216,11 +224,11 @@ const BhajanSahitya = () => {
 
           <div className="d-flex align-items-center gap-3">
             <div style={{ width: '320px', position: 'relative' }}>
-              {/* Search Icon */}
-              <span style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#999', pointerEvents: 'none' }}>
-                🔍
+              {/* Lucide-Style Search Icon */}
+              <span style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#888', display: 'flex', alignItems: 'center', pointerEvents: 'none' }}>
+                <SearchIcon size={16} />
               </span>
-              {/* Live Search Input with Proper Padding */}
+              {/* Live Search Input */}
               <input
                 type="text"
                 className="form-control shadow-sm"
@@ -229,7 +237,7 @@ const BhajanSahitya = () => {
                 placeholder="સાહિત્ય, શીર્ષક, ભજન કે રાગ દ્વારા શોધો..."
                 style={{ 
                   borderRadius: '50px', 
-                  paddingLeft: '40px', 
+                  paddingLeft: '42px', 
                   paddingRight: '20px', 
                   borderColor: '#fbd3bc',
                   fontSize: '13px'
