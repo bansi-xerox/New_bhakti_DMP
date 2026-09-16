@@ -406,15 +406,33 @@ const BhajanSahitya = () => {
            TABLE
            ===================================================== */
 
-       .table-custom-wrapper {
-        width: 100%;
-        flex: 1;
-        min-height: 0;
-        overflow: hidden;
-        background-color: #ffffff;
-        border: 1px solid #8f8f8f !important;
-        border-radius: 14px;
-      }
+        .table-custom-wrapper {
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  background-color: #ffffff;
+  border: 1px solid #d49a7a !important;
+  border-radius: 14px;
+  position: relative;
+}
+
+.table-custom-wrapper::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  width: 22px;
+  height: 22px;
+
+  border-top: 2px solid #c45a24;
+  border-left: 2px solid #c45a24;
+
+  border-top-left-radius: 14px;
+
+  pointer-events: none;
+  z-index: 10;
+}
 
         .table-responsive-wrapper {
           width: 100%;
@@ -433,9 +451,9 @@ const BhajanSahitya = () => {
 
        .table-custom th,
         .table-custom td {
-        border-right: 1px solid #8f8f8f !important;
-        border-bottom: 1px solid #8f8f8f !important;
-        vertical-align: middle !important;
+         border-right: 1px solid #c45a24 !important;
+border-bottom: 1px solid #c45a24 !important;
+          vertical-align: middle !important;
         }
 
         .table-custom th:last-child,
