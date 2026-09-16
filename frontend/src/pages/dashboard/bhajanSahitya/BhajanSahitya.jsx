@@ -342,8 +342,7 @@ const BhajanSahitya = () => {
           title={isEditing ? 'ભજનમાં સુધારો કરો (Edit)' : 'નવું ભજન ઉમેરો (Add New)'}
           size="lg"
         >
-          {/* Changed g-2 to g-3 for increased spacing between input rows */}
-          <form onSubmit={handleSubmit} className="row g-3">
+          <form onSubmit={handleSubmit} className="row g-1">
             <div className="col-md-6">
               <Input
                 name="sahitya_name"
