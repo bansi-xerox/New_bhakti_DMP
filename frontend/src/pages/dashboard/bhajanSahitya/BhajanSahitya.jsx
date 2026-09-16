@@ -56,11 +56,10 @@ const BhajanSahitya = () => {
   const [formData, setFormData] = useState(initialFormState);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const fetchBhajans = useCallback(async (query = '') => {
+ const fetchBhajans = useCallback(async (query = '') => {
     try {
       let response;
       if (query && query.trim() !== '') {
-        // Fix: Pass query directly based on how api.js handles it (either string or object)
         response = await searchBhajans(query.trim()); 
       } else {
         response = await getAllBhajans();
@@ -71,7 +70,6 @@ const BhajanSahitya = () => {
       showErrorAlert("Fetch Error", "Could not load bhajans.");
     }
   }, []);
-
   useEffect(() => {
     fetchBhajans();
   }, [fetchBhajans]);
