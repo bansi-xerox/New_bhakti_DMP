@@ -56,7 +56,7 @@ const BhajanSahitya = () => {
   const [formData, setFormData] = useState(initialFormState);
   const [searchQuery, setSearchQuery] = useState('');
 
- const fetchBhajans = useCallback(async (query = '') => {
+  const fetchBhajans = useCallback(async (query = '') => {
     try {
       let response;
       if (query && query.trim() !== '') {
@@ -70,6 +70,7 @@ const BhajanSahitya = () => {
       showErrorAlert("Fetch Error", "Could not load bhajans.");
     }
   }, []);
+
   useEffect(() => {
     fetchBhajans();
   }, [fetchBhajans]);
@@ -78,11 +79,10 @@ const BhajanSahitya = () => {
     fetchBhajans(searchQuery);
   };
 
+  // Fixed: Typing and Enter key both will perform search seamlessly
   const handleSearchChange = (val) => {
     setSearchQuery(val);
-    if (!val || val.trim() === '') {
-      fetchBhajans('');
-    }
+    fetchBhajans(val);
   };
 
   const handleInputChange = (e) => {
