@@ -407,14 +407,14 @@ const BhajanSahitya = () => {
            ===================================================== */
 
         .table-custom-wrapper {
-  width: 100%;
-  flex: 1;
-  min-height: 0;
-  overflow: hidden;
-  background-color: #ffffff;
-  border: 1px solid #d49a7a !important;
-  border-radius: 14px;
-  position: relative;
+        width: 100%;
+        flex: 1;
+        min-height: 0;
+        overflow: hidden;
+        background-color: #ffffff;
+        border: 1px solid #d49a7a !important;
+        border-radius: 14px;
+        position: relative; 
 }
 
 .table-custom-wrapper::before {
@@ -683,18 +683,11 @@ border-bottom: 1px solid #c45a24 !important;
           resize: vertical !important;
         }
 
-        /* =====================================================
-           TEXTAREA GROUP
-           
-           This specifically controls the small gap between
-           Bhajan textarea and Bhavarth textarea.
-           ===================================================== */
-
         .bhajan-textarea-group {
           width: 100%;
           display: flex;
           flex-direction: column;
-          gap: 7px !important;
+          gap: 14px !important;
           margin: 0 !important;
           padding: 0 !important;
         }
