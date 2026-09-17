@@ -510,7 +510,7 @@ border-bottom: 1px solid #c45a24 !important;
           width: 100%;
           display: flex;
           flex-direction: column;
-          gap: 14px !important;
+          gap: 20px !important;
           margin: 0 !important;
           padding: 0 !important;
           box-sizing: border-box;
