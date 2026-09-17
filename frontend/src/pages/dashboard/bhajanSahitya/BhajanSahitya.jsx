@@ -1154,7 +1154,7 @@ border-bottom: 1px solid #c45a24 !important;
                 className="form-control custom-scrollbar bhajan-textarea"
                 placeholder="ભજનનો પાઠ દાખલ કરો *"
               />
-            </div>
+            </div><br></br>
 
             {/* BHAVARTH TEXTAREA */}
             <div className="bhajan-form-full">
