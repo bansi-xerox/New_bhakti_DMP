@@ -683,14 +683,14 @@ border-bottom: 1px solid #c45a24 !important;
           resize: vertical !important;
         }
 
-        .bhajan-textarea-group {
-          width: 100%;
-          display: flex;
-          flex-direction: column;
-          gap: 14px !important;
-          margin: 0 !important;
-          padding: 0 !important;
-        }
+        // .bhajan-textarea-group {
+        //   width: 100%;
+        //   display: flex;
+        //   flex-direction: column;
+        //   gap: 14px !important;
+        //   margin: 0 !important;
+        //   padding: 0 !important;
+        // }
 
         /* =====================================================
            ACTION BUTTONS
@@ -1144,35 +1144,30 @@ border-bottom: 1px solid #c45a24 !important;
                 placeholder="YouTube Link (https://youtube.com/...)"
               />
             </div>
-
-            {/* =================================================
-                BHAJAN + BHAVARTH
-                ================================================= */}
-
-            <div className="bhajan-textarea-group">
               <div className="bhajan-form-full">
-                <textarea
-                  required
-                  name="bhajan"
-                  value={formData.bhajan}
-                  onChange={handleInputChange}
-                  rows={4}
-                  className="form-control custom-scrollbar bhajan-textarea"
-                  placeholder="ભજનનો પાઠ દાખલ કરો *"
-                />
-              </div>
-
-              <div className="bhajan-form-full">
-                <textarea
-                  name="bhajan_bhavarth"
-                  value={formData.bhajan_bhavarth}
-                  onChange={handleInputChange}
-                  rows={3}
-                  className="form-control custom-scrollbar bhavarth-textarea"
-                  placeholder="ભજનનો અર્થ / ભાવાર્થ દાખલ કરો"
-                />
-              </div>
+              <textarea
+                required
+                name="bhajan"
+                value={formData.bhajan}
+                onChange={handleInputChange}
+                rows={4}
+                className="form-control custom-scrollbar bhajan-textarea"
+                placeholder="ભજનનો પાઠ દાખલ કરો *"
+              />
             </div>
+
+            {/* BHAVARTH TEXTAREA */}
+            <div className="bhajan-form-full">
+              <textarea
+                name="bhajan_bhavarth"
+                value={formData.bhajan_bhavarth}
+                onChange={handleInputChange}
+                rows={3}
+                className="form-control custom-scrollbar bhavarth-textarea"
+                placeholder="ભજનનો અર્થ / ભાવાર્થ દાખલ કરો"
+              />
+            </div>
+            
 
             {/* =================================================
                 ACTION BUTTONS
