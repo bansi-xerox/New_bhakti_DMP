@@ -292,17 +292,6 @@ const BhajanSahitya = () => {
   return (
     <>
       <style>{`
-<<<<<<< HEAD
-        .delete-btn-wrapper { display: none; }
-        .serial-cell:hover .serial-number { display: none; }
-        .serial-cell:hover .delete-btn-wrapper { display: inline-block; }
-        
-        .modal-body .row > div {
-          margin-bottom: 4px !important;
-        }
-        .modal-body .row > div:last-child {
-          margin-bottom: 0 !important;
-=======
         /* =====================================================
            PAGE
            ===================================================== */
@@ -319,7 +308,6 @@ const BhajanSahitya = () => {
           box-sizing: border-box;
           background-color: #fdf9f1;
           overflow-y: auto;
->>>>>>> 2d71a7cac0e3f2294936048da24761b9ec19e5bf
         }
 
         /* =====================================================
@@ -865,16 +853,6 @@ border-bottom: 1px solid #c45a24 !important;
             HEADER
             =================================================== */}
 
-<<<<<<< HEAD
-          <div className="d-flex align-items-center gap-3">
-            <div style={{ width: '320px', position: 'relative' }}>
-              {/* Lucide-Style Search Icon (Left) */}
-              <span style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#888', display: 'flex', alignItems: 'center', pointerEvents: 'none' }}>
-                <SearchIcon size={16} />
-              </span>
-
-              {/* Live Search Input */}
-=======
         <div className="premium-card bhajan-header">
           <h4 className="bhajan-header-title">
             Bhajan &amp; Satsang Library
@@ -886,24 +864,12 @@ border-bottom: 1px solid #c45a24 !important;
                 <SearchIcon size={16} />
               </span>
 
->>>>>>> 2d71a7cac0e3f2294936048da24761b9ec19e5bf
               <input
                 type="text"
                 className="bhajan-search-input"
                 value={searchQuery}
                 onChange={handleSearchChange}
-<<<<<<< HEAD
-                placeholder="સાહિત્ય, શીર્ષક, ભજન, કડી કે રાગ શોધો... "
-                style={{
-                  borderRadius: '50px',
-                  paddingLeft: '42px',
-                  paddingRight: '40px', // Increased padding to prevent text overlapping the mic
-                  borderColor: '#fbd3bc',
-                  fontSize: '13px'
-                }}
-=======
                 placeholder="સાહિત્ય, શીર્ષક, ભજન, કડી કે રાગ શોધો..."
->>>>>>> 2d71a7cac0e3f2294936048da24761b9ec19e5bf
               />
 
               {/* Lucide-Style Mic Icon (Right) */}
@@ -937,60 +903,6 @@ border-bottom: 1px solid #c45a24 !important;
           </div>
         </div>
 
-<<<<<<< HEAD
-        {/* Data Table Card */}
-        <div
-          className="premium-card overflow-hidden d-flex flex-column"
-          style={{ borderColor: '#fbd3bc' }}
-        >
-          <div className="table-responsive-wrapper custom-scrollbar">
-            <table className="table table-hover align-middle table-custom" style={{ minWidth: '900px' }}>
-              <thead style={{ position: 'sticky', top: 0, zIndex: 1 }}>
-                <tr>
-                  <th className="py-3 px-4 text-secondary" style={{ width: '80px' }}>ક્રમ</th>
-                  <th className="py-3 px-4 text-secondary">સાહિત્યનું નામ</th>
-                  <th className="py-3 px-4 text-secondary">શીર્ષકનું નામ</th>
-                  <th className="py-3 px-4 text-secondary">ભજનનું નામ</th>
-                  <th className="py-3 px-4 text-secondary">ભજનની કડી</th>
-                  <th className="py-3 px-4 text-secondary">ભજનનો રાગ</th>
-                  <th className="py-3 px-4 text-secondary">પૃષ્ઠ ક્રમાંક</th>
-                  <th className="py-3 px-4 text-secondary text-center">YouTube Link</th>
-                </tr>
-              </thead>
-              <tbody>
-                {bhajans.length > 0 ? (
-                  bhajans.map((item, index) => (
-                    <tr
-                      key={item._id}
-                      onDoubleClick={() => openEditModal(item._id)}
-                      title="Double-click to edit"
-                      style={{ cursor: 'pointer' }}
-                    >
-                      <td className="py-3 px-4 serial-cell" style={{ width: '80px', minWidth: '80px' }}>
-                        <span className="serial-number text-secondary fw-bold">{index + 1}</span>
-                        <div className="delete-btn-wrapper">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDelete(item._id);
-                            }}
-                            className="btn btn-sm btn-danger border-0 p-1 d-flex align-items-center justify-content-center shadow-sm"
-                            style={{ width: '28px', height: '28px', borderRadius: '4px' }}
-                            title="Delete"
-                          >
-                            <Trash2Icon size={14} />
-                          </button>
-                        </div>
-                      </td>
-
-                      <td className="py-3 px-4 text-dark">{item.sahitya_name}</td>
-                      <td className="py-3 px-4 text-muted">{item.heading_name || '-'}</td>
-                      <td className="py-3 px-4 fw-bold" style={{ color: '#f26522' }}>{item.bhajan_name}</td>
-                      <td className="py-3 px-4 text-muted text-truncate" style={{ maxWidth: '200px' }}>{item.bhajan_kadi}</td>
-                      <td className="py-3 px-4 text-muted">{item.bhajan_rag}</td>
-                      <td className="py-3 px-4 text-muted">{item.page_no}</td>
-
-=======
         {/* ===================================================
             TABLE
             =================================================== */}
@@ -1113,7 +1025,6 @@ border-bottom: 1px solid #c45a24 !important;
                         {item.page_no || '-'}
                       </td>
 
->>>>>>> 2d71a7cac0e3f2294936048da24761b9ec19e5bf
                       <td className="py-3 px-4 text-center">
                         {item.youtube_link ? (
                           <a
@@ -1127,27 +1038,19 @@ border-bottom: 1px solid #c45a24 !important;
                             ▶ Play
                           </a>
                         ) : (
-<<<<<<< HEAD
-                          <span className="text-muted">-</span>
-=======
                           <span className="text-muted">
                             -
                           </span>
->>>>>>> 2d71a7cac0e3f2294936048da24761b9ec19e5bf
                         )}
                       </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-<<<<<<< HEAD
-                    <td colSpan="8" className="py-5 text-center text-muted">
-=======
                     <td
                       colSpan="8"
                       className="py-5 text-center text-muted"
                     >
->>>>>>> 2d71a7cac0e3f2294936048da24761b9ec19e5bf
                       કોઈ ડેટા મળ્યો નથી. (No data found)
                     </td>
                   </tr>
@@ -1156,16 +1059,11 @@ border-bottom: 1px solid #c45a24 !important;
             </table>
           </div>
         </div>
-<<<<<<< HEAD
-        {/* Reusable Custom Modal */}
-        {/* Reusable Custom Modal */}
-=======
 
         {/* ===================================================
             ADD / EDIT MODAL
             =================================================== */}
 
->>>>>>> 2d71a7cac0e3f2294936048da24761b9ec19e5bf
         <Modal
           isOpen={isModalOpen}
           onClose={closeModal}
