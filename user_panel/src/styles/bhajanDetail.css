@@ -349,3 +349,17 @@
     padding: 10px 12px 18px 12px !important;
   }
 }
+
+/* ================= Bhajan Detail Centered Search Bar ================= */
+.bhajan-detail-search-container {
+  width: 100%;
+  max-width: 1000px; 
+  margin: 0 auto 16px auto;
+  display: flex;
+  justify-content: center;
+}
+
+.bhajan-detail-search-container .wide-search-wrapper {
+  max-width: 1000px;
+  width: 100%;
+}
