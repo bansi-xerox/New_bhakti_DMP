@@ -6,6 +6,8 @@ import {
   confirmMediaDelete,
 } from "../../../components/common/Alert";
 import GalleryModal from "./GalleryModal";
+import FaceSearchModal from "./FaceSearchModal";
+
 
 // --- Zero-Dependency Lucide-Style SVG Icons ---
 const FolderIcon = ({ size = 18, className = "" }) => (
@@ -75,6 +77,19 @@ const Trash2Icon = ({ size = 16, className = "" }) => (
     <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
     <line x1="10" x2="10" y1="11" y2="17" />
     <line x1="14" x2="14" y1="11" y2="17" />
+  </svg>
+);
+
+// Add this SVG icon definition with your others
+const FaceIcon = ({ size = 18, className = "" }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <path d="M3 7V5a2 2 0 0 1 2-2h2" />
+    <path d="M17 3h2a2 2 0 0 1 2 2v2" />
+    <path d="M21 17v2a2 2 0 0 1-2 2h-2" />
+    <path d="M7 21H5a2 2 0 0 1-2-2v-2" />
+    <circle cx="12" cy="12" r="3" />
+    <path d="M12 9v-1" />
+    <path d="M12 16v1" />
   </svg>
 );
 
@@ -248,6 +263,26 @@ const Gallery = () => {
     setSelectedIds((prev) =>
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id],
     );
+  };
+
+  // New function to handle the API call
+  const handleFaceSearch = async (formData) => {
+    try {
+      setLoading(true);
+      // NOTE: You must add this endpoint to your services/api.js:
+      // export const searchByFace = (formData) => API.post('/gallery/face-search', formData);
+      const res = await searchByFace(formData); 
+      
+      if (res.data?.success) {
+        // Replace current items with matched items
+        setItems(res.data.data || []);
+        setFilterType('Photos'); // Switch to photos tab since videos usually aren't scanned
+      }
+    } catch (err) {
+      showErrorAlert("Face Search Failed", "Could not find matches or process the image.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -530,6 +565,17 @@ const Gallery = () => {
                   <XIcon size={16} />
                 </button>
               )}
+
+              {/* NEW FACE SEARCH BUTTON */}
+            <button
+              className="btn btn-light border bg-white d-flex align-items-center gap-2 shadow-sm rounded-3"
+              style={{ padding: '0.55rem 1rem', color: '#ea580c', fontWeight: '600' }}
+              onClick={() => setIsFaceSearchOpen(true)}
+              title="Search by Face"
+            >
+              <FaceIcon size={18} />
+              <span className="d-none d-sm-inline">Face Search</span>
+            </button>
             </div>
 
             <div className="d-flex flex-wrap gap-2 align-items-center ms-auto">
@@ -720,6 +766,12 @@ const Gallery = () => {
           setSelectedIds([]);
         }}
         initialData={selectedForEdit}
+      />
+
+      <FaceSearchModal 
+        isOpen={isFaceSearchOpen} 
+        onClose={() => setIsFaceSearchOpen(false)} 
+        onSearch={handleFaceSearch} 
       />
     </div>
   );
