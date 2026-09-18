@@ -13,7 +13,6 @@ const BhajanDetailPage = () => {
   const [bhajan, setBhajan] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('lyrics');
-  const [fontSize, setFontSize] = useState(19);
 
   // Search States
   const [allBhajansList, setAllBhajansList] = useState([]);
@@ -95,7 +94,7 @@ const BhajanDetailPage = () => {
       );
     });
 
-    setSearchResults(matched.slice(0, 15)); // Display top 15 results
+    setSearchResults(matched.slice(0, 15));
     setShowDropdown(true);
   };
 
@@ -104,7 +103,7 @@ const BhajanDetailPage = () => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
     if (!SpeechRecognition) {
-      alert('તમારું બ્રાઉઝર વોઇસ સર્ચને સપોર્ટ કરતું નથી.');
+      alert('Tammari browser voice search support cheyyadam ledu.');
       return;
     }
 
@@ -183,7 +182,6 @@ const BhajanDetailPage = () => {
         .search-input-box {
           padding-right: 75px !important;
         }
-        /* Live Search Dropdown */
         .live-search-dropdown {
           position: absolute;
           top: calc(100% + 6px);
@@ -241,8 +239,7 @@ const BhajanDetailPage = () => {
         <Header />
 
         <main className="main-desktop-container">
-          {/* ================= Universal Search Bar ================= */}
-          {/* ================= Universal Search Bar (Centered with Stage) ================= */}
+          {/* Universal Search Bar (Centered with Stage) */}
           <div className="bhajan-detail-search-container" ref={searchRef}>
             <div className="search-input-wrapper wide-search-wrapper" style={{ position: 'relative' }}>
               <Search className="search-icon" size={20} />
@@ -331,7 +328,8 @@ const BhajanDetailPage = () => {
               )}
             </div>
           </div>
-          {/* ================= Bhajan Detail Stage ================= */}
+
+          {/* Bhajan Detail Stage */}
           {loading ? (
             <Loader />
           ) : !bhajan ? (
@@ -341,8 +339,9 @@ const BhajanDetailPage = () => {
               <div className="stage-sticky-header">
                 {/* Clickable Info Area */}
                 <div
-                  className={`stage-title-header clean-info-stage clickable-lyrics-header ${activeTab === 'lyrics' ? 'active-lyrics-header' : ''
-                    }`}
+                  className={`stage-title-header clean-info-stage clickable-lyrics-header ${
+                    activeTab === 'lyrics' ? 'active-lyrics-header' : ''
+                  }`}
                   onClick={() => setActiveTab('lyrics')}
                   role="button"
                   tabIndex={0}
@@ -397,7 +396,7 @@ const BhajanDetailPage = () => {
                   </div>
                 </div>
 
-                {/* Actions Bar */}
+                {/* Actions Bar (Font control buttons completely removed) */}
                 <div className="stage-actions-bar">
                   {bottomTabs.length > 0 && (
                     <div className="desktop-tab-bar icon-only-tab-bar">
@@ -421,28 +420,6 @@ const BhajanDetailPage = () => {
                       })}
                     </div>
                   )}
-
-                  {/* Font Controls only for lyrics */}
-                  {activeTab === 'lyrics' && (
-                    <div className="header-font-controls">
-                      <button
-                        type="button"
-                        className="font-btn"
-                        onClick={() => setFontSize((s) => Math.max(15, s - 2))}
-                        aria-label="Decrease Font"
-                      >
-                        A-
-                      </button>
-                      <button
-                        type="button"
-                        className="font-btn"
-                        onClick={() => setFontSize((s) => Math.min(28, s + 2))}
-                        aria-label="Increase Font"
-                      >
-                        A+
-                      </button>
-                    </div>
-                  )}
                 </div>
               </div>
 
@@ -450,7 +427,7 @@ const BhajanDetailPage = () => {
               <div className="stage-content-body">
                 {/* Lyrics */}
                 {activeTab === 'lyrics' && (
-                  <div className="lyrics-text-container" style={{ fontSize: `${fontSize}px` }}>
+                  <div className="lyrics-text-container" style={{ fontSize: '18px' }}>
                     {formatText(bhajan.bhajan) || 'લખાણ ઉપલબ્ધ નથી.'}
                   </div>
                 )}
