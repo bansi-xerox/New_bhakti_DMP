@@ -1,0 +1,67 @@
+/* ================= Sticky Top Header ================= */
+.royal-header {
+  flex-shrink: 0;
+  background: linear-gradient(180deg, #ffffff 0%, #fffbf6 100%);
+  border-bottom: 2px solid var(--border-gold);
+  box-shadow: 0 4px 20px rgba(160, 64, 0, 0.06);
+  z-index: 100;
+}
+
+.royal-header-inner {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.royal-brand-group {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-decoration: none;
+}
+
+.royal-brand-emblem {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #d84315 0%, #ff8f00 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(216, 67, 21, 0.3);
+  border: 2px solid #fff3e0;
+}
+
+.royal-brand-titles h1 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #b71c1c 0%, #e65100 60%, #ff8f00 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -0.3px;
+}
+
+.royal-brand-titles p {
+  margin: 2px 0 0 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.header-shloka-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff3e0;
+  border: 1px solid #ffe0b2;
+  padding: 6px 14px;
+  border-radius: 50px;
+  color: #bf360c;
+  font-size: 13px;
+  font-weight: 700;
+}

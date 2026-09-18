@@ -1,0 +1,29 @@
+/* ================= Sticky Bottom Footer ================= */
+.royal-footer {
+  flex-shrink: 0;
+  background: #24140e;
+  color: #efe5dd;
+  border-top: 3px solid var(--primary-saffron);
+  z-index: 90;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.2);
+  width: 100%;
+}
+
+.footer-bottom-bar {
+  padding: 12px 16px;
+  padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  text-align: center;
+  background: #190c07;
+  font-size: 13px;
+  color: #cfd8dc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.footer-bottom-bar strong,
+.footer-bottom-bar a {
+  color: #ffca28;
+  font-size: 13.5px;
+}
