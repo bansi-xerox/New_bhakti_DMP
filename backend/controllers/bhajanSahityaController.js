@@ -4,7 +4,7 @@ const BhajanSahitya = require('../models/BhajanSahitya');
 exports.createBhajan = async (req, res) => {
   try {
     const { sahitya_name, heading_name, bhajan_name } = req.body;
-    
+
     const cleanHeading = (heading_name && heading_name.trim()) ? heading_name.trim() : null;
 
     // Check if duplicate entry already exists
@@ -43,7 +43,7 @@ exports.getAllBhajans = async (req, res) => {
   try {
     const bhajans = await BhajanSahitya.find()
       .select('sahitya_name heading_name bhajan_name bhajan_kadi bhajan_rag page_no youtube_link')
-      .sort({ _id: -1 }); 
+      .sort({ _id: -1 });
     res.status(200).json({ success: true, data: bhajans });
   } catch (error) {
     return res.status(500).json({
@@ -66,8 +66,16 @@ exports.searchBhajans = async (req, res) => {
       });
     }
 
-    const regex = new RegExp(q.trim(), 'i');
-    
+    // 1. Remove all spaces and common punctuation from the user's search string
+    const cleanQuery = q.replace(/[\s.,:;_'"+=\-!@#$%^&*()]+/g, '');
+
+
+    // 2. Insert a regex wildcard between every single character
+    const flexibleRegexPattern = cleanQuery.split('').join('[\\s.,:;_\'"\\-]*');
+
+    // Create the case-insensitive regex
+    const regex = new RegExp(flexibleRegexPattern, 'i');
+
     // Strict search criteria limited only to the 5 requested fields
     const query = {
       $or: [
@@ -146,16 +154,16 @@ exports.updateBhajan = async (req, res) => {
     }
 
     const updatedBhajan = await BhajanSahitya.findByIdAndUpdate(
-      req.params.id, 
+      req.params.id,
       {
         ...req.body,
         heading_name: cleanHeading
-      }, 
+      },
       { new: true, runValidators: true }
     );
-    
+
     if (!updatedBhajan) return res.status(404).json({ success: false, message: 'Record not found' });
-    
+
     res.status(200).json({ success: true, message: 'Bhajan updated successfully', data: updatedBhajan });
   } catch (error) {
     if (error.code === 11000) {
