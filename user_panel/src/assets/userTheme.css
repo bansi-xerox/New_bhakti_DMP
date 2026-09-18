@@ -648,6 +648,150 @@ html, body {
   }
 }
 
+
+/* ================= Clean, Centered & Uniform Typography ================= */
+.clean-info-stage {
+  padding: 16px 22px 14px 22px !important;
+  background: #ffffff !important;
+  border-bottom: 1.5px solid var(--border-gold) !important;
+  text-align: left !important;
+  position: relative;
+}
+
+/* Centered Sahitya - Heading Header */
+.center-sahitya-header {
+  text-align: center;
+  margin-bottom: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #bf360c;
+  letter-spacing: 0.2px;
+}
+
+.center-sahitya-header .sahitya-txt {
+  color: #d84315;
+}
+
+.center-sahitya-header .divider-hyphen {
+  color: #a1887f;
+  margin: 0 4px;
+}
+
+.center-sahitya-header .heading-txt {
+  color: #6d4c41;
+}
+
+/* Uniform Info Block */
+.uniform-info-block {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  font-size: 15.5px;
+  color: #2c1810;
+}
+
+.info-row-split {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.info-item {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.label-bold {
+  font-weight: 700;
+  color: #3e2723;
+  font-size: 15.5px;
+}
+
+.val-normal {
+  font-weight: 400;
+  color: #4e342e;
+  font-size: 15.5px;
+}
+
+.page-item .val-normal {
+  color: #bf360c;
+  font-weight: 600;
+}
+
+/* ================= Top Music Click Icon Button ================= */
+.top-music-click-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 14px;
+}
+
+.top-music-btn {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 1.5px solid var(--border-gold);
+  color: #795548;
+  cursor: pointer;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.top-music-btn:hover {
+  background: #fff3e0;
+  color: #d84315;
+  border-color: #ffcc80;
+  transform: translateY(-2px);
+}
+
+/* Active Top Music Button with Saffron Gradient */
+.top-music-btn.active {
+  background: linear-gradient(135deg, #d84315 0%, #ff6f00 100%) !important;
+  color: #ffffff !important;
+  border-color: #bf360c !important;
+  box-shadow: 0 6px 16px rgba(216, 67, 21, 0.35) !important;
+  transform: translateY(-2px);
+}
+
+.top-music-btn.active svg {
+  stroke: #ffffff !important;
+}
+
+/* Tooltip on Hover for Top Music Button */
+.top-music-btn:hover .tab-hover-tooltip,
+.top-music-btn:focus .tab-hover-tooltip {
+  visibility: visible;
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+@media (max-width: 768px) {
+  .clean-info-stage {
+    padding: 12px 16px 10px 16px !important;
+  }
+  .center-sahitya-header {
+    font-size: 15px;
+    margin-bottom: 10px;
+  }
+  .uniform-info-block,
+  .label-bold,
+  .val-normal {
+    font-size: 14.5px;
+  }
+  .top-music-btn {
+    width: 44px;
+    height: 44px;
+  }
+}
+
 /* ================= 7. Sticky Bottom Footer ================= */
 .royal-footer {
   flex-shrink: 0;
