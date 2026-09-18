@@ -6,7 +6,7 @@ import {
   confirmMediaDelete,
 } from "../../../components/common/Alert";
 import GalleryModal from "./GalleryModal";
-import FaceSearchModal from "./FaceSearchModal";
+// import FaceSearchModal from "./FaceSearchModal";
 
 
 // --- Zero-Dependency Lucide-Style SVG Icons ---
@@ -266,24 +266,24 @@ const Gallery = () => {
   };
 
   // New function to handle the API call
-  const handleFaceSearch = async (formData) => {
-    try {
-      setLoading(true);
-      // NOTE: You must add this endpoint to your services/api.js:
-      // export const searchByFace = (formData) => API.post('/gallery/face-search', formData);
-      const res = await searchByFace(formData); 
+  // const handleFaceSearch = async (formData) => {
+  //   try {
+  //     setLoading(true);
+  //     // NOTE: You must add this endpoint to your services/api.js:
+  //     // export const searchByFace = (formData) => API.post('/gallery/face-search', formData);
+  //     const res = await searchByFace(formData); 
       
-      if (res.data?.success) {
-        // Replace current items with matched items
-        setItems(res.data.data || []);
-        setFilterType('Photos'); // Switch to photos tab since videos usually aren't scanned
-      }
-    } catch (err) {
-      showErrorAlert("Face Search Failed", "Could not find matches or process the image.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  //     if (res.data?.success) {
+  //       // Replace current items with matched items
+  //       setItems(res.data.data || []);
+  //       setFilterType('Photos'); // Switch to photos tab since videos usually aren't scanned
+  //     }
+  //   } catch (err) {
+  //     showErrorAlert("Face Search Failed", "Could not find matches or process the image.");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   return (
     <div
@@ -567,7 +567,7 @@ const Gallery = () => {
               )}
 
               {/* NEW FACE SEARCH BUTTON */}
-            <button
+            {/* <button
               className="btn btn-light border bg-white d-flex align-items-center gap-2 shadow-sm rounded-3"
               style={{ padding: '0.55rem 1rem', color: '#ea580c', fontWeight: '600' }}
               onClick={() => setIsFaceSearchOpen(true)}
@@ -575,7 +575,7 @@ const Gallery = () => {
             >
               <FaceIcon size={18} />
               <span className="d-none d-sm-inline">Face Search</span>
-            </button>
+            </button> */}
             </div>
 
             <div className="d-flex flex-wrap gap-2 align-items-center ms-auto">
@@ -768,11 +768,11 @@ const Gallery = () => {
         initialData={selectedForEdit}
       />
 
-      <FaceSearchModal 
+      {/* <FaceSearchModal 
         isOpen={isFaceSearchOpen} 
         onClose={() => setIsFaceSearchOpen(false)} 
         onSearch={handleFaceSearch} 
-      />
+      /> */}
     </div>
   );
 };
