@@ -65,6 +65,14 @@ const SearchIcon = ({ size = 16, className = '' }) => (
   </svg>
 );
 
+const MicIcon = ({ size = 16, className = '', color = "currentColor" }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
+    <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+    <line x1="12" x2="12" y1="19" y2="22" />
+  </svg>
+);
+
 // =========================================================
 // Main Component
 // =========================================================
@@ -89,6 +97,10 @@ const BhajanSahitya = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState(initialFormState);
   const [searchQuery, setSearchQuery] = useState('');
+
+
+  // New State for Voice Search
+  const [isListening, setIsListening] = useState(false);
 
   // =========================================================
   // Fetch Bhajans
@@ -132,6 +144,47 @@ const BhajanSahitya = () => {
 
     setSearchQuery(value);
     fetchBhajans(value);
+  };
+
+  // =========================================================
+  // Voice Search Handler
+  // =========================================================
+  
+  const handleVoiceSearch = () => {
+    // Check for browser support
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    
+    if (!SpeechRecognition) {
+      showErrorAlert('Not Supported', 'તમારું બ્રાઉઝર વોઇસ સર્ચને સપોર્ટ કરતું નથી. (Your browser does not support voice search.)');
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'gu-IN'; // Setting to Gujarati. Change to 'en-IN' for English or 'hi-IN' for Hindi.
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.onstart = () => {
+      setIsListening(true);
+    };
+
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      setSearchQuery(transcript); // Set the search box text to spoken text
+      fetchBhajans(transcript);   // Trigger the API call
+    };
+
+    recognition.onerror = (event) => {
+      console.error("Speech recognition error:", event.error);
+      setIsListening(false);
+      showToastAlert('Voice Search failed or was cancelled.');
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
+    };
+
+    recognition.start();
   };
 
   // =========================================================
@@ -842,6 +895,18 @@ border-bottom: 1px solid #c45a24 !important;
             min-width: 0 !important;
           }
         }
+
+        /* Added pulse animation for active mic */
+        @keyframes pulseMic {
+          0% { transform: translateY(-50%) scale(1); opacity: 1; }
+          50% { transform: translateY(-50%) scale(1.2); opacity: 0.7; }
+          100% { transform: translateY(-50%) scale(1); opacity: 1; }
+        }
+        
+        .mic-active {
+          color: #dc3545 !important; /* Red color when recording */
+          animation: pulseMic 1.5s infinite;
+        }
       `}</style>
 
       {/* =====================================================
@@ -872,25 +937,24 @@ border-bottom: 1px solid #c45a24 !important;
                 placeholder="સાહિત્ય, શીર્ષક, ભજન, કડી કે રાગ શોધો..."
               />
 
-              {/* Lucide-Style Mic Icon (Right) */}
+             {/* Voice Search Mic Icon */}
               <span
+                className={isListening ? "mic-active" : ""}
                 style={{
                   position: 'absolute',
                   right: '16px',
                   top: '50%',
                   transform: 'translateY(-50%)',
-                  color: '#444', // Slightly darker for better visibility 
+                  color: isListening ? '#dc3545' : '#888',
                   display: 'flex',
                   alignItems: 'center',
-                  cursor: 'pointer' // Shows pointer on hover so users know it's interactive
+                  cursor: 'pointer',
+                  transition: 'color 0.3s ease'
                 }}
-                onClick={() => {
-                  // Optional: Add Web Speech API integration here later
-                  console.log("Mic clicked");
-                }}
-                title="Voice Search"
+                onClick={handleVoiceSearch}
+                title={isListening ? "Listening..." : "Search by Voice"}
               >
-                <MicIcon size={16} />
+                <MicIcon size={18} />
               </span>
             </div>
 
