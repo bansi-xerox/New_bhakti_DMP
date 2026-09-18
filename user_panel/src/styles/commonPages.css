@@ -143,3 +143,32 @@
   color: #8d6e63;
   font-size: 16px;
 }
+
+
+/* Pulse animation for active voice search mic */
+@keyframes pulseMic {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.25); opacity: 0.7; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.mic-active {
+  color: #dc3545 !important;
+  animation: pulseMic 1.4s infinite ease-in-out;
+}
+
+/* Action Icons inside Search Input */
+.search-actions {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 10;
+}
+
+.search-input-box {
+  padding-right: 80px !important; /* Space for Mic and Clear X buttons */
+}

@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Music, ArrowLeft, Search, X } from 'lucide-react';
+import { Search, X, Mic } from 'lucide-react';
 import { getAllBhajans } from '../services/api';
 import Header from '../components/common/Header';
 import Footer from '../components/common/Footer';
 import Loader from '../components/common/Loader';
+import '../assets/userTheme.css';
 
 const HeadingBhajansPage = () => {
   const { sahityaName, headingName } = useParams();
   const [bhajans, setBhajans] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
+  const [isListening, setIsListening] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -34,6 +36,34 @@ const HeadingBhajansPage = () => {
     }
   };
 
+  // Voice Search Handler (Gujarati)
+  const handleVoiceSearch = () => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      alert('તમારું બ્રાઉઝર વોઇસ સર્ચને સપોર્ટ કરતું નથી.');
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'gu-IN';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.onstart = () => setIsListening(true);
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      setSearchTerm(transcript);
+    };
+    recognition.onerror = (event) => {
+      console.error('Speech recognition error:', event.error);
+      setIsListening(false);
+    };
+    recognition.onend = () => setIsListening(false);
+
+    recognition.start();
+  };
+
   // Search Filter: ભજનનું નામ અથવા રાગ શોધશે
   const filteredBhajans = bhajans.filter((b) => {
     if (!searchTerm.trim()) return true;
@@ -46,15 +76,12 @@ const HeadingBhajansPage = () => {
 
   return (
     <div className="user-app-layout">
-      {/* 1. Sticky Royal Header */}
       <Header />
 
       <main className="main-desktop-container">
-
-
-        {/* 2. Standalone Modern Searchbar */}
+        {/* Standalone Modern Searchbar with Voice */}
         <div className="standalone-search-container">
-          <div className="search-input-wrapper wide-search-wrapper">
+          <div className="search-input-wrapper wide-search-wrapper" style={{ position: 'relative' }}>
             <Search className="search-icon" size={20} />
             <input
               type="text"
@@ -63,21 +90,47 @@ const HeadingBhajansPage = () => {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-            {searchTerm && (
-              <button
-                type="button"
-                className="search-clear-btn"
-                onClick={() => setSearchTerm('')}
-                aria-label="Clear Search"
+
+            <div className="search-actions">
+              <span
+                className={isListening ? 'mic-active' : ''}
+                style={{
+                  color: isListening ? '#dc3545' : '#888',
+                  display: 'flex',
+                  alignItems: 'center',
+                  cursor: 'pointer',
+                  transition: 'color 0.3s ease',
+                }}
+                onClick={handleVoiceSearch}
+                title={isListening ? 'Listening...' : 'Search by Voice'}
               >
-                <X size={18} />
-              </button>
-            )}
+                <Mic size={18} />
+              </span>
+
+              {searchTerm && (
+                <button
+                  type="button"
+                  className="search-clear-btn"
+                  onClick={() => setSearchTerm('')}
+                  aria-label="Clear Search"
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    padding: 0,
+                    color: '#888',
+                  }}
+                >
+                  <X size={18} />
+                </button>
+              )}
+            </div>
           </div>
         </div>
 
-
-        {/* 5. Bhajans Grid (Arrow વગર) */}
+        {/* Bhajans Grid (Arrow વગર) */}
         {loading ? (
           <Loader />
         ) : filteredBhajans.length === 0 ? (
@@ -110,7 +163,6 @@ const HeadingBhajansPage = () => {
         )}
       </main>
 
-      {/* 6. Sticky Footer */}
       <Footer />
     </div>
   );

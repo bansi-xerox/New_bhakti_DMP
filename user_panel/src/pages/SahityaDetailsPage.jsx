@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowRight, Search, X } from 'lucide-react';
+import { ArrowRight, Search, X, Mic } from 'lucide-react';
 import { getAllBhajans } from '../services/api';
 import Header from '../components/common/Header';
 import Footer from '../components/common/Footer';
 import Loader from '../components/common/Loader';
+import '../assets/userTheme.css';
 
 const SahityaDetailsPage = () => {
   const { sahityaName } = useParams();
   const [combinedItems, setCombinedItems] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
+  const [isListening, setIsListening] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -53,7 +55,35 @@ const SahityaDetailsPage = () => {
     }
   };
 
-  // Search Filter
+  // Voice Search Handler (Gujarati)
+  const handleVoiceSearch = () => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      alert('તમારું બ્રાઉઝર વોઇસ સર્ચને સપોર્ટ કરતું નથી.');
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'gu-IN';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.onstart = () => setIsListening(true);
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      setSearchTerm(transcript);
+    };
+    recognition.onerror = (event) => {
+      console.error('Speech recognition error:', event.error);
+      setIsListening(false);
+    };
+    recognition.onend = () => setIsListening(false);
+
+    recognition.start();
+  };
+
+  // Search Filter: શીર્ષક અથવા ભજનના નામ અને રાગ પરથી શોધશે
   const filteredItems = combinedItems.filter((item) => {
     if (!searchTerm.trim()) return true;
     const query = searchTerm.toLowerCase();
@@ -73,9 +103,9 @@ const SahityaDetailsPage = () => {
       <Header />
 
       <main className="main-desktop-container">
-        {/* Standalone Modern Searchbar */}
+        {/* Standalone Modern Searchbar with Voice */}
         <div className="standalone-search-container">
-          <div className="search-input-wrapper wide-search-wrapper">
+          <div className="search-input-wrapper wide-search-wrapper" style={{ position: 'relative' }}>
             <Search className="search-icon" size={20} />
             <input
               type="text"
@@ -84,16 +114,43 @@ const SahityaDetailsPage = () => {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-            {searchTerm && (
-              <button
-                type="button"
-                className="search-clear-btn"
-                onClick={() => setSearchTerm('')}
-                aria-label="Clear Search"
+
+            <div className="search-actions">
+              <span
+                className={isListening ? 'mic-active' : ''}
+                style={{
+                  color: isListening ? '#dc3545' : '#888',
+                  display: 'flex',
+                  alignItems: 'center',
+                  cursor: 'pointer',
+                  transition: 'color 0.3s ease',
+                }}
+                onClick={handleVoiceSearch}
+                title={isListening ? 'Listening...' : 'Search by Voice'}
               >
-                <X size={16} />
-              </button>
-            )}
+                <Mic size={18} />
+              </span>
+
+              {searchTerm && (
+                <button
+                  type="button"
+                  className="search-clear-btn"
+                  onClick={() => setSearchTerm('')}
+                  aria-label="Clear Search"
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    padding: 0,
+                    color: '#888',
+                  }}
+                >
+                  <X size={18} />
+                </button>
+              )}
+            </div>
           </div>
         </div>
 
@@ -115,7 +172,7 @@ const SahityaDetailsPage = () => {
         ) : (
           <div className="desktop-grid">
             {filteredItems.map((item, idx) => {
-              // if heading (with arrow):
+              // શીર્ષક (Heading) વાળા કાર્ડમાં Arrow સાથે
               if (item.type === 'heading') {
                 return (
                   <div
@@ -135,7 +192,7 @@ const SahityaDetailsPage = () => {
                 );
               }
 
-              // if bhajan without arrow:
+              // ભજન (Bhajan) વાળા કાર્ડમાં Arrow વગર
               const b = item.data;
               return (
                 <div
