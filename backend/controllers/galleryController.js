@@ -86,355 +86,357 @@ const deleteFromCloudinary = async (url, resourceType) => {
   }
 };
 
-// exports.uploadMedia = async (req, res) => {
-//   try {
-//     const {
-//       main_folder_name,
-//       sub_folder_name,
-//       media_type,
-//       event_date
-//     } = req.body;
-
-//     const files = req.files;
-
-//     if (
-//       !main_folder_name ||
-//       !sub_folder_name ||
-//       !media_type
-//     ) {
-//       return res.status(400).json({
-//         success: false,
-//         message:
-//           'Main folder name, sub folder name, and media type are required.'
-//       });
-//     }
-
-//     if (!files || files.length === 0) {
-//       return res.status(400).json({
-//         success: false,
-//         message:
-//           'Please upload at least one file.'
-//       });
-//     }
-
-//     const typeLower =
-//       media_type.toLowerCase();
-
-//     if (
-//       typeLower !== 'photos' &&
-//       typeLower !== 'videos'
-//     ) {
-//       return res.status(400).json({
-//         success: false,
-//         message:
-//           'Media type must be either "Photos" or "Videos".'
-//       });
-//     }
-
-//     const safeMain =
-//       sanitizeName(main_folder_name);
-
-//     const safeSub =
-//       sanitizeName(sub_folder_name);
-
-//     const typeFolder =
-//       typeLower === 'photos'
-//         ? 'photos'
-//         : 'videos';
-
-//     const photoExts =
-//       ['.jpg', '.jpeg', '.png'];
-
-//     const videoExts =
-//       ['.mp4'];
-
-//     for (const file of files) {
-//       const ext =
-//         path.extname(
-//           file.originalname
-//         ).toLowerCase();
-
-//       if (
-//         typeFolder === 'photos' &&
-//         !photoExts.includes(ext)
-//       ) {
-//         return res.status(400).json({
-//           success: false,
-//           message:
-//             `Invalid format in ${file.originalname}. Photos must be .jpg, .jpeg, or .png.`
-//         });
-//       }
-
-//       if (
-//         typeFolder === 'videos' &&
-//         !videoExts.includes(ext)
-//       ) {
-//         return res.status(400).json({
-//           success: false,
-//           message:
-//             `Invalid format in ${file.originalname}. Videos must be .mp4.`
-//         });
-//       }
-
-
-
-//     }
-
-//     let existingRecords;
-
-//     if (typeFolder === 'photos') {
-//       existingRecords =
-//         await Gallery.find({
-//           main_folder_name: safeMain,
-//           sub_folder_name: safeSub,
-//           photo_path: { $ne: null }
-//         }).select('photo_path');
-//     } else {
-//       existingRecords =
-//         await Gallery.find({
-//           main_folder_name: safeMain,
-//           sub_folder_name: safeSub,
-//           video_path: { $ne: null }
-//         }).select('video_path');
-//     }
-
-//     const existingPaths =
-//       existingRecords.map(record => {
-//         return typeFolder === 'photos'
-//           ? record.photo_path
-//           : record.video_path;
-//       });
-
-//     const savedRecords = [];
-
-//     for (const file of files) {
-//       const seqNumber =
-//         getNextSequenceNumber(
-//           existingPaths,
-//           safeMain,
-//           safeSub
-//         );
-
-//       const fileName =
-//         `${safeMain}-${safeSub}-${seqNumber}`;
-
-//       const resourceType =
-//         typeFolder === 'videos'
-//           ? 'video'
-//           : 'image';
-
-//       const result =
-//         await uploadToCloudinary(
-//           file.buffer,
-//           {
-//             folder:
-//               `bhakti-dmp/${safeMain}/${safeSub}/${typeFolder}`,
-//             public_id:
-//               fileName,
-//             resource_type:
-//               resourceType
-//           }
-//         );
-
-//       const cloudinaryUrl =
-//         result.secure_url;
-
-//       const newRecord =
-//         new Gallery({
-//           main_folder_name:
-//             safeMain,
-//           sub_folder_name:
-//             safeSub,
-//           photo_path:
-//             typeFolder === 'photos'
-//               ? cloudinaryUrl
-//               : null,
-//           video_path:
-//             typeFolder === 'videos'
-//               ? cloudinaryUrl
-//               : null,
-//           event_date:
-//             event_date
-//               ? new Date(event_date)
-//               : new Date()
-//         });
-
-//       const savedDoc =
-//         await newRecord.save();
-
-//       savedRecords.push({
-//         id: savedDoc._id,
-//         relativePath:
-//           cloudinaryUrl
-//       });
-
-//       existingPaths.push(
-//         cloudinaryUrl
-//       );
-//     }
-
-//     const count =
-//       savedRecords.length;
-
-//     const itemLabel =
-//       typeFolder === 'photos'
-//         ? count === 1
-//           ? 'photo'
-//           : 'photos'
-//         : count === 1
-//           ? 'video'
-//           : 'videos';
-
-//     return res.status(200).json({
-//       success: true,
-//       message:
-//         `${count} ${itemLabel} added successfully`,
-//       data:
-//         savedRecords
-//     });
-//   } catch (error) {
-//     console.error(
-//       'Cloudinary upload error:',
-//       error
-//     );
-
-//     return res.status(500).json({
-//       success: false,
-//       message:
-//         error.message
-//     });
-//   }
-// };
-
-
-
 exports.uploadMedia = async (req, res) => {
   try {
-    const { main_folder_name, sub_folder_name, media_type, event_date } = req.body;
+    const {
+      main_folder_name,
+      sub_folder_name,
+      media_type,
+      event_date
+    } = req.body;
+
     const files = req.files;
 
-    if (!main_folder_name || !sub_folder_name || !media_type) {
+    if (
+      !main_folder_name ||
+      !sub_folder_name ||
+      !media_type
+    ) {
       return res.status(400).json({
         success: false,
-        message: 'Main folder name, sub folder name, and media type are required.'
+        message:
+          'Main folder name, sub folder name, and media type are required.'
       });
     }
 
     if (!files || files.length === 0) {
       return res.status(400).json({
         success: false,
-        message: 'Please upload at least one file.'
+        message:
+          'Please upload at least one file.'
       });
     }
 
-    const typeLower = media_type.toLowerCase();
-    if (typeLower !== 'photos' && typeLower !== 'videos') {
+    const typeLower =
+      media_type.toLowerCase();
+
+    if (
+      typeLower !== 'photos' &&
+      typeLower !== 'videos'
+    ) {
       return res.status(400).json({
         success: false,
-        message: 'Media type must be either "Photos" or "Videos".'
+        message:
+          'Media type must be either "Photos" or "Videos".'
       });
     }
 
-    const safeMain = sanitizeName(main_folder_name);
-    const safeSub = sanitizeName(sub_folder_name);
-    const typeFolder = typeLower === 'photos' ? 'photos' : 'videos';
+    const safeMain =
+      sanitizeName(main_folder_name);
 
-    const photoExts = ['.jpg', '.jpeg', '.png'];
-    const videoExts = ['.mp4'];
+    const safeSub =
+      sanitizeName(sub_folder_name);
+
+    const typeFolder =
+      typeLower === 'photos'
+        ? 'photos'
+        : 'videos';
+
+    const photoExts =
+      ['.jpg', '.jpeg', '.png'];
+
+    const videoExts =
+      ['.mp4'];
 
     for (const file of files) {
-      const ext = path.extname(file.originalname).toLowerCase();
-      if (typeFolder === 'photos' && !photoExts.includes(ext)) {
+      const ext =
+        path.extname(
+          file.originalname
+        ).toLowerCase();
+
+      if (
+        typeFolder === 'photos' &&
+        !photoExts.includes(ext)
+      ) {
         return res.status(400).json({
           success: false,
-          message: `Invalid format in ${file.originalname}. Photos must be .jpg, .jpeg, or .png.`
+          message:
+            `Invalid format in ${file.originalname}. Photos must be .jpg, .jpeg, or .png.`
         });
       }
-      if (typeFolder === 'videos' && !videoExts.includes(ext)) {
+
+      if (
+        typeFolder === 'videos' &&
+        !videoExts.includes(ext)
+      ) {
         return res.status(400).json({
           success: false,
-          message: `Invalid format in ${file.originalname}. Videos must be .mp4.`
+          message:
+            `Invalid format in ${file.originalname}. Videos must be .mp4.`
         });
       }
+
+
+
     }
 
     let existingRecords;
+
     if (typeFolder === 'photos') {
-      existingRecords = await Gallery.find({
-        main_folder_name: safeMain,
-        sub_folder_name: safeSub,
-        photo_path: { $ne: null }
-      }).select('photo_path');
+      existingRecords =
+        await Gallery.find({
+          main_folder_name: safeMain,
+          sub_folder_name: safeSub,
+          photo_path: { $ne: null }
+        }).select('photo_path');
     } else {
-      existingRecords = await Gallery.find({
-        main_folder_name: safeMain,
-        sub_folder_name: safeSub,
-        video_path: { $ne: null }
-      }).select('video_path');
+      existingRecords =
+        await Gallery.find({
+          main_folder_name: safeMain,
+          sub_folder_name: safeSub,
+          video_path: { $ne: null }
+        }).select('video_path');
     }
 
-    const existingPaths = existingRecords.map(record => {
-      return typeFolder === 'photos' ? record.photo_path : record.video_path;
-    });
+    const existingPaths =
+      existingRecords.map(record => {
+        return typeFolder === 'photos'
+          ? record.photo_path
+          : record.video_path;
+      });
 
     const savedRecords = [];
 
     for (const file of files) {
-      const seqNumber = getNextSequenceNumber(existingPaths, safeMain, safeSub);
-      const fileName = `${safeMain}-${safeSub}-${seqNumber}`;
-      const resourceType = typeFolder === 'videos' ? 'video' : 'image';
+      const seqNumber =
+        getNextSequenceNumber(
+          existingPaths,
+          safeMain,
+          safeSub
+        );
 
-      // 1. Upload to Cloudinary
-      const result = await uploadToCloudinary(file.buffer, {
-        folder: `bhakti-dmp/${safeMain}/${safeSub}/${typeFolder}`,
-        public_id: fileName,
-        resource_type: resourceType
+      const fileName =
+        `${safeMain}-${safeSub}-${seqNumber}`;
+
+      const resourceType =
+        typeFolder === 'videos'
+          ? 'video'
+          : 'image';
+
+      const result =
+        await uploadToCloudinary(
+          file.buffer,
+          {
+            folder:
+              `bhakti-dmp/${safeMain}/${safeSub}/${typeFolder}`,
+            public_id:
+              fileName,
+            resource_type:
+              resourceType
+          }
+        );
+
+      const cloudinaryUrl =
+        result.secure_url;
+
+      const newRecord =
+        new Gallery({
+          main_folder_name:
+            safeMain,
+          sub_folder_name:
+            safeSub,
+          photo_path:
+            typeFolder === 'photos'
+              ? cloudinaryUrl
+              : null,
+          video_path:
+            typeFolder === 'videos'
+              ? cloudinaryUrl
+              : null,
+          event_date:
+            event_date
+              ? new Date(event_date)
+              : new Date()
+        });
+
+      const savedDoc =
+        await newRecord.save();
+
+      savedRecords.push({
+        id: savedDoc._id,
+        relativePath:
+          cloudinaryUrl
       });
 
-      const cloudinaryUrl = result.secure_url;
-
-      // 2. Extract Face Descriptors for Photos
-      let descriptors = [];
-      if (typeFolder === 'photos') {
-        try {
-          const img = await canvas.loadImage(file.buffer);
-          const detections = await faceapi.detectAllFaces(img).withFaceLandmarks().withFaceDescriptors();
-          descriptors = detections.map(d => Array.from(d.descriptor));
-        } catch (faceErr) {
-          console.error(`Face extraction failed for ${fileName}:`, faceErr.message);
-        }
-      }
-
-      // 3. Save to DB
-      const newRecord = new Gallery({
-        main_folder_name: safeMain,
-        sub_folder_name: safeSub,
-        photo_path: typeFolder === 'photos' ? cloudinaryUrl : null,
-        video_path: typeFolder === 'videos' ? cloudinaryUrl : null,
-        event_date: event_date ? new Date(event_date) : new Date(),
-        face_descriptors: descriptors // Stores AI face embeddings
-      });
-
-      const savedDoc = await newRecord.save();
-      savedRecords.push({ id: savedDoc._id, relativePath: cloudinaryUrl });
-      existingPaths.push(cloudinaryUrl);
+      existingPaths.push(
+        cloudinaryUrl
+      );
     }
 
-    const count = savedRecords.length;
-    const itemLabel = typeFolder === 'photos' 
-      ? (count === 1 ? 'photo' : 'photos') 
-      : (count === 1 ? 'video' : 'videos');
+    const count =
+      savedRecords.length;
+
+    const itemLabel =
+      typeFolder === 'photos'
+        ? count === 1
+          ? 'photo'
+          : 'photos'
+        : count === 1
+          ? 'video'
+          : 'videos';
 
     return res.status(200).json({
       success: true,
-      message: `${count} ${itemLabel} added successfully`,
-      data: savedRecords
+      message:
+        `${count} ${itemLabel} added successfully`,
+      data:
+        savedRecords
     });
   } catch (error) {
-    console.error('Cloudinary upload error:', error);
-    return res.status(500).json({ success: false, message: error.message });
+    console.error(
+      'Cloudinary upload error:',
+      error
+    );
+
+    return res.status(500).json({
+      success: false,
+      message:
+        error.message
+    });
   }
 };
+
+
+
+// exports.uploadMedia = async (req, res) => {
+//   try {
+//     const { main_folder_name, sub_folder_name, media_type, event_date } = req.body;
+//     const files = req.files;
+
+//     if (!main_folder_name || !sub_folder_name || !media_type) {
+//       return res.status(400).json({
+//         success: false,
+//         message: 'Main folder name, sub folder name, and media type are required.'
+//       });
+//     }
+
+//     if (!files || files.length === 0) {
+//       return res.status(400).json({
+//         success: false,
+//         message: 'Please upload at least one file.'
+//       });
+//     }
+
+//     const typeLower = media_type.toLowerCase();
+//     if (typeLower !== 'photos' && typeLower !== 'videos') {
+//       return res.status(400).json({
+//         success: false,
+//         message: 'Media type must be either "Photos" or "Videos".'
+//       });
+//     }
+
+//     const safeMain = sanitizeName(main_folder_name);
+//     const safeSub = sanitizeName(sub_folder_name);
+//     const typeFolder = typeLower === 'photos' ? 'photos' : 'videos';
+
+//     const photoExts = ['.jpg', '.jpeg', '.png'];
+//     const videoExts = ['.mp4'];
+
+//     for (const file of files) {
+//       const ext = path.extname(file.originalname).toLowerCase();
+//       if (typeFolder === 'photos' && !photoExts.includes(ext)) {
+//         return res.status(400).json({
+//           success: false,
+//           message: `Invalid format in ${file.originalname}. Photos must be .jpg, .jpeg, or .png.`
+//         });
+//       }
+//       if (typeFolder === 'videos' && !videoExts.includes(ext)) {
+//         return res.status(400).json({
+//           success: false,
+//           message: `Invalid format in ${file.originalname}. Videos must be .mp4.`
+//         });
+//       }
+//     }
+
+//     let existingRecords;
+//     if (typeFolder === 'photos') {
+//       existingRecords = await Gallery.find({
+//         main_folder_name: safeMain,
+//         sub_folder_name: safeSub,
+//         photo_path: { $ne: null }
+//       }).select('photo_path');
+//     } else {
+//       existingRecords = await Gallery.find({
+//         main_folder_name: safeMain,
+//         sub_folder_name: safeSub,
+//         video_path: { $ne: null }
+//       }).select('video_path');
+//     }
+
+//     const existingPaths = existingRecords.map(record => {
+//       return typeFolder === 'photos' ? record.photo_path : record.video_path;
+//     });
+
+//     const savedRecords = [];
+
+//     for (const file of files) {
+//       const seqNumber = getNextSequenceNumber(existingPaths, safeMain, safeSub);
+//       const fileName = `${safeMain}-${safeSub}-${seqNumber}`;
+//       const resourceType = typeFolder === 'videos' ? 'video' : 'image';
+
+//       // 1. Upload to Cloudinary
+//       const result = await uploadToCloudinary(file.buffer, {
+//         folder: `bhakti-dmp/${safeMain}/${safeSub}/${typeFolder}`,
+//         public_id: fileName,
+//         resource_type: resourceType
+//       });
+
+//       const cloudinaryUrl = result.secure_url;
+
+//       // 2. Extract Face Descriptors for Photos
+//       let descriptors = [];
+//       if (typeFolder === 'photos') {
+//         try {
+//           const img = await canvas.loadImage(file.buffer);
+//           const detections = await faceapi.detectAllFaces(img).withFaceLandmarks().withFaceDescriptors();
+//           descriptors = detections.map(d => Array.from(d.descriptor));
+//         } catch (faceErr) {
+//           console.error(`Face extraction failed for ${fileName}:`, faceErr.message);
+//         }
+//       }
+
+//       // 3. Save to DB
+//       const newRecord = new Gallery({
+//         main_folder_name: safeMain,
+//         sub_folder_name: safeSub,
+//         photo_path: typeFolder === 'photos' ? cloudinaryUrl : null,
+//         video_path: typeFolder === 'videos' ? cloudinaryUrl : null,
+//         event_date: event_date ? new Date(event_date) : new Date(),
+//         face_descriptors: descriptors // Stores AI face embeddings
+//       });
+
+//       const savedDoc = await newRecord.save();
+//       savedRecords.push({ id: savedDoc._id, relativePath: cloudinaryUrl });
+//       existingPaths.push(cloudinaryUrl);
+//     }
+
+//     const count = savedRecords.length;
+//     const itemLabel = typeFolder === 'photos' 
+//       ? (count === 1 ? 'photo' : 'photos') 
+//       : (count === 1 ? 'video' : 'videos');
+
+//     return res.status(200).json({
+//       success: true,
+//       message: `${count} ${itemLabel} added successfully`,
+//       data: savedRecords
+//     });
+//   } catch (error) {
+//     console.error('Cloudinary upload error:', error);
+//     return res.status(500).json({ success: false, message: error.message });
+//   }
+// };
+
+
 exports.getGalleryItems = async (req, res) => {
   try {
     const {

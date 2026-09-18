@@ -11,5 +11,5 @@ router.delete('/delete', galleryController.deleteMedia);
 router.get('/search', galleryController.searchMedia);
 
 
-router.post('/face-search', upload.single('face'), galleryController.searchByFace);
+// router.post('/face-search', upload.single('face'), galleryController.searchByFace);
 module.exports = router;
