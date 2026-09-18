@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Music, BookOpen, Video } from 'lucide-react';
+import { BookOpen, Video } from 'lucide-react';
 import { getBhajanById } from '../services/api';
 import Header from '../components/common/Header';
 import Footer from '../components/common/Footer';
@@ -54,7 +54,7 @@ const BhajanDetailPage = () => {
     return str !== '' && str !== '-';
   };
 
-  // Bottom Tab Bar: ONLY Bhavarth and Video (Music icon moved to top as click event)
+  // Bottom Tab Bar: Only Bhavarth and Video tabs
   const bottomTabs = [
     ...(bhajan?.bhajan_bhavarth?.trim() && bhajan.bhajan_bhavarth.trim() !== '-'
       ? [{ id: 'bhavarth', label: 'ભજન ભાવાર્થ', icon: <BookOpen size={22} /> }]
@@ -77,8 +77,17 @@ const BhajanDetailPage = () => {
           <div className="bhajan-desktop-stage">
             {/* Sticky Stage Header */}
             <div className="stage-sticky-header">
-              <div className="stage-title-header clean-info-stage">
-                
+              {/* Entire Info Area is clickable to trigger lyrics view */}
+              <div
+                className={`stage-title-header clean-info-stage clickable-lyrics-header ${
+                  activeTab === 'lyrics' ? 'active-lyrics-header' : ''
+                }`}
+                onClick={() => setActiveTab('lyrics')}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setActiveTab('lyrics')}
+                aria-label="ભજન લખાણ જોવા માટે ક્લિક કરો"
+              >
                 {/* 1. Centered Sahitya Name - Heading Name */}
                 {(hasValue(bhajan.sahitya_name) || hasValue(bhajan.heading_name)) && (
                   <div className="center-sahitya-header">
@@ -94,7 +103,7 @@ const BhajanDetailPage = () => {
                   </div>
                 )}
 
-                {/* 2. Bhajan Meta Info & Top Clickable Music Button */}
+                {/* 2. Bhajan Meta Info */}
                 <div className="uniform-info-block">
                   {/* Bhajan Name and Page Number */}
                   <div className="info-row-split">
@@ -128,57 +137,58 @@ const BhajanDetailPage = () => {
                     </div>
                   )}
                 </div>
-
-                {/* 3. Top Clickable Music Icon Button (As requested in right sketch) */}
-                <div className="top-music-click-wrapper">
-                  <button
-                    type="button"
-                    className={`top-music-btn ${activeTab === 'lyrics' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('lyrics')}
-                    title="ભજન લખાણ (Lyrics)"
-                    aria-label="ભજન લખાણ"
-                  >
-                    <Music size={22} />
-                    <span className="tab-hover-tooltip">ભજન લખાણ</span>
-                  </button>
-                </div>
               </div>
 
-              {/* Bottom Tab Bar (Only Book and Video Tabs) */}
-              {bottomTabs.length > 0 && (
-                <div className="desktop-tab-bar icon-only-tab-bar">
-                  {bottomTabs.map((tab) => {
-                    const isActive = activeTab === tab.id;
-                    return (
-                      <button
-                        key={tab.id}
-                        type="button"
-                        className={`tab-pill-btn icon-tab-btn ${isActive ? 'active' : ''}`}
-                        onClick={() => setActiveTab(tab.id)}
-                        title={tab.label}
-                        aria-label={tab.label}
-                      >
-                        {tab.icon}
-                        <span className="tab-hover-tooltip">{tab.label}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
+              {/* Bottom Bar: Tabs and Font Controls aligned together cleanly */}
+              <div className="stage-actions-bar">
+                {bottomTabs.length > 0 && (
+                  <div className="desktop-tab-bar icon-only-tab-bar">
+                    {bottomTabs.map((tab) => {
+                      const isActive = activeTab === tab.id;
+                      return (
+                        <button
+                          key={tab.id}
+                          type="button"
+                          className={`tab-pill-btn icon-tab-btn ${isActive ? 'active' : ''}`}
+                          onClick={() => setActiveTab(tab.id)}
+                          aria-label={tab.label}
+                        >
+                          {tab.icon}
+                          <span className="tab-hover-tooltip">{tab.label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {/* Font Controls moved here (Fixed at header, out of scrolling area) */}
+                {activeTab === 'lyrics' && (
+                  <div className="header-font-controls">
+                    <button
+                      type="button"
+                      className="font-btn"
+                      onClick={() => setFontSize((s) => Math.max(15, s - 2))}
+                    >
+                      A-
+                    </button>
+                    <button
+                      type="button"
+                      className="font-btn"
+                      onClick={() => setFontSize((s) => Math.min(28, s + 2))}
+                    >
+                      A+
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
 
-            {/* Content Body */}
+            {/* Content Body: Zero top space, lyrics text starts immediately at the top */}
             <div className="stage-content-body">
               {/* 1. Lyrics View */}
               {activeTab === 'lyrics' && (
-                <div>
-                  <div className="font-controls-bar">
-                    <button className="font-btn" onClick={() => setFontSize((s) => Math.max(15, s - 2))}>A-</button>
-                    <button className="font-btn" onClick={() => setFontSize((s) => Math.min(28, s + 2))}>A+</button>
-                  </div>
-                  <div className="lyrics-text-container" style={{ fontSize: `${fontSize}px` }}>
-                    {formatText(bhajan.bhajan) || 'લખાણ ઉપલબ્ધ નથી.'}
-                  </div>
+                <div className="lyrics-text-container" style={{ fontSize: `${fontSize}px` }}>
+                  {formatText(bhajan.bhajan) || 'લખાણ ઉપલબ્ધ નથી.'}
                 </div>
               )}
 
