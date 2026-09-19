@@ -327,24 +327,46 @@
   .bhajan-desktop-stage {
     border-radius: 14px;
   }
+
   .clean-info-stage {
     padding: 12px 16px 10px 16px !important;
   }
+
   .center-sahitya-header {
     font-size: 15px;
     margin-bottom: 8px;
   }
+
   .uniform-info-block,
   .label-bold,
   .val-normal {
     font-size: 14.5px;
   }
+
   .stage-actions-bar {
-    padding: 6px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background: #fffdfa;
+    border-top: 1px solid #f6e8da;
+    padding: 8px 16px;
+    min-height: 52px;
   }
+
+  .clean-info-stage.no-tabs-stage-header {
+    border-bottom: none !important;
+    padding-bottom: 12px !important;
+  }
+
+  .stage-content-body.no-tabs-body-padding {
+    padding-top: 16px !important;
+  }
+
   .header-font-controls {
     right: 10px;
   }
+
   .stage-content-body {
     padding: 10px 12px 18px 12px !important;
   }
@@ -353,7 +375,7 @@
 /* ================= Bhajan Detail Centered Search Bar ================= */
 .bhajan-detail-search-container {
   width: 100%;
-  max-width: 1000px; 
+  max-width: 1000px;
   margin: 0 auto 16px auto;
   display: flex;
   justify-content: center;
