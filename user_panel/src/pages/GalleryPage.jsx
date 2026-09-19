@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { Image as ImageIcon, Camera, Download, Share2, X, RefreshCw } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Image as ImageIcon, Download, Share2, X, RefreshCw } from 'lucide-react';
 import { getGalleryItems, searchByFace } from '../services/api';
 import Header from '../components/common/Header';
 import Footer from '../components/common/Footer';
@@ -16,18 +16,17 @@ const GalleryPage = () => {
   const [availableYears, setAvailableYears] = useState([]);
   const [availableEvents, setAvailableEvents] = useState([]);
 
-  // Lightbox Modal State
+  // Modal Lightbox State
   const [activePhoto, setActivePhoto] = useState(null);
 
-  // Face Recognition States & Hidden File Input
+  // Face Recognition State
   const [faceSearching, setFaceSearching] = useState(false);
-  const fileInputRef = useRef(null);
 
   useEffect(() => {
     fetchGallery();
   }, []);
 
-  // Fetch all gallery items
+  // Fetch all gallery items from API
   const fetchGallery = async () => {
     try {
       setLoading(true);
@@ -35,7 +34,7 @@ const GalleryPage = () => {
       const items = res.data?.data || res.data || [];
       setMediaList(items);
 
-      // Extract unique years using backend's 'main_folder_name' or 'event_date'
+      // Extract unique years using 'main_folder_name' or 'event_date'
       const years = [
         ...new Set(
           items
@@ -53,7 +52,7 @@ const GalleryPage = () => {
         ),
       ].sort((a, b) => b - a);
 
-      // Extract unique event/festival names using backend's 'sub_folder_name'
+      // Extract unique event/festival names using 'sub_folder_name'
       const events = [
         ...new Set(
           items
@@ -81,19 +80,11 @@ const GalleryPage = () => {
   const getEventTitle = (item) => {
     if (!item) return '';
     const raw = item.sub_folder_name || item.event_name || item.title || '';
-    return raw.replace(/_/g, ' '); // e.g. "Guru_Purnima" -> "Guru Purnima"
+    return raw.replace(/_/g, ' ');
   };
 
-  // Face Recognition: Trigger system camera / photo picker
-  const handleFaceRecognitionTrigger = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
-  };
-
-  // Handle uploaded face image and query face recognition API
-  const handleFaceFileChange = async (e) => {
-    const file = e.target.files?.[0];
+  // Face Search Handler triggered from Header camera icon
+  const handleFaceSearchFromHeader = async (file) => {
     if (!file) return;
 
     try {
@@ -111,7 +102,6 @@ const GalleryPage = () => {
       alert('ચહેરો ઓળખવામાં સમસ્યા આવી છે અથવા કોઈ મેળ ખાતો ફોટો મળ્યો નથી.');
     } finally {
       setFaceSearching(false);
-      if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };
 
@@ -175,15 +165,14 @@ const GalleryPage = () => {
 
   return (
     <div className="user-app-layout">
-      {/* 1. Sticky Royal Header */}
-      <Header />
+      {/* 1. Sticky Royal Header with Face Search Handler */}
+      <Header onFaceSearch={handleFaceSearchFromHeader} faceSearching={faceSearching} />
 
       <main className="main-desktop-container">
         {/* Gallery Stage Box */}
         <div className="gallery-desktop-stage">
-          {/* Top Filter and Actions Bar */}
+          {/* Top Filter Bar (Face button removed from here) */}
           <div className="gallery-filter-bar">
-            {/* Left Filter Dropdowns */}
             <div className="gallery-select-group">
               {/* Year Filter */}
               <select
@@ -191,7 +180,7 @@ const GalleryPage = () => {
                 value={selectedYear}
                 onChange={(e) => setSelectedYear(e.target.value)}
               >
-                <option value="">બધા વર્ષ (All Years)</option>
+                <option value="">બધા વર્ષ</option>
                 {availableYears.map((yr) => (
                   <option key={yr} value={yr}>
                     વર્ષ: {yr}
@@ -205,7 +194,7 @@ const GalleryPage = () => {
                 value={selectedEvent}
                 onChange={(e) => setSelectedEvent(e.target.value)}
               >
-                <option value="">બધા તહેવાર / ઉત્સવ (All Events)</option>
+                <option value="">બધા તહેવાર / ઉત્સવ</option>
                 {availableEvents.map((evt) => (
                   <option key={evt} value={evt}>
                     {evt.replace(/_/g, ' ')}
@@ -229,28 +218,6 @@ const GalleryPage = () => {
                   <span>રીસેટ</span>
                 </button>
               )}
-            </div>
-
-            {/* Right Action: Face Recognition Camera Button */}
-            <div className="gallery-face-action">
-              <input
-                type="file"
-                ref={fileInputRef}
-                accept="image/*"
-                capture="user"
-                style={{ display: 'none' }}
-                onChange={handleFaceFileChange}
-              />
-
-              <button
-                type="button"
-                className={`face-recognize-btn ${faceSearching ? 'loading' : ''}`}
-                onClick={handleFaceRecognitionTrigger}
-                title="ચહેરો ઓળખી ફોટો શોધો (Face Recognition)"
-              >
-                <Camera size={19} />
-                <span>{faceSearching ? 'શોધી રહ્યું છે...' : 'ફેસ રેકગ્નિશન'}</span>
-              </button>
             </div>
           </div>
 
@@ -306,11 +273,10 @@ const GalleryPage = () => {
         </div>
       </main>
 
-      {/* Lightbox Modal (Click to Enlarge Photo with Download and Share) */}
+      {/* Lightbox Modal */}
       {activePhoto && (
         <div className="lightbox-overlay" onClick={() => setActivePhoto(null)}>
           <div className="lightbox-container" onClick={(e) => e.stopPropagation()}>
-            {/* Close Button */}
             <button
               type="button"
               className="lightbox-close-btn"
@@ -320,7 +286,6 @@ const GalleryPage = () => {
               <X size={22} />
             </button>
 
-            {/* Enlarge Image */}
             <div className="lightbox-image-wrapper">
               <img
                 src={getPhotoUrl(activePhoto)}
@@ -328,7 +293,6 @@ const GalleryPage = () => {
               />
             </div>
 
-            {/* Bottom Actions: Download & Share */}
             <div className="lightbox-actions-bar">
               <span className="lightbox-title">
                 {getEventTitle(activePhoto) || 'ભજન કીર્તન દર્શન'}
@@ -344,18 +308,18 @@ const GalleryPage = () => {
                       `${getEventTitle(activePhoto) || 'bhajan-photo'}.jpg`
                     )
                   }
+                  title="ડાઉનલોડ કરો"
                 >
                   <Download size={18} />
-                  <span>ડાઉનલોડ</span>
                 </button>
 
                 <button
                   type="button"
                   className="lightbox-action-btn share-btn"
                   onClick={() => handleShare(activePhoto)}
+                  title="શેર કરો"
                 >
                   <Share2 size={18} />
-                  <span>શેર</span>
                 </button>
               </div>
             </div>

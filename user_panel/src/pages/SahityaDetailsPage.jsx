@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowRight, Search, X, Mic } from 'lucide-react';
 import { getAllBhajans } from '../services/api';
@@ -10,24 +10,45 @@ import '../assets/userTheme.css';
 const SahityaDetailsPage = () => {
   const { sahityaName } = useParams();
   const [combinedItems, setCombinedItems] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
+
+  // Search & Dropdown states
+  const [allBhajansList, setAllBhajansList] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [showDropdown, setShowDropdown] = useState(false);
   const [isListening, setIsListening] = useState(false);
+  const searchRef = useRef(null);
+
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchItems();
   }, [sahityaName]);
 
+  // Close search dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const fetchItems = async () => {
     try {
+      setLoading(true);
       const res = await getAllBhajans();
       const allItems = res.data.data || res.data || [];
+      setAllBhajansList(allItems);
+
       const items = allItems.filter(
         (item) => item.sahitya_name?.trim() === sahityaName
       );
 
-      // ૧. Unique Headings ની યાદી
+      // 1. Unique Headings
       const uniqueHeadings = [
         ...new Set(
           items
@@ -39,7 +60,7 @@ const SahityaDetailsPage = () => {
         name: heading,
       }));
 
-      // ૨. Direct Bhajans ની યાદી
+      // 2. Direct Bhajans without heading
       const directBhajans = items
         .filter((i) => !i.heading_name || i.heading_name.trim() === '')
         .map((bhajan) => ({
@@ -53,6 +74,37 @@ const SahityaDetailsPage = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Helper function to remove spaces and special characters
+  const cleanString = (str) => {
+    if (!str) return '';
+    return str.replace(/[\s.,:;_'"+=\-!@#$%^&*()]+/g, '').toLowerCase();
+  };
+
+  // Live search handler with suggestions
+  const handleSearchChange = (value) => {
+    setSearchTerm(value);
+    const cleanQuery = cleanString(value);
+
+    if (!cleanQuery) {
+      setSearchResults([]);
+      setShowDropdown(false);
+      return;
+    }
+
+    const matched = allBhajansList.filter((item) => {
+      return (
+        cleanString(item.sahitya_name).includes(cleanQuery) ||
+        cleanString(item.heading_name).includes(cleanQuery) ||
+        cleanString(item.bhajan_name).includes(cleanQuery) ||
+        cleanString(item.bhajan_kadi).includes(cleanQuery) ||
+        cleanString(item.bhajan_rag).includes(cleanQuery)
+      );
+    });
+
+    setSearchResults(matched.slice(0, 15));
+    setShowDropdown(true);
   };
 
   // Voice Search Handler (Gujarati)
@@ -72,7 +124,7 @@ const SahityaDetailsPage = () => {
     recognition.onstart = () => setIsListening(true);
     recognition.onresult = (event) => {
       const transcript = event.results[0][0].transcript;
-      setSearchTerm(transcript);
+      handleSearchChange(transcript);
     };
     recognition.onerror = (event) => {
       console.error('Speech recognition error:', event.error);
@@ -83,21 +135,23 @@ const SahityaDetailsPage = () => {
     recognition.start();
   };
 
-  // Helper function to remove spaces and special characters
-  const cleanString = (str) => {
-    if (!str) return '';
-    return str.replace(/[\s.,:;_'"+=\-!@#$%^&*()]+/g, '').toLowerCase();
+  // Selecting a suggestion navigates directly to Bhajan detail
+  const handleSelectBhajan = (bhajanId) => {
+    setSearchTerm('');
+    setSearchResults([]);
+    setShowDropdown(false);
+    navigate(`/bhajan/${bhajanId}`);
   };
 
   const cleanSearchTerm = cleanString(searchTerm);
 
   const filteredItems = combinedItems.filter((item) => {
-    if (!cleanSearchTerm) return true;
+    if (!cleanSearchTerm || showDropdown) return true;
 
     if (item.type === 'heading') {
       return cleanString(item.name).includes(cleanSearchTerm);
     }
-    
+
     const b = item.data;
     return (
       cleanString(b.bhajan_name).includes(cleanSearchTerm) ||
@@ -105,14 +159,13 @@ const SahityaDetailsPage = () => {
     );
   });
 
-
   return (
     <div className="user-app-layout">
       <Header />
 
       <main className="main-desktop-container">
-        {/* Standalone Modern Searchbar with Voice */}
-        <div className="standalone-search-container">
+        {/* Standalone Modern Searchbar with Dropdown Suggestions */}
+        <div className="standalone-search-container" ref={searchRef}>
           <div className="search-input-wrapper wide-search-wrapper" style={{ position: 'relative' }}>
             <Search className="search-icon" size={20} />
             <input
@@ -120,7 +173,8 @@ const SahityaDetailsPage = () => {
               className="search-input-box wide-search-input"
               placeholder={`${sahityaName} માં શીર્ષક અથવા ભજન શોધો...`}
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => handleSearchChange(e.target.value)}
+              onFocus={() => searchTerm.trim() && setShowDropdown(true)}
             />
 
             <div className="search-actions">
@@ -143,7 +197,11 @@ const SahityaDetailsPage = () => {
                 <button
                   type="button"
                   className="search-clear-btn"
-                  onClick={() => setSearchTerm('')}
+                  onClick={() => {
+                    setSearchTerm('');
+                    setSearchResults([]);
+                    setShowDropdown(false);
+                  }}
                   aria-label="Clear Search"
                   style={{
                     background: 'transparent',
@@ -159,19 +217,62 @@ const SahityaDetailsPage = () => {
                 </button>
               )}
             </div>
+
+            {/* Live Search Dropdown Suggestions */}
+            {showDropdown && (
+              <div className="live-search-dropdown">
+                {searchResults.length > 0 ? (
+                  searchResults.map((item) => (
+                    <div
+                      key={item._id}
+                      className="live-search-item"
+                      onClick={() => handleSelectBhajan(item._id)}
+                    >
+                      <div className="live-item-title">{item.bhajan_name?.trim()}</div>
+                      <div className="live-item-meta">
+                        {item.sahitya_name && (
+                          <span>
+                            સાહિત્ય: <strong className="live-item-tag">{item.sahitya_name.trim()}</strong>
+                          </span>
+                        )}
+                        {item.heading_name && (
+                          <span>
+                            વિભાગ: <strong>{item.heading_name.trim()}</strong>
+                          </span>
+                        )}
+                        {item.bhajan_rag && (
+                          <span>
+                            રાગ: <strong>{item.bhajan_rag.trim()}</strong>
+                          </span>
+                        )}
+                        {item.bhajan_kadi && (
+                          <span>કડી: "{item.bhajan_kadi.trim()}"</span>
+                        )}
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="no-results-item">કોઈ મેળ ખાતું ભજન કે સાહિત્ય મળ્યું નથી.</div>
+                )}
+              </div>
+            )}
           </div>
         </div>
 
         {loading ? (
           <Loader />
-        ) : filteredItems.length === 0 ? (
+        ) : !showDropdown && filteredItems.length === 0 ? (
           <div className="empty-search-state">
             <p>કોઈ મેળ ખાતી વિગતો મળી નથી.</p>
             {searchTerm && (
               <button
                 type="button"
                 className="font-btn"
-                onClick={() => setSearchTerm('')}
+                onClick={() => {
+                  setSearchTerm('');
+                  setSearchResults([]);
+                  setShowDropdown(false);
+                }}
               >
                 બધું સાહિત્ય દર્શાવો
               </button>
@@ -180,7 +281,6 @@ const SahityaDetailsPage = () => {
         ) : (
           <div className="desktop-grid">
             {filteredItems.map((item, idx) => {
-              // શીર્ષક (Heading) વાળા કાર્ડમાં Arrow સાથે
               if (item.type === 'heading') {
                 return (
                   <div
@@ -200,7 +300,6 @@ const SahityaDetailsPage = () => {
                 );
               }
 
-              // ભજન (Bhajan) વાળા કાર્ડમાં Arrow વગર
               const b = item.data;
               return (
                 <div
