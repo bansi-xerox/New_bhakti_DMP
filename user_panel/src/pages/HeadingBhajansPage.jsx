@@ -26,7 +26,6 @@ const HeadingBhajansPage = () => {
     fetchBhajans();
   }, [sahityaName, headingName]);
 
-  // Close search dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (searchRef.current && !searchRef.current.contains(event.target)) {
@@ -57,13 +56,11 @@ const HeadingBhajansPage = () => {
     }
   };
 
-  // Helper function to remove spaces and special characters
   const cleanString = (str) => {
     if (!str) return '';
     return str.replace(/[\s.,:;_'"+=\-!@#$%^&*()]+/g, '').toLowerCase();
   };
 
-  // Live search handler with suggestions
   const handleSearchChange = (value) => {
     setSearchTerm(value);
     const cleanQuery = cleanString(value);
@@ -88,7 +85,6 @@ const HeadingBhajansPage = () => {
     setShowDropdown(true);
   };
 
-  // Voice Search Handler (Gujarati)
   const handleVoiceSearch = () => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
@@ -116,7 +112,6 @@ const HeadingBhajansPage = () => {
     recognition.start();
   };
 
-  // Selecting a suggestion navigates directly to Bhajan detail
   const handleSelectBhajan = (bhajanId) => {
     setSearchTerm('');
     setSearchResults([]);
@@ -127,19 +122,19 @@ const HeadingBhajansPage = () => {
   const cleanSearchTerm = cleanString(searchTerm);
 
   const filteredBhajans = bhajans.filter((b) => {
-  if (!cleanSearchTerm || showDropdown) return true;
-  return (
-    cleanString(b.bhajan_name).includes(cleanSearchTerm) ||
-    cleanString(b.bhajan_rag).includes(cleanSearchTerm)
-  );
-});
+    if (!cleanSearchTerm || showDropdown) return true;
+    return (
+      cleanString(b.bhajan_name).includes(cleanSearchTerm) ||
+      cleanString(b.bhajan_rag).includes(cleanSearchTerm)
+    );
+  });
 
   return (
     <div className="user-app-layout">
       <Header />
 
       <main className="main-desktop-container">
-        {/* Standalone Modern Searchbar with Dropdown Suggestions */}
+        {/* Standalone Modern Searchbar (Centered: 1000px) */}
         <div className="standalone-search-container" ref={searchRef}>
           <div className="search-input-wrapper wide-search-wrapper" style={{ position: 'relative' }}>
             <Search className="search-icon" size={20} />
@@ -234,41 +229,43 @@ const HeadingBhajansPage = () => {
           </div>
         </div>
 
-        {/* Bhajans Grid */}
-        {loading ? (
-          <Loader />
-        ) :!showDropdown && filteredBhajans.length === 0 ? (
-          <div className="empty-search-state">
-            <p>કોઈ મેળ ખાતા ભજન મળ્યા નથી.</p>
-            {searchTerm && (
-              <button
-                type="button"
-                className="font-btn"
-                onClick={() => {
-                  setSearchTerm('');
-                  setSearchResults([]);
-                  setShowDropdown(false);
-                }}
-              >
-                તમામ ભજનો દર્શાવો
-              </button>
-            )}
-          </div>
-        ) : (
-          <div className="desktop-grid">
-            {filteredBhajans.map((b) => (
-              <div
-                key={b._id}
-                className="desktop-card"
-                onClick={() => navigate(`/bhajan/${b._id}`)}
-              >
-                <div>
-                  <h4 className="desktop-card-title">{b.bhajan_name?.trim()}</h4>
+        {/* Bhajans Grid (Centered: 1000px) */}
+        <div className="content-stage-centered">
+          {loading ? (
+            <Loader />
+          ) : !showDropdown && filteredBhajans.length === 0 ? (
+            <div className="empty-search-state">
+              <p>કોઈ મેળ ખાતા ભજન મળ્યા નથી.</p>
+              {searchTerm && (
+                <button
+                  type="button"
+                  className="font-btn"
+                  onClick={() => {
+                    setSearchTerm('');
+                    setSearchResults([]);
+                    setShowDropdown(false);
+                  }}
+                >
+                  તમામ ભજનો દર્શાવો
+                </button>
+              )}
+            </div>
+          ) : (
+            <div className="desktop-grid">
+              {filteredBhajans.map((b) => (
+                <div
+                  key={b._id}
+                  className="desktop-card"
+                  onClick={() => navigate(`/bhajan/${b._id}`)}
+                >
+                  <div>
+                    <h4 className="desktop-card-title">{b.bhajan_name?.trim()}</h4>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        )}
+              ))}
+            </div>
+          )}
+        </div>
       </main>
 
       <Footer />

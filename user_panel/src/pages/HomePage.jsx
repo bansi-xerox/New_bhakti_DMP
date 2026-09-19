@@ -58,7 +58,6 @@ const HomePage = () => {
     }
   };
 
-  // Helper function to remove spaces and special characters for clean matching
   const cleanString = (str) => {
     if (!str) return '';
     return str.replace(/[\s.,:;_'"+=\-!@#$%^&*()]+/g, '').toLowerCase();
@@ -117,7 +116,6 @@ const HomePage = () => {
     recognition.start();
   };
 
-  // Selecting a suggestion navigates directly to Bhajan detail
   const handleSelectBhajan = (bhajanId) => {
     setSearchTerm('');
     setSearchResults([]);
@@ -127,11 +125,10 @@ const HomePage = () => {
 
   const cleanSearchTerm = cleanString(searchTerm);
 
-  // Background categories filtering if user doesn't pick from dropdown
   const filteredCategories = categories.filter((c) => {
-  if (!cleanSearchTerm || showDropdown) return true;
-  return cleanString(c).includes(cleanSearchTerm);
-});
+    if (!cleanSearchTerm || showDropdown) return true;
+    return cleanString(c).includes(cleanSearchTerm);
+  });
 
   return (
     <div className="user-app-layout">
@@ -139,7 +136,7 @@ const HomePage = () => {
       <Header />
 
       <main className="main-desktop-container">
-        {/* 2. Standalone Modern Searchbar with Dropdown */}
+        {/* 2. Standalone Modern Searchbar (Centered: 1000px) */}
         <div className="standalone-search-container" ref={searchRef}>
           <div className="search-input-wrapper wide-search-wrapper" style={{ position: 'relative' }}>
             <Search className="search-icon" size={20} />
@@ -235,11 +232,11 @@ const HomePage = () => {
           </div>
         </div>
 
-        {/* 3. Categories Grid */}
-        <div id="sahitya-section">
+        {/* 3. Categories Grid (Centered: 1000px) */}
+        <div id="sahitya-section" className="content-stage-centered">
           {loading ? (
             <Loader />
-          ) :!showDropdown && filteredCategories.length === 0 ? (
+          ) : !showDropdown && filteredCategories.length === 0 ? (
             <div className="empty-search-state">
               <p>કોઈ મેળ ખાતું સાહિત્ય મળ્યું નથી.</p>
               {searchTerm && (

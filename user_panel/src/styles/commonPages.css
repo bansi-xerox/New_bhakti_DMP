@@ -1,21 +1,24 @@
-/* ================= Standalone Search Bar ================= */
-.standalone-search-container {
-  display: flex;
-  justify-content: flex-start;
-  margin-bottom: 20px;
+/* ================= Universal Perfectly Centered Search Bar (All Pages) ================= */
+.standalone-search-container,
+.bhajan-detail-search-container {
   width: 100%;
+  max-width: 1000px !important; /* Bhajan Detail Stage જેટલી જ ૧૦૦૦px સાઈઝ */
+  margin: 0 auto 20px auto !important; /* બંને બાજુ auto આપીને એક્ઝેટ સેન્ટર */
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
   flex-shrink: 0;
 }
 
 .wide-search-wrapper {
-  max-width: 680px;
-  width: 100%;
+  width: 100% !important;
+  max-width: 1000px !important;
   position: relative;
 }
 
 .wide-search-input {
   width: 100%;
-  padding: 13px 44px 13px 48px !important;
+  padding: 13px 80px 13px 48px !important;
   font-size: 15px !important;
   background: #ffffff !important;
   border: 1.5px solid var(--border-gold) !important;
@@ -56,16 +59,23 @@
   padding: 0;
 }
 
-/* ================= Cards & Grid Layout ================= */
-#sahitya-section {
+/* ================= Cards Container: Perfectly Centered (1000px) ================= */
+#sahitya-section,
+.content-stage-centered {
   width: 100%;
+  max-width: 1000px !important; /* સર્ચબાર જેટલી જ પહોળાઈ */
+  margin: 0 auto !important; /* એક્ઝેટ સેન્ટર */
 }
 
 .desktop-grid {
+  width: 100%;
+  max-width: 1000px !important;
+  margin: 0 auto !important;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 16px;
 }
+
 
 .desktop-card {
   background: #ffffff;

@@ -26,7 +26,6 @@ const SahityaDetailsPage = () => {
     fetchItems();
   }, [sahityaName]);
 
-  // Close search dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (searchRef.current && !searchRef.current.contains(event.target)) {
@@ -76,13 +75,11 @@ const SahityaDetailsPage = () => {
     }
   };
 
-  // Helper function to remove spaces and special characters
   const cleanString = (str) => {
     if (!str) return '';
     return str.replace(/[\s.,:;_'"+=\-!@#$%^&*()]+/g, '').toLowerCase();
   };
 
-  // Live search handler with suggestions
   const handleSearchChange = (value) => {
     setSearchTerm(value);
     const cleanQuery = cleanString(value);
@@ -107,7 +104,6 @@ const SahityaDetailsPage = () => {
     setShowDropdown(true);
   };
 
-  // Voice Search Handler (Gujarati)
   const handleVoiceSearch = () => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
@@ -135,7 +131,6 @@ const SahityaDetailsPage = () => {
     recognition.start();
   };
 
-  // Selecting a suggestion navigates directly to Bhajan detail
   const handleSelectBhajan = (bhajanId) => {
     setSearchTerm('');
     setSearchResults([]);
@@ -164,7 +159,7 @@ const SahityaDetailsPage = () => {
       <Header />
 
       <main className="main-desktop-container">
-        {/* Standalone Modern Searchbar with Dropdown Suggestions */}
+        {/* Standalone Modern Searchbar (Centered: 1000px) */}
         <div className="standalone-search-container" ref={searchRef}>
           <div className="search-input-wrapper wide-search-wrapper" style={{ position: 'relative' }}>
             <Search className="search-icon" size={20} />
@@ -259,67 +254,70 @@ const SahityaDetailsPage = () => {
           </div>
         </div>
 
-        {loading ? (
-          <Loader />
-        ) : !showDropdown && filteredItems.length === 0 ? (
-          <div className="empty-search-state">
-            <p>કોઈ મેળ ખાતી વિગતો મળી નથી.</p>
-            {searchTerm && (
-              <button
-                type="button"
-                className="font-btn"
-                onClick={() => {
-                  setSearchTerm('');
-                  setSearchResults([]);
-                  setShowDropdown(false);
-                }}
-              >
-                બધું સાહિત્ય દર્શાવો
-              </button>
-            )}
-          </div>
-        ) : (
-          <div className="desktop-grid">
-            {filteredItems.map((item, idx) => {
-              if (item.type === 'heading') {
+        {/* Content Centered Container (1000px) */}
+        <div className="content-stage-centered">
+          {loading ? (
+            <Loader />
+          ) : !showDropdown && filteredItems.length === 0 ? (
+            <div className="empty-search-state">
+              <p>કોઈ મેળ ખાતી વિગતો મળી નથી.</p>
+              {searchTerm && (
+                <button
+                  type="button"
+                  className="font-btn"
+                  onClick={() => {
+                    setSearchTerm('');
+                    setSearchResults([]);
+                    setShowDropdown(false);
+                  }}
+                >
+                  બધું સાહિત્ય દર્શાવો
+                </button>
+              )}
+            </div>
+          ) : (
+            <div className="desktop-grid">
+              {filteredItems.map((item, idx) => {
+                if (item.type === 'heading') {
+                  return (
+                    <div
+                      key={`heading-${idx}`}
+                      className="desktop-card"
+                      onClick={() =>
+                        navigate(
+                          `/sahitya/${encodeURIComponent(sahityaName)}/heading/${encodeURIComponent(item.name)}`
+                        )
+                      }
+                    >
+                      <div className="card-title-row">
+                        <h4 className="desktop-card-title">{item.name}</h4>
+                        <ArrowRight size={18} className="title-arrow-icon" />
+                      </div>
+                    </div>
+                  );
+                }
+
+                const b = item.data;
                 return (
                   <div
-                    key={`heading-${idx}`}
+                    key={b._id || `bhajan-${idx}`}
                     className="desktop-card"
-                    onClick={() =>
-                      navigate(
-                        `/sahitya/${encodeURIComponent(sahityaName)}/heading/${encodeURIComponent(item.name)}`
-                      )
-                    }
+                    onClick={() => navigate(`/bhajan/${b._id}`)}
                   >
                     <div className="card-title-row">
-                      <h4 className="desktop-card-title">{item.name}</h4>
-                      <ArrowRight size={18} className="title-arrow-icon" />
+                      <h4 className="desktop-card-title">{b.bhajan_name?.trim()}</h4>
+                      {b.bhajan_rag && (
+                        <span style={{ fontSize: '13px', color: '#8d6e63' }}>
+                          {b.bhajan_rag}
+                        </span>
+                      )}
                     </div>
                   </div>
                 );
-              }
-
-              const b = item.data;
-              return (
-                <div
-                  key={b._id || `bhajan-${idx}`}
-                  className="desktop-card"
-                  onClick={() => navigate(`/bhajan/${b._id}`)}
-                >
-                  <div className="card-title-row">
-                    <h4 className="desktop-card-title">{b.bhajan_name?.trim()}</h4>
-                    {b.bhajan_rag && (
-                      <span style={{ fontSize: '13px', color: '#8d6e63' }}>
-                        {b.bhajan_rag}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
+              })}
+            </div>
+          )}
+        </div>
       </main>
 
       <Footer />
