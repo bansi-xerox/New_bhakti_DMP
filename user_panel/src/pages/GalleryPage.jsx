@@ -199,6 +199,20 @@ const GalleryPage = () => {
         }
     };
 
+    // Helper to determine count label based on content type
+    const getGroupCountLabel = (items) => {
+        const hasVideos = items.some((item) => Boolean(item.video_path));
+        const hasPhotos = items.some((item) => !item.video_path && Boolean(item.photo_path || item.file_url || item.url));
+
+        if (hasVideos && hasPhotos) {
+            return `${items.length} સ્મૃતિ / ઝાંખી`;
+        }
+        if (hasVideos) {
+            return `${items.length} ઝાંખી`;
+        }
+        return `${items.length} સ્મૃતિ`;
+    };
+
     return (
         <div className="user-app-layout">
             {/* 1. Header with Face Search Handler */}
@@ -269,9 +283,7 @@ const GalleryPage = () => {
                                         {/* Group Header: Event Name (Event Date) */}
                                         <div className="gallery-group-header">
                                             <span className="gallery-group-title">{groupTitle}</span>
-                                            <span className="gallery-group-count">
-                                                {items.length} {items.some(i => i.video_path) ? 'સ્મૃતિ / ઝાંખી' : 'સ્મૃતિ'}
-                                            </span>                    
+                                            <span className="gallery-group-count">{getGroupCountLabel(items)}</span>
                                         </div>
 
                                         {/* Media Grid */}
