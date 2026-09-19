@@ -471,6 +471,10 @@ const BhajanSahitya = () => {
           position: relative; 
         }
 
+        .table-custom tbody tr:last-child td {
+          border-bottom: none !important;
+        }
+
 .table-custom-wrapper::before {
   content: "";
   position: absolute;
@@ -487,6 +491,8 @@ const BhajanSahitya = () => {
   pointer-events: none;
   z-index: 10;
 }
+
+
 
        .table-responsive-wrapper {
           width: 100%;
