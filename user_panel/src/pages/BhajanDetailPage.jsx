@@ -67,30 +67,30 @@ const BhajanDetailPage = () => {
     }
   };
 
+  // Helper function to remove spaces and special characters
+  const cleanString = (str) => {
+    if (!str) return '';
+    return str.replace(/[\s.,:;_'"+=\-!@#$%^&*()]+/g, '').toLowerCase();
+  };
+
   // Live Search Filter: Matches Sahitya, Heading, Bhajan Name, Kadi, and Raag
   const handleSearchChange = (value) => {
     setSearchTerm(value);
-    const query = value.trim().toLowerCase();
+    const cleanQuery = cleanString(value);
 
-    if (!query) {
+    if (!cleanQuery) {
       setSearchResults([]);
       setShowDropdown(false);
       return;
     }
 
     const matched = allBhajansList.filter((item) => {
-      const sahitya = item.sahitya_name?.toLowerCase() || '';
-      const heading = item.heading_name?.toLowerCase() || '';
-      const name = item.bhajan_name?.toLowerCase() || '';
-      const kadi = item.bhajan_kadi?.toLowerCase() || '';
-      const rag = item.bhajan_rag?.toLowerCase() || '';
-
       return (
-        sahitya.includes(query) ||
-        heading.includes(query) ||
-        name.includes(query) ||
-        kadi.includes(query) ||
-        rag.includes(query)
+        cleanString(item.sahitya_name).includes(cleanQuery) ||
+        cleanString(item.heading_name).includes(cleanQuery) ||
+        cleanString(item.bhajan_name).includes(cleanQuery) ||
+        cleanString(item.bhajan_kadi).includes(cleanQuery) ||
+        cleanString(item.bhajan_rag).includes(cleanQuery)
       );
     });
 

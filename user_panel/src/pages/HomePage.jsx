@@ -18,6 +18,8 @@ const HomePage = () => {
     fetchSahityaCategories();
   }, []);
 
+  
+
   const fetchSahityaCategories = async () => {
     try {
       const res = await getAllBhajans();
@@ -66,8 +68,15 @@ const HomePage = () => {
     recognition.start();
   };
 
+ const cleanString = (str) => {
+    if (!str) return '';
+    return str.replace(/[\s.,:;_'"+=\-!@#$%^&*()]+/g, '').toLowerCase();
+  };
+
+  const cleanSearchTerm = cleanString(searchTerm);
+
   const filteredCategories = categories.filter((c) =>
-    c.toLowerCase().includes(searchTerm.toLowerCase())
+    cleanString(c).includes(cleanSearchTerm)
   );
 
   return (

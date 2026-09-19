@@ -83,20 +83,28 @@ const SahityaDetailsPage = () => {
     recognition.start();
   };
 
-  // Search Filter: શીર્ષક અથવા ભજનના નામ અને રાગ પરથી શોધશે
+  // Helper function to remove spaces and special characters
+  const cleanString = (str) => {
+    if (!str) return '';
+    return str.replace(/[\s.,:;_'"+=\-!@#$%^&*()]+/g, '').toLowerCase();
+  };
+
+  const cleanSearchTerm = cleanString(searchTerm);
+
   const filteredItems = combinedItems.filter((item) => {
-    if (!searchTerm.trim()) return true;
-    const query = searchTerm.toLowerCase();
+    if (!cleanSearchTerm) return true;
 
     if (item.type === 'heading') {
-      return item.name.toLowerCase().includes(query);
+      return cleanString(item.name).includes(cleanSearchTerm);
     }
+    
     const b = item.data;
     return (
-      b.bhajan_name?.toLowerCase().includes(query) ||
-      b.bhajan_rag?.toLowerCase().includes(query)
+      cleanString(b.bhajan_name).includes(cleanSearchTerm) ||
+      cleanString(b.bhajan_rag).includes(cleanSearchTerm)
     );
   });
+
 
   return (
     <div className="user-app-layout">

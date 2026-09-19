@@ -64,13 +64,19 @@ const HeadingBhajansPage = () => {
     recognition.start();
   };
 
-  // Search Filter: ભજનનું નામ અથવા રાગ શોધશે
+  const cleanString = (str) => {
+    if (!str) return '';
+    return str.replace(/[\s.,:;_'"+=\-!@#$%^&*()]+/g, '').toLowerCase();
+  };
+
+  const cleanSearchTerm = cleanString(searchTerm);
+  
   const filteredBhajans = bhajans.filter((b) => {
-    if (!searchTerm.trim()) return true;
-    const query = searchTerm.toLowerCase();
+    if (!cleanSearchTerm) return true;
+    
     return (
-      b.bhajan_name?.toLowerCase().includes(query) ||
-      b.bhajan_rag?.toLowerCase().includes(query)
+      cleanString(b.bhajan_name).includes(cleanSearchTerm) ||
+      cleanString(b.bhajan_rag).includes(cleanSearchTerm)
     );
   });
 
