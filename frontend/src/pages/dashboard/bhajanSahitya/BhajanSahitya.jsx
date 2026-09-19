@@ -149,11 +149,11 @@ const BhajanSahitya = () => {
   // =========================================================
   // Voice Search Handler
   // =========================================================
-  
+
   const handleVoiceSearch = () => {
     // Check for browser support
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    
+
     if (!SpeechRecognition) {
       showErrorAlert('Not Supported', 'તમારું બ્રાઉઝર વોઇસ સર્ચને સપોર્ટ કરતું નથી. (Your browser does not support voice search.)');
       return;
@@ -360,9 +360,8 @@ const BhajanSahitya = () => {
           padding: 16px;
           box-sizing: border-box;
           background-color: #fdf9f1;
-          overflow-y: auto;
+          overflow-y: hidden; /* CHANGED: prevents full-screen scrolling */
         }
-
         /* =====================================================
            PREMIUM CARD
            ===================================================== */
@@ -459,16 +458,18 @@ const BhajanSahitya = () => {
            TABLE
            ===================================================== */
 
-        .table-custom-wrapper {
-        width: 100%;
-        flex: 1;
-        min-height: 0;
-        overflow: hidden;
-        background-color: #ffffff;
-        border: 1px solid #d49a7a !important;
-        border-radius: 14px;
-        position: relative; 
-}
+     .table-custom-wrapper {
+          width: 100%;
+          flex: 0 1 auto; /* CHANGED: Sizes to content, shrinks if page is full */
+          display: flex;  /* CHANGED: Required for inner scrolling */
+          flex-direction: column;
+          min-height: 0;
+          overflow: hidden;
+          background-color: #ffffff;
+          border: 1px solid #d49a7a !important;
+          border-radius: 14px;
+          position: relative; 
+        }
 
 .table-custom-wrapper::before {
   content: "";
@@ -487,11 +488,11 @@ const BhajanSahitya = () => {
   z-index: 10;
 }
 
-        .table-responsive-wrapper {
+       .table-responsive-wrapper {
           width: 100%;
-          height: 100%;
-          overflow-x: auto;
-          overflow-y: auto;
+          flex: 1 1 auto; /* CHANGED: allows scrolling when content overflows */
+          min-height: 0;
+          overflow: auto; /* CHANGED: Handles both X and Y scrollbars inside the table */
         }
 
         .table-custom {
@@ -937,7 +938,7 @@ border-bottom: 1px solid #c45a24 !important;
                 placeholder="સાહિત્ય, શીર્ષક, ભજન, કડી કે રાગ શોધો..."
               />
 
-             {/* Voice Search Mic Icon */}
+              {/* Voice Search Mic Icon */}
               <span
                 className={isListening ? "mic-active" : ""}
                 style={{
@@ -1229,7 +1230,7 @@ border-bottom: 1px solid #c45a24 !important;
                 placeholder="YouTube Link (https://youtube.com/...)"
               />
             </div>
-              <div className="bhajan-form-full">
+            <div className="bhajan-form-full">
               <textarea
                 required
                 name="bhajan"
@@ -1252,7 +1253,7 @@ border-bottom: 1px solid #c45a24 !important;
                 placeholder="ભજનનો અર્થ / ભાવાર્થ દાખલ કરો"
               />
             </div>
-            
+
 
             {/* =================================================
                 ACTION BUTTONS
