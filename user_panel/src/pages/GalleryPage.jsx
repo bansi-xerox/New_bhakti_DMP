@@ -220,22 +220,6 @@ const GalleryPage = () => {
                   </option>
                 ))}
               </select>
-
-              {(selectedYear || selectedEvent) && (
-                <button
-                  type="button"
-                  className="gallery-reset-btn"
-                  onClick={() => {
-                    setSelectedYear('');
-                    setSelectedEvent('');
-                    fetchGallery();
-                  }}
-                  title="ફિલ્ટર ક્લીયર કરો"
-                >
-                  <RefreshCw size={15} />
-                  <span>રીસેટ</span>
-                </button>
-              )}
             </div>
           </div>
 
