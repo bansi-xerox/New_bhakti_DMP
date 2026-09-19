@@ -325,3 +325,156 @@
     height: 140px;
   }
 }
+
+
+/* ================= Gallery Scrollbar (Orange Theme) ================= */
+.custom-orange-scrollbar::-webkit-scrollbar {
+  width: 7px;
+}
+
+.custom-orange-scrollbar::-webkit-scrollbar-track {
+  background: #fdf5ec;
+  border-radius: 8px;
+}
+
+/* Vibrant Orange/Saffron scrollbar thumb as per screenshot */
+.custom-orange-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #f57c00 0%, #e65100 100%) !important;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(230, 81, 0, 0.35);
+}
+
+.custom-orange-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #bf360c !important;
+}
+
+/* ================= Group Header & Spacing ================= */
+.gallery-groups-container {
+  display: flex;
+  flex-direction: column;
+  gap: 36px; /* દરેક ઇવેન્ટ સેક્શન વચ્ચે મોટો અને ક્લીન ગેપ */
+  padding-bottom: 24px;
+}
+
+.gallery-group-section {
+  display: flex;
+  flex-direction: column;
+  gap: 18px; /* હેડિંગ અને નીચેના ફોટા/વિડીયો વચ્ચે પ્રોપર સ્પેસ */
+}
+
+.gallery-group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 18px;
+  background: #fff8f0;
+  border-left: 4.5px solid var(--primary-saffron);
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  margin-bottom: 2px; /* હેડિંગ નીચે વધારાની સ્પેસ */
+}
+
+.gallery-group-title {
+  font-size: 17px;
+  font-weight: 750;
+  color: #bf360c;
+  letter-spacing: 0.3px;
+}
+
+.gallery-group-count {
+  font-size: 13.5px;
+  font-weight: 650;
+  color: #795548;
+  background: #ffffff;
+  padding: 3px 10px;
+  border-radius: 20px;
+  border: 1px solid var(--border-gold);
+}
+
+/* Gallery Grid Gap */
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px; /* ફોટા/વિડીયો વચ્ચે પણ પરફેક્ટ ૧૬px થી વધારીને ૨૦px સ્પેસ */
+}
+
+/* ================= Clean Cards (Without repetitive labels) ================= */
+.gallery-card.clean-card {
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1.5px solid var(--border-gold);
+  background: #ffffff;
+  box-shadow: 0 3px 10px rgba(160, 64, 0, 0.04);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.gallery-card.clean-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--primary-saffron);
+  box-shadow: 0 8px 22px rgba(216, 67, 21, 0.18);
+}
+
+.gallery-card.clean-card .gallery-img-wrapper {
+  height: 190px;
+  width: 100%;
+}
+
+/* ================= Video Card & Play Overlay ================= */
+.video-card-preview {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #000000;
+}
+
+.video-card-preview video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.85;
+}
+
+.video-play-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.25);
+  transition: background 0.2s ease;
+}
+
+.gallery-card:hover .video-play-overlay {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.play-icon-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(216, 67, 21, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+  transition: transform 0.2s ease;
+}
+
+.gallery-card:hover .play-icon-circle {
+  transform: scale(1.12);
+  background: #e65100;
+}
+
+/* Lightbox Video */
+.lightbox-video {
+  max-width: 100%;
+  max-height: calc(90vh - 80px);
+  outline: none;
+}
+
+.lightbox-date {
+  font-size: 14px;
+  color: #795548;
+  font-weight: 600;
+}

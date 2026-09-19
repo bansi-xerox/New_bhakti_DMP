@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Image as ImageIcon, Download, Share2, X, RefreshCw } from 'lucide-react';
+import { Image as ImageIcon, Download, Share2, X, RefreshCw, Play, Film } from 'lucide-react';
 import { getGalleryItems, searchByFace } from '../services/api';
 import Header from '../components/common/Header';
 import Footer from '../components/common/Footer';
@@ -17,7 +17,7 @@ const GalleryPage = () => {
   const [availableEvents, setAvailableEvents] = useState([]);
 
   // Modal Lightbox State
-  const [activePhoto, setActivePhoto] = useState(null);
+  const [activeMedia, setActiveMedia] = useState(null);
 
   // Face Recognition State
   const [faceSearching, setFaceSearching] = useState(false);
@@ -34,7 +34,7 @@ const GalleryPage = () => {
       const items = res.data?.data || res.data || [];
       setMediaList(items);
 
-      // Extract unique years using 'main_folder_name' or 'event_date'
+      // Extract unique years
       const years = [
         ...new Set(
           items
@@ -52,7 +52,7 @@ const GalleryPage = () => {
         ),
       ].sort((a, b) => b - a);
 
-      // Extract unique event/festival names using 'sub_folder_name'
+      // Extract unique events
       const events = [
         ...new Set(
           items
@@ -70,16 +70,25 @@ const GalleryPage = () => {
     }
   };
 
-  // Helper to extract the actual photo URL from API response
-  const getPhotoUrl = (item) => {
-    if (!item) return '';
-    return item.photo_path || item.file_url || item.url || item.image || '';
+  // Helper to format date as DD-MM-YYYY
+  const formatDateString = (dateStr) => {
+    if (!dateStr) return '';
+    try {
+      const d = new Date(dateStr);
+      if (isNaN(d.getTime())) return '';
+      const day = String(d.getDate()).padStart(2, '0');
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const year = d.getFullYear();
+      return `${day}-${month}-${year}`;
+    } catch {
+      return '';
+    }
   };
 
-  // Helper to display clean event / festival name
+  // Helper to clean and display event title
   const getEventTitle = (item) => {
     if (!item) return '';
-    const raw = item.sub_folder_name || item.event_name || item.title || '';
+    const raw = item.sub_folder_name || item.event_name || item.title || 'દર્શન';
     return raw.replace(/_/g, ' ');
   };
 
@@ -124,10 +133,23 @@ const GalleryPage = () => {
     return matchYear && matchEvent;
   });
 
-  // Download photo function
-  const handleDownload = async (photoUrl, fileName = 'bhakti-darshan.jpg') => {
+  // Group media items by event and date
+  const groupedMedia = filteredMedia.reduce((acc, item) => {
+    const title = getEventTitle(item);
+    const dateFormatted = formatDateString(item.event_date || item.created_at);
+    const groupKey = dateFormatted ? `${title} (${dateFormatted})` : title;
+
+    if (!acc[groupKey]) {
+      acc[groupKey] = [];
+    }
+    acc[groupKey].push(item);
+    return acc;
+  }, {});
+
+  // Download media function (Image or Video)
+  const handleDownload = async (url, fileName = 'bhakti-media') => {
     try {
-      const response = await fetch(photoUrl);
+      const response = await fetch(url);
       const blob = await response.blob();
       const blobUrl = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -138,43 +160,41 @@ const GalleryPage = () => {
       document.body.removeChild(a);
       window.URL.revokeObjectURL(blobUrl);
     } catch {
-      window.open(photoUrl, '_blank');
+      window.open(url, '_blank');
     }
   };
 
-  // Web Share API with fallback to copy link
-  const handleShare = async (photo) => {
-    const photoUrl = getPhotoUrl(photo);
-    const title = getEventTitle(photo) || 'ભજન કીર્તન પોર્ટલ ગેલેરી દર્શન';
+  // Share handler
+  const handleShare = async (media) => {
+    const mediaUrl = media.video_path || media.photo_path || media.file_url || media.url;
+    const title = getEventTitle(media);
 
     if (navigator.share) {
       try {
         await navigator.share({
           title,
-          text: 'આ ભક્તિમય તસવીર જુઓ',
-          url: photoUrl,
+          text: 'આ ભક્તિ દર્શન જુઓ',
+          url: mediaUrl,
         });
       } catch {
-        // Dismissed share
+        // Dismiss
       }
     } else {
-      navigator.clipboard.writeText(photoUrl);
-      alert('ફોટો લિંક ક્લિપબોર્ડમાં કોપી થઈ ગઈ છે!');
+      navigator.clipboard.writeText(mediaUrl);
+      alert('લિંક ક્લિપબોર્ડમાં કોપી થઈ ગઈ છે!');
     }
   };
 
   return (
     <div className="user-app-layout">
-      {/* 1. Sticky Royal Header with Face Search Handler */}
+      {/* 1. Header with Face Search Handler */}
       <Header onFaceSearch={handleFaceSearchFromHeader} faceSearching={faceSearching} />
 
       <main className="main-desktop-container">
-        {/* Gallery Stage Box */}
         <div className="gallery-desktop-stage">
-          {/* Top Filter Bar (Face button removed from here) */}
+          {/* Filters Bar */}
           <div className="gallery-filter-bar">
             <div className="gallery-select-group">
-              {/* Year Filter */}
               <select
                 className="gallery-select"
                 value={selectedYear}
@@ -188,7 +208,6 @@ const GalleryPage = () => {
                 ))}
               </select>
 
-              {/* Event / Festival Filter */}
               <select
                 className="gallery-select"
                 value={selectedEvent}
@@ -202,7 +221,6 @@ const GalleryPage = () => {
                 ))}
               </select>
 
-              {/* Reset Filters */}
               {(selectedYear || selectedEvent) && (
                 <button
                   type="button"
@@ -221,14 +239,14 @@ const GalleryPage = () => {
             </div>
           </div>
 
-          {/* Photo Grid Section */}
-          <div className="gallery-content-body">
+          {/* Grouped Photos & Videos Grid */}
+          <div className="gallery-content-body custom-orange-scrollbar">
             {loading ? (
               <Loader />
-            ) : filteredMedia.length === 0 ? (
+            ) : Object.keys(groupedMedia).length === 0 ? (
               <div className="empty-search-state">
                 <ImageIcon size={48} style={{ opacity: 0.35, marginBottom: 10 }} />
-                <p>કોઈ તસવીરો ઉપલબ્ધ નથી.</p>
+                <p>કોઈ તસવીરો કે વિડીયો ઉપલબ્ધ નથી.</p>
                 <button
                   type="button"
                   className="font-btn"
@@ -238,64 +256,103 @@ const GalleryPage = () => {
                     fetchGallery();
                   }}
                 >
-                  બધી તસવીરો દર્શાવો
+                  બધું દર્શાવો
                 </button>
               </div>
             ) : (
-              <div className="gallery-grid">
-                {filteredMedia.map((photo, idx) => {
-                  const imgUrl = getPhotoUrl(photo);
-                  const label = getEventTitle(photo);
-
-                  return (
-                    <div
-                      key={photo.id || photo._id || idx}
-                      className="gallery-card"
-                      onClick={() => setActivePhoto(photo)}
-                    >
-                      <div className="gallery-img-wrapper">
-                        <img
-                          src={imgUrl}
-                          alt={label || 'Gallery Photo'}
-                          loading="lazy"
-                          onError={(e) => {
-                            e.target.src = 'https://via.placeholder.com/300x200?text=Photo+Unavailable';
-                          }}
-                        />
-                      </div>
-                      {label && <div className="gallery-photo-label">{label}</div>}
+              <div className="gallery-groups-container">
+                {Object.entries(groupedMedia).map(([groupTitle, items], groupIndex) => (
+                  <div key={groupIndex} className="gallery-group-section">
+                    {/* Group Header: Event Name (Event Date)[cite: 30] */}
+                    <div className="gallery-group-header">
+                      <span className="gallery-group-title">{groupTitle}</span>
+                      <span className="gallery-group-count">{items.length} દર્શન</span>
                     </div>
-                  );
-                })}
+
+                    {/* Media Grid */}
+                    <div className="gallery-grid">
+                      {items.map((media, idx) => {
+                        const isVideo = Boolean(media.video_path);
+                        const mediaUrl = media.video_path || media.photo_path || media.file_url || media.url;
+
+                        return (
+                          <div
+                            key={media.id || media._id || idx}
+                            className="gallery-card clean-card"
+                            onClick={() => setActiveMedia(media)}
+                          >
+                            <div className="gallery-img-wrapper">
+                              {isVideo ? (
+                                <div className="video-card-preview">
+                                  <video src={mediaUrl} muted preload="metadata" />
+                                  <div className="video-play-overlay">
+                                    <div className="play-icon-circle">
+                                      <Play size={20} fill="#ffffff" color="#ffffff" />
+                                    </div>
+                                  </div>
+                                </div>
+                              ) : (
+                                <img
+                                  src={mediaUrl}
+                                  alt={groupTitle}
+                                  loading="lazy"
+                                  onError={(e) => {
+                                    e.target.src = 'https://via.placeholder.com/300x200?text=Photo+Unavailable';
+                                  }}
+                                />
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
           </div>
         </div>
       </main>
 
-      {/* Lightbox Modal */}
-      {activePhoto && (
-        <div className="lightbox-overlay" onClick={() => setActivePhoto(null)}>
+      {/* Lightbox Modal (For Photos and Videos) */}
+      {activeMedia && (
+        <div className="lightbox-overlay" onClick={() => setActiveMedia(null)}>
           <div className="lightbox-container" onClick={(e) => e.stopPropagation()}>
             <button
               type="button"
               className="lightbox-close-btn"
-              onClick={() => setActivePhoto(null)}
+              onClick={() => setActiveMedia(null)}
               aria-label="Close"
             >
               <X size={22} />
             </button>
 
+            {/* Media Player / Viewer */}
             <div className="lightbox-image-wrapper">
-              <img
-                src={getPhotoUrl(activePhoto)}
-                alt={getEventTitle(activePhoto) || 'Enlarged View'}
-              />
+              {activeMedia.video_path ? (
+                <video
+                  src={activeMedia.video_path}
+                  controls
+                  autoPlay
+                  className="lightbox-video"
+                />
+              ) : (
+                <img
+                  src={activeMedia.photo_path || activeMedia.file_url || activeMedia.url}
+                  alt={getEventTitle(activeMedia) || 'Enlarged View'}
+                />
+              )}
             </div>
 
+            {/* Actions Bar */}
             <div className="lightbox-actions-bar">
               <span className="lightbox-title">
-                {getEventTitle(activePhoto) || 'ભજન કીર્તન દર્શન'}
+                {getEventTitle(activeMedia)}
+                {formatDateString(activeMedia.event_date || activeMedia.created_at) && (
+                  <span className="lightbox-date">
+                    {' '}({formatDateString(activeMedia.event_date || activeMedia.created_at)})
+                  </span>
+                )}
               </span>
 
               <div className="lightbox-btns-group">
@@ -304,8 +361,8 @@ const GalleryPage = () => {
                   className="lightbox-action-btn download-btn"
                   onClick={() =>
                     handleDownload(
-                      getPhotoUrl(activePhoto),
-                      `${getEventTitle(activePhoto) || 'bhajan-photo'}.jpg`
+                      activeMedia.video_path || activeMedia.photo_path || activeMedia.file_url || activeMedia.url,
+                      `${getEventTitle(activeMedia)}.${activeMedia.video_path ? 'mp4' : 'jpg'}`
                     )
                   }
                   title="ડાઉનલોડ કરો"
@@ -316,7 +373,7 @@ const GalleryPage = () => {
                 <button
                   type="button"
                   className="lightbox-action-btn share-btn"
-                  onClick={() => handleShare(activePhoto)}
+                  onClick={() => handleShare(activeMedia)}
                   title="શેર કરો"
                 >
                   <Share2 size={18} />
@@ -327,7 +384,6 @@ const GalleryPage = () => {
         </div>
       )}
 
-      {/* Footer */}
       <Footer />
     </div>
   );

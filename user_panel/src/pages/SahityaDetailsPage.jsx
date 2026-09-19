@@ -306,11 +306,7 @@ const SahityaDetailsPage = () => {
                   >
                     <div className="card-title-row">
                       <h4 className="desktop-card-title">{b.bhajan_name?.trim()}</h4>
-                      {b.bhajan_rag && (
-                        <span style={{ fontSize: '13px', color: '#8d6e63' }}>
-                          {b.bhajan_rag}
-                        </span>
-                      )}
+
                     </div>
                   </div>
                 );
