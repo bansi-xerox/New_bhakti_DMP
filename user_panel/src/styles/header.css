@@ -65,3 +65,43 @@
   font-size: 13px;
   font-weight: 700;
 }
+
+/* Header Right Actions (Gallery Button) */
+.header-right-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header-gallery-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  border: 1.5px solid var(--border-gold);
+  color: var(--primary-saffron);
+  padding: 7px 16px;
+  border-radius: 50px;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(160, 64, 0, 0.04);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.header-gallery-btn:hover,
+.header-gallery-btn.active {
+  background: linear-gradient(135deg, #d84315 0%, #ff6f00 100%);
+  color: #ffffff;
+  border-color: #bf360c;
+  box-shadow: 0 4px 14px rgba(216, 67, 21, 0.28);
+  transform: translateY(-2px);
+}
+
+.header-gallery-btn svg {
+  transition: transform 0.2s ease;
+}
+
+.header-gallery-btn:hover svg {
+  transform: scale(1.1);
+}
