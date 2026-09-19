@@ -3,24 +3,40 @@
 .bhajan-detail-search-container {
   width: 100%;
   max-width: 1000px !important;
-  margin: 0 auto 20px auto !important;
+  margin: 0 auto 16px auto !important;
   display: flex !important;
   justify-content: center !important;
   align-items: center !important;
   flex-shrink: 0;
 
-  /* ============ STICKY PROPERTIES ADDED ============ */
+  /* Sticky Positioning */
   position: sticky !important;
-  top: 0px !important; /* Header ની બરાબર નીચે ચોંટી રહેશે */
-  z-index: 90 !important; /* કાર્ડ્સ આની નીચેથી પસાર થશે */
-  background: var(--bg-cream, #faf5ed) !important; /* સ્ક્રોલ થતી વખતે નીચેના કાર્ડ્સ આની આરપાર ન દેખાય તે માટે પેજનો બેકગ્રાઉન્ડ કલર */
-  padding: 12px 0 10px 0 !important; /* સ્ટીકી વખતે ઉપર-નીચે સહેજ પ્રોટેક્શન પેડિંગ */
+  top: 0px !important; 
+  z-index: 80 !important;
+
+  /* Solid Background with Padding to prevent card bleed */
+  background: var(--bg-cream, #faf5ed) !important;
+  padding: 12px 0 14px 0 !important;
+
+  /* Mask shadow to hide cards passing from the sides */
+  box-shadow: 0 0 0 100vmax var(--bg-cream, #faf5ed) !important;
+  clip-path: inset(0 -100vmax -20px -100vmax) !important;
 }
 
+
+.royal-header {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 100 !important; /* Header must stay above the search bar */
+  background: linear-gradient(180deg, #ffffff 0%, #fffbf6 100%) !important;
+}
+
+/* Ensure the Search input stays cleanly rounded */
 .wide-search-wrapper {
   width: 100% !important;
   max-width: 1000px !important;
   position: relative;
+  z-index: 2;
 }
 
 .wide-search-input {
@@ -30,7 +46,7 @@
   background: #ffffff !important;
   border: 1.5px solid var(--border-gold) !important;
   border-radius: 50px !important;
-  box-shadow: 0 4px 14px rgba(160, 64, 0, 0.08) !important;
+  box-shadow: 0 3px 12px rgba(160, 64, 0, 0.08) !important;
   transition: all 0.25s ease !important;
 }
 
@@ -246,4 +262,13 @@
   text-align: center;
   color: #8d6e63;
   font-size: 14px;
+}
+
+/* Responsive adjustment for Mobile */
+@media (max-width: 768px) {
+  .standalone-search-container,
+  .bhajan-detail-search-container {
+    padding: 10px 16px 12px 16px !important;
+    margin-bottom: 12px !important;
+  }
 }
