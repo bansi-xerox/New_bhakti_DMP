@@ -17,7 +17,7 @@ faceapi.env.monkeyPatch({ Canvas, Image, ImageData });
 const loadModels = async () => {
   try {
     const MODEL_URL = path.join(__dirname, '../face-models'); // Ensure this points to your downloaded models folder
-    await faceapi.nets.ssdMobilenetv1.loadFromDisk(MODEL_URL);
+    await faceapi.nets.tinyFaceDetector.loadFromDisk(MODEL_URL);
     await faceapi.nets.faceLandmark68Net.loadFromDisk(MODEL_URL);
     await faceapi.nets.faceRecognitionNet.loadFromDisk(MODEL_URL);
     console.log('Face Recognition Models Loaded Successfully');
