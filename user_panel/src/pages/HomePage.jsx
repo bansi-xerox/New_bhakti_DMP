@@ -145,7 +145,7 @@ const HomePage = () => {
   />
 
         {/* 3. Categories Grid (Centered: 1000px) */}
-<div id="sahitya-section" className="content-stage-centered" style={{ paddingTop: '3px' }}>          {loading ? (
+<div id="sahitya-section" className="content-stage-centered" style={{ paddingTop: '5px' }}>          {loading ? (
             <Loader />
           ) : !showDropdown && filteredCategories.length === 0 ? (
             <div className="empty-search-state">
