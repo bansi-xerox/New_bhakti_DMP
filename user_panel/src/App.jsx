@@ -5,6 +5,8 @@ import SahityaDetailsPage from './pages/SahityaDetailsPage';
 import HeadingBhajansPage from './pages/HeadingBhajansPage';
 import BhajanDetailPage from './pages/BhajanDetailPage';
 import './assets/userTheme.css';
+import GalleryPage from './pages/GalleryPage';
+
 
 function App() {
   return (
@@ -21,6 +23,8 @@ function App() {
 
         {/* Screen 4: Full Bhajan Detail with 4-Tab Bottom Nav */}
         <Route path="/bhajan/:id" element={<BhajanDetailPage />} />
+
+        <Route path="/gallery" element={<GalleryPage />} />
       </Routes>
     </Router>
   );

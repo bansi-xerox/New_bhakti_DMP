@@ -22,17 +22,14 @@ const BhajanDetailPage = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const searchRef = useRef(null);
 
-  // Fetch current bhajan details by ID
   useEffect(() => {
     fetchBhajan();
   }, [id]);
 
-  // Fetch all bhajans list for live universal search
   useEffect(() => {
     fetchAllBhajansData();
   }, []);
 
-  // Close search dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (searchRef.current && !searchRef.current.contains(event.target)) {
@@ -67,13 +64,11 @@ const BhajanDetailPage = () => {
     }
   };
 
-  // Helper function to remove spaces and special characters
   const cleanString = (str) => {
     if (!str) return '';
     return str.replace(/[\s.,:;_'"+=\-!@#$%^&*()]+/g, '').toLowerCase();
   };
 
-  // Live Search Filter: Matches Sahitya, Heading, Bhajan Name, Kadi, and Raag
   const handleSearchChange = (value) => {
     setSearchTerm(value);
     const cleanQuery = cleanString(value);
@@ -98,12 +93,11 @@ const BhajanDetailPage = () => {
     setShowDropdown(true);
   };
 
-  // Voice Search Handler (Gujarati)
   const handleVoiceSearch = () => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
     if (!SpeechRecognition) {
-      alert('Tammari browser voice search support cheyyadam ledu.');
+      alert('તમારું બ્રાઉઝર વોઇસ સર્ચને સપોર્ટ કરતું નથી.');
       return;
     }
 
@@ -148,6 +142,7 @@ const BhajanDetailPage = () => {
     return str !== '' && str !== '-';
   };
 
+  // Check if Bhavarth or Video exists
   const bottomTabs = [
     ...(bhajan?.bhajan_bhavarth?.trim() && bhajan.bhajan_bhavarth.trim() !== '-'
       ? [{ id: 'bhavarth', label: 'ભજન ભાવાર્થ', icon: <BookOpen size={22} />, posClass: 'side-tooltip-left' }]
@@ -341,7 +336,7 @@ const BhajanDetailPage = () => {
                 <div
                   className={`stage-title-header clean-info-stage clickable-lyrics-header ${
                     activeTab === 'lyrics' ? 'active-lyrics-header' : ''
-                  }`}
+                  } ${bottomTabs.length === 0 ? 'no-tabs-stage-header' : ''}`}
                   onClick={() => setActiveTab('lyrics')}
                   role="button"
                   tabIndex={0}
@@ -396,9 +391,9 @@ const BhajanDetailPage = () => {
                   </div>
                 </div>
 
-                {/* Actions Bar (Font control buttons completely removed) */}
-                <div className="stage-actions-bar">
-                  {bottomTabs.length > 0 && (
+                {/* Actions Bar: Jo bottomTabs hoy to j render thase, nathi to completely remove thai jase! */}
+                {bottomTabs.length > 0 && (
+                  <div className="stage-actions-bar">
                     <div className="desktop-tab-bar icon-only-tab-bar">
                       {bottomTabs.map((tab) => {
                         const isActive = activeTab === tab.id;
@@ -419,12 +414,12 @@ const BhajanDetailPage = () => {
                         );
                       })}
                     </div>
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
 
               {/* Content Body */}
-              <div className="stage-content-body">
+              <div className={`stage-content-body ${bottomTabs.length === 0 ? 'no-tabs-body-padding' : ''}`}>
                 {/* Lyrics */}
                 {activeTab === 'lyrics' && (
                   <div className="lyrics-text-container" style={{ fontSize: '18px' }}>

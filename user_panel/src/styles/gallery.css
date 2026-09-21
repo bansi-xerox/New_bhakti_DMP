@@ -1,0 +1,429 @@
+/* ================= Gallery Stage Layout (Centered: Exact 1000px with Header) ================= */
+.gallery-desktop-stage {
+  background: #ffffff;
+  border: 1.5px solid var(--border-gold);
+  border-radius: 18px;
+  box-shadow: 0 8px 24px rgba(160, 64, 0, 0.05);
+  overflow: hidden;
+  width: 100%;
+  max-width: 1000px !important; /* Header ni same 1000px size jethi sidhi line ma rahe */
+  margin: 0 auto !important;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  flex: 1;
+  min-height: 0;
+}
+
+/* Filter & Action Bar */
+.gallery-filter-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 14px 20px;
+  background: linear-gradient(180deg, #fffcf8 0%, #fff7ee 100%);
+  border-bottom: 1.5px solid var(--border-gold);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.gallery-select-group {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.gallery-select {
+  background: #ffffff;
+  border: 1.5px solid var(--border-gold);
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #3e2723;
+  outline: none;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+  transition: border-color 0.2s ease;
+}
+
+.gallery-select:focus {
+  border-color: var(--primary-saffron);
+}
+
+.gallery-reset-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #fff3e0;
+  border: 1px solid #ffe0b2;
+  color: #bf360c;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.gallery-reset-btn:hover {
+  background: #ffe0b2;
+}
+
+/* Gallery Scrollable Grid Body */
+.gallery-content-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+/* ================= Gallery Scrollbar (Orange Theme) ================= */
+.custom-orange-scrollbar::-webkit-scrollbar {
+  width: 7px;
+}
+
+.custom-orange-scrollbar::-webkit-scrollbar-track {
+  background: #fdf5ec;
+  border-radius: 8px;
+}
+
+.custom-orange-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #f57c00 0%, #e65100 100%) !important;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(230, 81, 0, 0.35);
+}
+
+.custom-orange-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #bf360c !important;
+}
+
+/* ================= Group Header & Spacing ================= */
+.gallery-groups-container {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding-bottom: 24px;
+}
+
+.gallery-group-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.gallery-group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 18px;
+  background: #fff8f0;
+  border-left: 4.5px solid var(--primary-saffron);
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.gallery-group-title {
+  font-size: 17px;
+  font-weight: 750;
+  color: #bf360c;
+  letter-spacing: 0.3px;
+}
+
+.gallery-group-count {
+  font-size: 13.5px;
+  font-weight: 650;
+  color: #795548;
+  background: #ffffff;
+  padding: 3px 10px;
+ 
+}
+
+/* ================= Gallery Grid: Desktop (Default 4 per row) ================= */
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 18px;
+}
+
+/* Clean Cards */
+.gallery-card.clean-card {
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1.5px solid var(--border-gold);
+  background: #ffffff;
+  box-shadow: 0 3px 10px rgba(160, 64, 0, 0.04);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.gallery-card.clean-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--primary-saffron);
+  box-shadow: 0 8px 22px rgba(216, 67, 21, 0.18);
+}
+
+.gallery-card.clean-card .gallery-img-wrapper {
+  height: 180px;
+  width: 100%;
+  background: #f7ede2;
+  overflow: hidden;
+}
+
+.gallery-img-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.35s ease;
+}
+
+.gallery-card:hover .gallery-img-wrapper img {
+  transform: scale(1.05);
+}
+
+/* ================= Video Card & Play Overlay ================= */
+.video-card-preview {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #000000;
+}
+
+.video-card-preview video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.85;
+}
+
+.video-play-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.25);
+  transition: background 0.2s ease;
+}
+
+.gallery-card:hover .video-play-overlay {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.play-icon-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(216, 67, 21, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+  transition: transform 0.2s ease;
+}
+
+.gallery-card:hover .play-icon-circle {
+  transform: scale(1.12);
+  background: #e65100;
+}
+
+/* ================= Lightbox Modal ================= */
+.lightbox-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(18, 9, 5, 0.88);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeInModal 0.2s ease;
+}
+
+@keyframes fadeInModal {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.lightbox-container {
+  background: #ffffff;
+  border-radius: 20px;
+  max-width: 860px;
+  width: 100%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+  border: 2px solid var(--border-gold);
+}
+
+.lightbox-close-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: rgba(0, 0, 0, 0.65);
+  border: none;
+  color: #ffffff;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: background 0.2s;
+}
+
+.lightbox-close-btn:hover {
+  background: #d84315;
+}
+
+.lightbox-image-wrapper {
+  flex: 1;
+  background: #190c07;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  max-height: calc(90vh - 80px);
+}
+
+.lightbox-image-wrapper img {
+  max-width: 100%;
+  max-height: calc(90vh - 80px);
+  object-fit: contain;
+}
+
+.lightbox-video {
+  max-width: 100%;
+  max-height: calc(90vh - 80px);
+  outline: none;
+}
+
+.lightbox-actions-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 22px;
+  background: #ffffff;
+  border-top: 1.5px solid var(--border-gold);
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.lightbox-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #3e2723;
+}
+
+.lightbox-date {
+  font-size: 14px;
+  color: #795548;
+  font-weight: 600;
+}
+
+.lightbox-btns-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.lightbox-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  border-radius: 10px;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+}
+
+.download-btn {
+  background: linear-gradient(135deg, #d84315 0%, #f57c00 100%);
+  color: #ffffff;
+  box-shadow: 0 3px 10px rgba(216, 67, 21, 0.3);
+}
+
+.download-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 14px rgba(216, 67, 21, 0.4);
+}
+
+.share-btn {
+  background: #fff3e0;
+  color: #bf360c;
+  border: 1.5px solid #ffcc80;
+}
+
+.share-btn:hover {
+  background: #ffe0b2;
+}
+
+/* ================= Responsive Rules for Mobile (1 Row = 2 Photos) ================= */
+@media (max-width: 768px) {
+  .gallery-desktop-stage {
+    border-radius: 14px;
+    max-width: 100% !important;
+  }
+
+  .gallery-filter-bar {
+    padding: 10px 14px;
+    gap: 8px;
+  }
+
+  .gallery-select {
+    flex: 1;
+    font-size: 12.5px;
+    padding: 7px 10px;
+  }
+
+  .gallery-content-body {
+    padding: 14px 12px;
+  }
+
+  .gallery-group-header {
+    padding: 8px 12px;
+  }
+
+  .gallery-group-title {
+    font-size: 15px;
+  }
+
+  /* Mobile Device Ma 1 Row Ma 2 Cards */
+  .gallery-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+
+  .gallery-card.clean-card .gallery-img-wrapper {
+    height: 145px !important; /* Mobile ma 2 cards mate balanced square/landscape ratio */
+  }
+
+  .play-icon-circle {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Extra Small Devices Ma Pan 1 Row Ma Exact 2 Cards Rahe */
+  .gallery-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 8px !important;
+  }
+
+  .gallery-card.clean-card .gallery-img-wrapper {
+    height: 130px !important;
+  }
+}
