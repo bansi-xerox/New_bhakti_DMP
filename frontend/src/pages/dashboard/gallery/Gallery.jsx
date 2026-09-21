@@ -7,7 +7,7 @@ import {
 } from "../../../components/common/Alert";
 import GalleryModal from "./GalleryModal";
 // import FaceSearchModal from "./FaceSearchModal";
-import { Image as ImageIcon, Download, Share2, X, RefreshCw, Play, Camera } from 'lucide-react';
+import { Download, Share2, X, RefreshCw, Play, Camera } from 'lucide-react';
 import { searchByFace } from '../services/api';
 // --- Zero-Dependency Lucide-Style SVG Icons ---
 const FolderIcon = ({ size = 18, className = "" }) => (
