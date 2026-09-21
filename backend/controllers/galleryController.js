@@ -259,52 +259,29 @@ exports.uploadMedia = async (req, res) => {
               : new Date()
         });
 
-      const savedDoc =
-        await newRecord.save();
+   const savedDoc = await newRecord.save();
 
-      savedRecords.push({
-        id: savedDoc._id,
-        relativePath:
-          cloudinaryUrl
-      });
+// Send immediate success response to the frontend so the user doesn't wait
+res.status(200).json({ 
+  success: true, 
+  message: "Image uploaded successfully!", 
+  data: savedDoc 
+});
 
-      existingPaths.push(
-        cloudinaryUrl
-      );
+(async () => {
+  try {
+    const img = await canvas.loadImage(file.buffer);
+    const detections = await faceapi.detectAllFaces(img).withFaceLandmarks().withFaceDescriptors();
+    const descriptors = detections.map(d => Array.from(d.descriptor));
+    
+    if (descriptors.length > 0) {
+      await Gallery.findByIdAndUpdate(savedDoc._id, { face_descriptors: descriptors });
+      console.log("Face descriptors saved in background for:", savedDoc._id);
     }
-
-    const count =
-      savedRecords.length;
-
-    const itemLabel =
-      typeFolder === 'photos'
-        ? count === 1
-          ? 'photo'
-          : 'photos'
-        : count === 1
-          ? 'video'
-          : 'videos';
-
-    return res.status(200).json({
-      success: true,
-      message:
-        `${count} ${itemLabel} added successfully`,
-      data:
-        savedRecords
-    });
-  } catch (error) {
-    console.error(
-      'Cloudinary upload error:',
-      error
-    );
-
-    return res.status(500).json({
-      success: false,
-      message:
-        error.message
-    });
+  } catch (err) {
+    console.error('Background face detection error:', err.message);
   }
-};
+})();
 
 // Face Recognition Search Logic
 exports.searchByFace = async (req, res) => {
