@@ -130,7 +130,6 @@ const Gallery = () => {
 const [isWebcamOpen, setIsWebcamOpen] = useState(false);
   const webcamRef = useRef(null);
   const clickTimeoutRef = useRef(null);
-  const cameraInputRef = useRef(null);
 
   const openCamera = () => {
     setIsWebcamOpen(true);
@@ -154,12 +153,12 @@ const [isWebcamOpen, setIsWebcamOpen] = useState(false);
       handleFaceSearchFromHeader(file); // તમારા એક્ઝિસ્ટિંગ ફંક્શનને ફોટો મોકલો
     }
   }, [webcamRef]);
-  const handleCameraCapture = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      handleFaceSearchFromHeader(file); // Tamaru banavelu function j API call karse
-    }
-  };
+  // const handleCameraCapture = (e) => {
+  //   const file = e.target.files[0];
+  //   if (file) {
+  //     handleFaceSearchFromHeader(file); // Tamaru banavelu function j API call karse
+  //   }
+  // };
   const handleSingleClick = (item, mediaUrl, isPhoto) => {
     if (clickTimeoutRef.current) {
       clearTimeout(clickTimeoutRef.current);
