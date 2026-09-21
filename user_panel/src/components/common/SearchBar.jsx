@@ -11,6 +11,7 @@ const SearchBar = ({
 }) => {
   const [isListening, setIsListening] = useState(false);
 
+  // Voice Search is now handled entirely inside the reusable component
   const handleVoiceSearch = () => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
@@ -27,20 +28,20 @@ const SearchBar = ({
     recognition.onstart = () => setIsListening(true);
     recognition.onresult = (event) => {
       const transcript = event.results[0][0].transcript;
-      setSearchTerm(transcript);
+      setSearchTerm(transcript); // Updates the search term in the parent page
     };
-    recognition.onerror = (event) => {
-      console.error('Speech recognition error:', event.error);
-      setIsListening(false);
-    };
+    recognition.onerror = () => setIsListening(false);
     recognition.onend = () => setIsListening(false);
 
     recognition.start();
   };
 
   const handleClear = () => {
-    setSearchTerm('');
-    if (onClear) onClear();
+    if (onClear) {
+      onClear();
+    } else {
+      setSearchTerm('');
+    }
   };
 
   return (
@@ -58,10 +59,10 @@ const SearchBar = ({
           onFocus={onFocus}
           style={{
             width: '100%',
-            padding: '14px 85px 14px 48px', // Fixed Padding to prevent overlapping on both sides
+            padding: '14px 85px 14px 48px', // Fixed padding prevents text overlapping icons
             borderRadius: '30px',
             border: '1px solid #e0d4c8',
-            boxSizing: 'border-box', // Prevents width overflow
+            boxSizing: 'border-box',
             fontSize: '16px',
             outline: 'none',
             boxShadow: '0 4px 10px rgba(0,0,0,0.05)',
@@ -70,6 +71,7 @@ const SearchBar = ({
         />
 
         <div className="search-actions" style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', display: 'flex', alignItems: 'center', gap: '12px', zIndex: 2 }}>
+          {/* Mic Button */}
           <span
             className={isListening ? 'mic-active' : ''}
             style={{
@@ -85,6 +87,7 @@ const SearchBar = ({
             <Mic size={18} />
           </span>
 
+          {/* Clear Button */}
           {searchTerm && (
             <button
               type="button"
@@ -106,7 +109,7 @@ const SearchBar = ({
           )}
         </div>
 
-        {/* For Live Dropdown Results */}
+        {/* This renders the Dropdown ONLY on the Bhajan Detail page */}
         {children}
         
       </div>

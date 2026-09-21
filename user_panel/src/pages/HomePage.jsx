@@ -138,13 +138,12 @@ const HomePage = () => {
 
       <main className="main-desktop-container">
       {/* Reusable Search Bar */}
-  <SearchBar 
+ <SearchBar 
     searchTerm={searchTerm} 
     setSearchTerm={setSearchTerm} 
     placeholder="સાહિત્ય શોધો (દા.ત. લોકભજન, પ્રભાતિયા, સંતવાણી)..." 
   />
 
-  
         {/* 3. Categories Grid (Centered: 1000px) */}
         <div id="sahitya-section" className="content-stage-centered">
           {loading ? (
