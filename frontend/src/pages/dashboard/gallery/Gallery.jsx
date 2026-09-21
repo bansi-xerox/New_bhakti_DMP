@@ -7,14 +7,16 @@ import {
 } from "../../../components/common/Alert";
 import GalleryModal from "./GalleryModal";
 // import FaceSearchModal from "./FaceSearchModal";
-
-
+import { Image as ImageIcon, Download, Share2, X, RefreshCw, Play, Camera } from 'lucide-react';
+import { searchByFace } from '../services/api';
 // --- Zero-Dependency Lucide-Style SVG Icons ---
 const FolderIcon = ({ size = 18, className = "" }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
     <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z" />
   </svg>
 );
+
+
 
 const FolderOpenIcon = ({ size = 18, className = "" }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
@@ -124,7 +126,21 @@ const Gallery = () => {
   const [previewMedia, setPreviewMedia] = useState(null);
 
   const clickTimeoutRef = useRef(null);
+const cameraInputRef = useRef(null);
 
+const openCamera = () => {
+        if (cameraInputRef.current) {
+            cameraInputRef.current.click();
+        }
+    };
+
+
+    const handleCameraCapture = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            handleFaceSearchFromHeader(file); // Tamaru banavelu function j API call karse
+        }
+    };
   const handleSingleClick = (item, mediaUrl, isPhoto) => {
     if (clickTimeoutRef.current) {
       clearTimeout(clickTimeoutRef.current);
@@ -151,6 +167,33 @@ const Gallery = () => {
   const [filterType, setFilterType] = useState('ALL');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedIds, setSelectedIds] = useState([]);
+const [faceSearching, setFaceSearching] = useState(false);
+
+  const handleFaceSearchFromHeader = async (file) => {
+    if (!file) return;
+
+    try {
+        setFaceSearching(true);
+        const formData = new FormData();
+        formData.append('face', file);
+
+        const res = await searchByFace(formData);
+        const matched = res.data?.data || res.data || [];
+        
+        // સુધારા: Gallery.jsx માં state ના નામ અલગ છે
+        setItems(matched); 
+        setSelectedFolder('All'); 
+        setSelectedSubFolder('All');
+        setFilterType('Photos'); // ઓટોમેટિક Photos ટેબ પર સેટ કરવા
+
+    } catch (err) {
+        console.error('Face recognition search error:', err);
+        alert('ચહેરો ઓળખવામાં સમસ્યા આવી છે અથવા કોઈ મેળ ખાતો ફોટો મળ્યો નથી.');
+    } finally {
+        setFaceSearching(false);
+    }
+};
+
 
   const loadGallery = useCallback(async () => {
     try {
@@ -297,6 +340,18 @@ const Gallery = () => {
         overflow: 'hidden'
       }}
     >
+
+      {/* Hidden Input je native camera open karse */}
+            <input
+                type="file"
+                accept="image/*"
+                capture="user" // "user" = Front Camera, "environment" = Back Camera
+                ref={cameraInputRef}
+                style={{ display: 'none' }}
+                onChange={handleCameraCapture}
+            />
+
+<Header onFaceSearch={openCamera} faceSearching={faceSearching} />
       <style>{`
         @keyframes zoomIn {
           from {
