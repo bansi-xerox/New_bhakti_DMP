@@ -126,21 +126,21 @@ const Gallery = () => {
   const [previewMedia, setPreviewMedia] = useState(null);
 
   const clickTimeoutRef = useRef(null);
-const cameraInputRef = useRef(null);
+  const cameraInputRef = useRef(null);
 
-const openCamera = () => {
-        if (cameraInputRef.current) {
-            cameraInputRef.current.click();
-        }
-    };
+  const openCamera = () => {
+    if (cameraInputRef.current) {
+      cameraInputRef.current.click();
+    }
+  };
 
 
-    const handleCameraCapture = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            handleFaceSearchFromHeader(file); // Tamaru banavelu function j API call karse
-        }
-    };
+  const handleCameraCapture = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      handleFaceSearchFromHeader(file); // Tamaru banavelu function j API call karse
+    }
+  };
   const handleSingleClick = (item, mediaUrl, isPhoto) => {
     if (clickTimeoutRef.current) {
       clearTimeout(clickTimeoutRef.current);
@@ -167,32 +167,32 @@ const openCamera = () => {
   const [filterType, setFilterType] = useState('ALL');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedIds, setSelectedIds] = useState([]);
-const [faceSearching, setFaceSearching] = useState(false);
+  const [faceSearching, setFaceSearching] = useState(false);
 
   const handleFaceSearchFromHeader = async (file) => {
     if (!file) return;
 
     try {
-        setFaceSearching(true);
-        const formData = new FormData();
-        formData.append('face', file);
+      setFaceSearching(true);
+      const formData = new FormData();
+      formData.append('face', file);
 
-        const res = await searchByFace(formData);
-        const matched = res.data?.data || res.data || [];
-        
-        // સુધારા: Gallery.jsx માં state ના નામ અલગ છે
-        setItems(matched); 
-        setSelectedFolder('All'); 
-        setSelectedSubFolder('All');
-        setFilterType('Photos'); // ઓટોમેટિક Photos ટેબ પર સેટ કરવા
+      const res = await searchByFace(formData);
+      const matched = res.data?.data || res.data || [];
+
+      // સુધારા: Gallery.jsx માં state ના નામ અલગ છે
+      setItems(matched);
+      setSelectedFolder('All');
+      setSelectedSubFolder('All');
+      setFilterType('Photos'); // ઓટોમેટિક Photos ટેબ પર સેટ કરવા
 
     } catch (err) {
-        console.error('Face recognition search error:', err);
-        alert('ચહેરો ઓળખવામાં સમસ્યા આવી છે અથવા કોઈ મેળ ખાતો ફોટો મળ્યો નથી.');
+      console.error('Face recognition search error:', err);
+      alert('ચહેરો ઓળખવામાં સમસ્યા આવી છે અથવા કોઈ મેળ ખાતો ફોટો મળ્યો નથી.');
     } finally {
-        setFaceSearching(false);
+      setFaceSearching(false);
     }
-};
+  };
 
 
   const loadGallery = useCallback(async () => {
@@ -315,7 +315,7 @@ const [faceSearching, setFaceSearching] = useState(false);
   //     // NOTE: You must add this endpoint to your services/api.js:
   //     // export const searchByFace = (formData) => API.post('/gallery/face-search', formData);
   //     const res = await searchByFace(formData); 
-      
+
   //     if (res.data?.success) {
   //       // Replace current items with matched items
   //       setItems(res.data.data || []);
@@ -342,16 +342,29 @@ const [faceSearching, setFaceSearching] = useState(false);
     >
 
       {/* Hidden Input je native camera open karse */}
-            <input
-                type="file"
-                accept="image/*"
-                capture="user" // "user" = Front Camera, "environment" = Back Camera
-                ref={cameraInputRef}
-                style={{ display: 'none' }}
-                onChange={handleCameraCapture}
-            />
+      <input
+        type="file"
+        accept="image/*"
+        capture="user" // "user" = Front Camera, "environment" = Back Camera
+        ref={cameraInputRef}
+        style={{ display: 'none' }}
+        onChange={handleCameraCapture}
+      />
 
-<Header onFaceSearch={openCamera} faceSearching={faceSearching} />
+      {/* NEW FACE SEARCH BUTTON */}
+      <button
+        className="btn btn-light border bg-white d-flex align-items-center gap-2 shadow-sm rounded-3"
+        style={{ padding: '0.55rem 1rem', color: '#ea580c', fontWeight: '600' }}
+        onClick={openCamera}
+        title="Search by Face"
+        disabled={faceSearching}
+      >
+        <Camera size={18} />
+        <span className="d-none d-sm-inline">
+          {faceSearching ? 'Searching...' : 'Face Search'}
+        </span>
+      </button>
+
       <style>{`
         @keyframes zoomIn {
           from {
@@ -622,7 +635,7 @@ const [faceSearching, setFaceSearching] = useState(false);
               )}
 
               {/* NEW FACE SEARCH BUTTON */}
-            {/* <button
+              {/* <button
               className="btn btn-light border bg-white d-flex align-items-center gap-2 shadow-sm rounded-3"
               style={{ padding: '0.55rem 1rem', color: '#ea580c', fontWeight: '600' }}
               onClick={() => setIsFaceSearchOpen(true)}
@@ -654,7 +667,7 @@ const [faceSearching, setFaceSearching] = useState(false);
                     className="btn btn-warning btn-sm fw-bold px-3 py-1 rounded-3 shadow-sm d-flex align-items-center gap-2 text-dark"
                     onClick={() => {
                       const itemsToMove = filteredItems.filter(i => selectedIds.includes(i.id));
-                      setSelectedForEdit(itemsToMove); 
+                      setSelectedForEdit(itemsToMove);
                       setIsModalOpen(true);
                     }}
                   >
@@ -722,7 +735,7 @@ const [faceSearching, setFaceSearching] = useState(false);
                           checked={isSelected}
                           onChange={(e) => toggleSelectId(e, item.id)}
                           onClick={(e) => e.stopPropagation()}
-                          style={{ width: '1.25rem', height: '1.25rem' }} 
+                          style={{ width: '1.25rem', height: '1.25rem' }}
                         />
 
                         {!isSelected && selectedIds.length === 0 && (
