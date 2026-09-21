@@ -6,6 +6,7 @@ import Header from '../components/common/Header';
 import Footer from '../components/common/Footer';
 import Loader from '../components/common/Loader';
 import '../assets/userTheme.css';
+import SearchBar from '../components/common/SearchBar';
 
 const HomePage = () => {
   const [categories, setCategories] = useState([]);
@@ -136,102 +137,14 @@ const HomePage = () => {
       <Header />
 
       <main className="main-desktop-container">
-        {/* 2. Standalone Modern Searchbar (Centered: 1000px) */}
-        <div className="standalone-search-container" ref={searchRef}>
-          <div className="search-input-wrapper wide-search-wrapper" style={{ position: 'relative' }}>
-            <Search className="search-icon" size={20} />
-            <input
-              type="text"
-              className="search-input-box wide-search-input"
-              placeholder="સાહિત્ય, શીર્ષક, ભજન, કડી કે રાગ શોધો..."
-              value={searchTerm}
-              onChange={(e) => handleSearchChange(e.target.value)}
-              onFocus={() => searchTerm.trim() && setShowDropdown(true)}
-            />
+      {/* Reusable Search Bar */}
+  <SearchBar 
+    searchTerm={searchTerm} 
+    setSearchTerm={setSearchTerm} 
+    placeholder="સાહિત્ય શોધો (દા.ત. લોકભજન, પ્રભાતિયા, સંતવાણી)..." 
+  />
 
-            {/* Mic & Clear Buttons */}
-            <div className="search-actions">
-              <span
-                className={isListening ? 'mic-active' : ''}
-                style={{
-                  color: isListening ? '#dc3545' : '#888',
-                  display: 'flex',
-                  alignItems: 'center',
-                  cursor: 'pointer',
-                  transition: 'color 0.3s ease',
-                }}
-                onClick={handleVoiceSearch}
-                title={isListening ? 'Listening...' : 'Search by Voice'}
-              >
-                <Mic size={18} />
-              </span>
-
-              {searchTerm && (
-                <button
-                  type="button"
-                  className="search-clear-btn"
-                  onClick={() => {
-                    setSearchTerm('');
-                    setSearchResults([]);
-                    setShowDropdown(false);
-                  }}
-                  aria-label="Clear Search"
-                  style={{
-                    background: 'transparent',
-                    border: 'none',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    padding: 0,
-                    color: '#888',
-                  }}
-                >
-                  <X size={18} />
-                </button>
-              )}
-            </div>
-
-            {/* Live Search Dropdown Suggestions */}
-            {showDropdown && (
-              <div className="live-search-dropdown">
-                {searchResults.length > 0 ? (
-                  searchResults.map((item) => (
-                    <div
-                      key={item._id}
-                      className="live-search-item"
-                      onClick={() => handleSelectBhajan(item._id)}
-                    >
-                      <div className="live-item-title">{item.bhajan_name?.trim()}</div>
-                      <div className="live-item-meta">
-                        {item.sahitya_name && (
-                          <span>
-                            સાહિત્ય: <strong className="live-item-tag">{item.sahitya_name.trim()}</strong>
-                          </span>
-                        )}
-                        {item.heading_name && (
-                          <span>
-                            વિભાગ: <strong>{item.heading_name.trim()}</strong>
-                          </span>
-                        )}
-                        {item.bhajan_rag && (
-                          <span>
-                            રાગ: <strong>{item.bhajan_rag.trim()}</strong>
-                          </span>
-                        )}
-                        {item.bhajan_kadi && (
-                          <span>કડી: "{item.bhajan_kadi.trim()}"</span>
-                        )}
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="no-results-item">કોઈ મેળ ખાતું ભજન કે સાહિત્ય મળ્યું નથી.</div>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
-
+  
         {/* 3. Categories Grid (Centered: 1000px) */}
         <div id="sahitya-section" className="content-stage-centered">
           {loading ? (

@@ -6,6 +6,8 @@ import Header from '../components/common/Header';
 import Footer from '../components/common/Footer';
 import Loader from '../components/common/Loader';
 import '../assets/userTheme.css';
+import SearchBar from '../components/common/SearchBar';
+
 
 const BhajanDetailPage = () => {
   const { id } = useParams();
@@ -92,6 +94,14 @@ const BhajanDetailPage = () => {
     setSearchResults(matched.slice(0, 15));
     setShowDropdown(true);
   };
+
+
+  // Modify handleClear to close dropdown
+  const handleClearSearch = () => {
+    setSearchResults([]);
+    setShowDropdown(false);
+  };
+
 
   const handleVoiceSearch = () => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -234,60 +244,14 @@ const BhajanDetailPage = () => {
         <Header />
 
         <main className="main-desktop-container">
-          {/* Universal Search Bar (Centered with Stage) */}
           <div className="bhajan-detail-search-container" ref={searchRef}>
-            <div className="search-input-wrapper wide-search-wrapper" style={{ position: 'relative' }}>
-              <Search className="search-icon" size={20} />
-              <input
-                type="text"
-                className="search-input-box wide-search-input"
-                placeholder="સાહિત્ય, શીર્ષક, ભજન, કડી કે રાગ શોધો..."
-                value={searchTerm}
-                onChange={(e) => handleSearchChange(e.target.value)}
-                onFocus={() => searchTerm.trim() && setShowDropdown(true)}
-              />
-
-              {/* Mic & Clear Buttons */}
-              <div className="search-actions">
-                <span
-                  className={isListening ? "mic-active" : ""}
-                  style={{
-                    color: isListening ? '#dc3545' : '#888',
-                    display: 'flex',
-                    alignItems: 'center',
-                    cursor: 'pointer',
-                    transition: 'color 0.3s ease'
-                  }}
-                  onClick={handleVoiceSearch}
-                  title={isListening ? "Listening..." : "Search by Voice"}
-                >
-                  <Mic size={18} />
-                </span>
-
-                {searchTerm && (
-                  <button
-                    type="button"
-                    className="search-clear-btn"
-                    onClick={() => {
-                      setSearchTerm('');
-                      setSearchResults([]);
-                      setShowDropdown(false);
-                    }}
-                    aria-label="Clear Search"
-                    style={{
-                      background: 'transparent',
-                      border: 'none',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      padding: 0,
-                      color: '#888'
-                    }}
-                  >
-                    <X size={18} />
-                  </button>
-                )}
-              </div>
+            <SearchBar
+              searchTerm={searchTerm}
+              setSearchTerm={handleSearchChange} // Uses your existing filter logic
+              onClear={handleClearSearch}
+              placeholder="સાહિત્ય, શીર્ષક, ભજન, કડી કે રાગ શોધો..."
+              onFocus={() => searchTerm.trim() && setShowDropdown(true)}
+            >
 
               {/* Dropdown Results */}
               {showDropdown && (
@@ -321,137 +285,136 @@ const BhajanDetailPage = () => {
                   )}
                 </div>
               )}
-            </div>
+            </SearchBar>
           </div>
 
-          {/* Bhajan Detail Stage */}
-          {loading ? (
-            <Loader />
-          ) : !bhajan ? (
-            <p style={{ textAlign: 'center', color: '#8d6e63', padding: '50px 0' }}>ભજન મળ્યું નથી.</p>
-          ) : (
-            <div className="bhajan-desktop-stage">
-              <div className="stage-sticky-header">
-                {/* Clickable Info Area */}
-                <div
-                  className={`stage-title-header clean-info-stage clickable-lyrics-header ${
-                    activeTab === 'lyrics' ? 'active-lyrics-header' : ''
-                  } ${bottomTabs.length === 0 ? 'no-tabs-stage-header' : ''}`}
-                  onClick={() => setActiveTab('lyrics')}
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setActiveTab('lyrics')}
-                  aria-label="ભજન લખાણ જોવા માટે ક્લિક કરો"
-                >
-                  {/* 1. Sahitya - Heading */}
-                  {(hasValue(bhajan.sahitya_name) || hasValue(bhajan.heading_name)) && (
-                    <div className="center-sahitya-header">
-                      {hasValue(bhajan.sahitya_name) && (
-                        <span className="sahitya-txt">{bhajan.sahitya_name.trim()}</span>
-                      )}
-                      {hasValue(bhajan.sahitya_name) && hasValue(bhajan.heading_name) && (
-                        <span className="divider-hyphen"> - </span>
-                      )}
-                      {hasValue(bhajan.heading_name) && (
-                        <span className="heading-txt">{bhajan.heading_name.trim()}</span>
-                      )}
+      {/* Bhajan Detail Stage */}
+      {loading ? (
+        <Loader />
+      ) : !bhajan ? (
+        <p style={{ textAlign: 'center', color: '#8d6e63', padding: '50px 0' }}>ભજન મળ્યું નથી.</p>
+      ) : (
+        <div className="bhajan-desktop-stage">
+          <div className="stage-sticky-header">
+            {/* Clickable Info Area */}
+            <div
+              className={`stage-title-header clean-info-stage clickable-lyrics-header ${activeTab === 'lyrics' ? 'active-lyrics-header' : ''
+                } ${bottomTabs.length === 0 ? 'no-tabs-stage-header' : ''}`}
+              onClick={() => setActiveTab('lyrics')}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setActiveTab('lyrics')}
+              aria-label="ભજન લખાણ જોવા માટે ક્લિક કરો"
+            >
+              {/* 1. Sahitya - Heading */}
+              {(hasValue(bhajan.sahitya_name) || hasValue(bhajan.heading_name)) && (
+                <div className="center-sahitya-header">
+                  {hasValue(bhajan.sahitya_name) && (
+                    <span className="sahitya-txt">{bhajan.sahitya_name.trim()}</span>
+                  )}
+                  {hasValue(bhajan.sahitya_name) && hasValue(bhajan.heading_name) && (
+                    <span className="divider-hyphen"> - </span>
+                  )}
+                  {hasValue(bhajan.heading_name) && (
+                    <span className="heading-txt">{bhajan.heading_name.trim()}</span>
+                  )}
+                </div>
+              )}
+
+              {/* 2. Metadata Info */}
+              <div className="uniform-info-block">
+                <div className="info-row-split">
+                  {hasValue(bhajan.bhajan_name) && (
+                    <div className="info-item">
+                      <strong className="label-bold">ભજન:</strong>
+                      <span className="val-normal">{bhajan.bhajan_name.trim()}</span>
                     </div>
                   )}
-
-                  {/* 2. Metadata Info */}
-                  <div className="uniform-info-block">
-                    <div className="info-row-split">
-                      {hasValue(bhajan.bhajan_name) && (
-                        <div className="info-item">
-                          <strong className="label-bold">ભજન:</strong>
-                          <span className="val-normal">{bhajan.bhajan_name.trim()}</span>
-                        </div>
-                      )}
-                      {hasValue(bhajan.page_no) && (
-                        <div className="info-item page-item">
-                          <strong className="label-bold">પૃષ્ઠ:</strong>
-                          <span className="val-normal">{bhajan.page_no}</span>
-                        </div>
-                      )}
+                  {hasValue(bhajan.page_no) && (
+                    <div className="info-item page-item">
+                      <strong className="label-bold">પૃષ્ઠ:</strong>
+                      <span className="val-normal">{bhajan.page_no}</span>
                     </div>
-
-                    {hasValue(bhajan.bhajan_kadi) && (
-                      <div className="info-item">
-                        <strong className="label-bold">કડી:</strong>
-                        <span className="val-normal">{bhajan.bhajan_kadi.trim()}</span>
-                      </div>
-                    )}
-
-                    {hasValue(bhajan.bhajan_rag) && (
-                      <div className="info-item">
-                        <strong className="label-bold">રાગ:</strong>
-                        <span className="val-normal">{bhajan.bhajan_rag.trim()}</span>
-                      </div>
-                    )}
-                  </div>
+                  )}
                 </div>
 
-                {/* Actions Bar: Jo bottomTabs hoy to j render thase, nathi to completely remove thai jase! */}
-                {bottomTabs.length > 0 && (
-                  <div className="stage-actions-bar">
-                    <div className="desktop-tab-bar icon-only-tab-bar">
-                      {bottomTabs.map((tab) => {
-                        const isActive = activeTab === tab.id;
-                        return (
-                          <div key={tab.id} className="adjacent-tab-wrapper">
-                            <button
-                              type="button"
-                              className={`tab-pill-btn icon-tab-btn ${isActive ? 'active' : ''}`}
-                              onClick={() => setActiveTab(tab.id)}
-                              aria-label={tab.label}
-                            >
-                              {tab.icon}
-                            </button>
-                            <span className={`adjacent-tooltip ${tab.posClass}`}>
-                              {tab.label}
-                            </span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Content Body */}
-              <div className={`stage-content-body ${bottomTabs.length === 0 ? 'no-tabs-body-padding' : ''}`}>
-                {/* Lyrics */}
-                {activeTab === 'lyrics' && (
-                  <div className="lyrics-text-container" style={{ fontSize: '18px' }}>
-                    {formatText(bhajan.bhajan) || 'લખાણ ઉપલબ્ધ નથી.'}
+                {hasValue(bhajan.bhajan_kadi) && (
+                  <div className="info-item">
+                    <strong className="label-bold">કડી:</strong>
+                    <span className="val-normal">{bhajan.bhajan_kadi.trim()}</span>
                   </div>
                 )}
 
-                {/* Bhavarth */}
-                {activeTab === 'bhavarth' && bhajan.bhajan_bhavarth && (
-                  <div className="bhavarth-clean-content">
-                    <p>{formatText(bhajan.bhajan_bhavarth)}</p>
-                  </div>
-                )}
-
-                {/* Video */}
-                {activeTab === 'video' && bhajan.youtube_link && (
-                  <div className="video-responsive-frame">
-                    <iframe
-                      src={getEmbedUrl(bhajan.youtube_link)}
-                      title="YouTube video player"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                      allowFullScreen
-                    />
+                {hasValue(bhajan.bhajan_rag) && (
+                  <div className="info-item">
+                    <strong className="label-bold">રાગ:</strong>
+                    <span className="val-normal">{bhajan.bhajan_rag.trim()}</span>
                   </div>
                 )}
               </div>
             </div>
-          )}
-        </main>
 
-        <Footer />
-      </div>
+            {/* Actions Bar: Jo bottomTabs hoy to j render thase, nathi to completely remove thai jase! */}
+            {bottomTabs.length > 0 && (
+              <div className="stage-actions-bar">
+                <div className="desktop-tab-bar icon-only-tab-bar">
+                  {bottomTabs.map((tab) => {
+                    const isActive = activeTab === tab.id;
+                    return (
+                      <div key={tab.id} className="adjacent-tab-wrapper">
+                        <button
+                          type="button"
+                          className={`tab-pill-btn icon-tab-btn ${isActive ? 'active' : ''}`}
+                          onClick={() => setActiveTab(tab.id)}
+                          aria-label={tab.label}
+                        >
+                          {tab.icon}
+                        </button>
+                        <span className={`adjacent-tooltip ${tab.posClass}`}>
+                          {tab.label}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Content Body */}
+          <div className={`stage-content-body ${bottomTabs.length === 0 ? 'no-tabs-body-padding' : ''}`}>
+            {/* Lyrics */}
+            {activeTab === 'lyrics' && (
+              <div className="lyrics-text-container" style={{ fontSize: '18px' }}>
+                {formatText(bhajan.bhajan) || 'લખાણ ઉપલબ્ધ નથી.'}
+              </div>
+            )}
+
+            {/* Bhavarth */}
+            {activeTab === 'bhavarth' && bhajan.bhajan_bhavarth && (
+              <div className="bhavarth-clean-content">
+                <p>{formatText(bhajan.bhajan_bhavarth)}</p>
+              </div>
+            )}
+
+            {/* Video */}
+            {activeTab === 'video' && bhajan.youtube_link && (
+              <div className="video-responsive-frame">
+                <iframe
+                  src={getEmbedUrl(bhajan.youtube_link)}
+                  title="YouTube video player"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                />
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </main >
+
+      <Footer />
+      </div >
     </>
   );
 };
