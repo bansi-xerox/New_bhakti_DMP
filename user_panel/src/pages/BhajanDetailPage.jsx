@@ -255,7 +255,7 @@ const BhajanDetailPage = () => {
 
               {/* Dropdown Results */}
               {showDropdown && (
-                <div className="live-search-dropdown">
+                <div className="live-search-dropdown" style={{ paddingTop: '5px' }}>
                   {searchResults.length > 0 ? (
                     searchResults.map((item) => (
                       <div

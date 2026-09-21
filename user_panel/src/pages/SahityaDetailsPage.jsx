@@ -167,7 +167,7 @@ const SahityaDetailsPage = () => {
   />
 
         {/* Content Centered Container (1000px) */}
-        <div className="content-stage-centered">
+        <div className="content-stage-centered" style={{ paddingTop: '5px' }}>
           {loading ? (
             <Loader />
           ) : !showDropdown && filteredItems.length === 0 ? (

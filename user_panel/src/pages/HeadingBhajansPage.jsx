@@ -142,7 +142,7 @@ const HeadingBhajansPage = () => {
   />
 
         {/* Bhajans Grid (Centered: 1000px) */}
-        <div className="content-stage-centered">
+        <div className="content-stage-centered" style={{ paddingTop: '5px' }}>
           {loading ? (
             <Loader />
           ) : !showDropdown && filteredBhajans.length === 0 ? (
