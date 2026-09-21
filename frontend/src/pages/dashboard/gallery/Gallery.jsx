@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
-import { getGalleryItems, deleteGalleryMedia } from "../../../services/api";
+import { getGalleryItems, deleteGalleryMedia } from "../../../../src/services/api";
 import {
   showGalleryToast,
   showErrorAlert,
