@@ -45,9 +45,8 @@ const SearchBar = ({
   };
 
   return (
-<div className="standalone-search-container" style={{ width: '100%', display: 'flex', justifyContent: 'center', padding: '20px', paddingBottom: '30px', boxSizing: 'border-box' }}>      <div className="search-input-wrapper wide-search-wrapper" style={{ position: 'relative', width: '100%', maxWidth: '800px' }}>
-        <Search className="search-icon" size={20} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#888', zIndex: 2 }} />
-        
+    <div className="standalone-search-container" style={{ width: '100%', display: 'flex', justifyContent: 'center', padding: '20px', boxSizing: 'border-box' }}>
+         <Search className="search-icon" size={20} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#888', zIndex: 2 }} />
         <input
           type="text"
           className="search-input-box wide-search-input"
@@ -111,7 +110,6 @@ const SearchBar = ({
         {children}
         
       </div>
-    </div>
   );
 };
 
