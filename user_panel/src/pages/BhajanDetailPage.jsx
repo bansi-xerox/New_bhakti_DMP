@@ -6,6 +6,8 @@ import Header from '../components/common/Header';
 import Footer from '../components/common/Footer';
 import Loader from '../components/common/Loader';
 import '../assets/userTheme.css';
+import SearchBar from '../components/common/SearchBar';
+
 
 const BhajanDetailPage = () => {
   const { id } = useParams();
@@ -92,6 +94,14 @@ const BhajanDetailPage = () => {
     setSearchResults(matched.slice(0, 15));
     setShowDropdown(true);
   };
+
+
+  // Modify handleClear to close dropdown
+  const handleClearSearch = () => {
+    setSearchResults([]);
+    setShowDropdown(false);
+  };
+
 
   const handleVoiceSearch = () => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -234,64 +244,18 @@ const BhajanDetailPage = () => {
         <Header />
 
         <main className="main-desktop-container">
-          {/* Universal Search Bar (Centered with Stage) */}
           <div className="bhajan-detail-search-container" ref={searchRef}>
-            <div className="search-input-wrapper wide-search-wrapper" style={{ position: 'relative' }}>
-              <Search className="search-icon" size={20} />
-              <input
-                type="text"
-                className="search-input-box wide-search-input"
-                placeholder="સાહિત્ય, શીર્ષક, ભજન, કડી કે રાગ શોધો..."
-                value={searchTerm}
-                onChange={(e) => handleSearchChange(e.target.value)}
-                onFocus={() => searchTerm.trim() && setShowDropdown(true)}
-              />
-
-              {/* Mic & Clear Buttons */}
-              <div className="search-actions">
-                <span
-                  className={isListening ? "mic-active" : ""}
-                  style={{
-                    color: isListening ? '#dc3545' : '#888',
-                    display: 'flex',
-                    alignItems: 'center',
-                    cursor: 'pointer',
-                    transition: 'color 0.3s ease'
-                  }}
-                  onClick={handleVoiceSearch}
-                  title={isListening ? "Listening..." : "Search by Voice"}
-                >
-                  <Mic size={18} />
-                </span>
-
-                {searchTerm && (
-                  <button
-                    type="button"
-                    className="search-clear-btn"
-                    onClick={() => {
-                      setSearchTerm('');
-                      setSearchResults([]);
-                      setShowDropdown(false);
-                    }}
-                    aria-label="Clear Search"
-                    style={{
-                      background: 'transparent',
-                      border: 'none',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      padding: 0,
-                      color: '#888'
-                    }}
-                  >
-                    <X size={18} />
-                  </button>
-                )}
-              </div>
+            <SearchBar
+              searchTerm={searchTerm}
+              setSearchTerm={handleSearchChange}
+              onClear={handleClearSearch}
+              placeholder="સાહિત્ય, શીર્ષક, ભજન, કડી કે રાગ શોધો..."
+              onFocus={() => searchTerm.trim() && setShowDropdown(true)}
+            >
 
               {/* Dropdown Results */}
               {showDropdown && (
-                <div className="live-search-dropdown">
+                <div className="live-search-dropdown" style={{ paddingTop: '5px' }}>
                   {searchResults.length > 0 ? (
                     searchResults.map((item) => (
                       <div
@@ -321,7 +285,7 @@ const BhajanDetailPage = () => {
                   )}
                 </div>
               )}
-            </div>
+            </SearchBar>
           </div>
 
           {/* Bhajan Detail Stage */}
@@ -334,9 +298,8 @@ const BhajanDetailPage = () => {
               <div className="stage-sticky-header">
                 {/* Clickable Info Area */}
                 <div
-                  className={`stage-title-header clean-info-stage clickable-lyrics-header ${
-                    activeTab === 'lyrics' ? 'active-lyrics-header' : ''
-                  } ${bottomTabs.length === 0 ? 'no-tabs-stage-header' : ''}`}
+                  className={`stage-title-header clean-info-stage clickable-lyrics-header ${activeTab === 'lyrics' ? 'active-lyrics-header' : ''
+                    } ${bottomTabs.length === 0 ? 'no-tabs-stage-header' : ''}`}
                   onClick={() => setActiveTab('lyrics')}
                   role="button"
                   tabIndex={0}
@@ -448,10 +411,10 @@ const BhajanDetailPage = () => {
               </div>
             </div>
           )}
-        </main>
+        </main >
 
         <Footer />
-      </div>
+      </div >
     </>
   );
 };

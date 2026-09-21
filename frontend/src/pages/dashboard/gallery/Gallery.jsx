@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
-import { getGalleryItems, deleteGalleryMedia } from "../../../services/api";
+import { getGalleryItems, deleteGalleryMedia } from "../../../../src/services/api";
 import {
   showGalleryToast,
   showErrorAlert,
@@ -7,6 +7,9 @@ import {
 } from "../../../components/common/Alert";
 import GalleryModal from "./GalleryModal";
 // import FaceSearchModal from "./FaceSearchModal";
+import {Camera, X } from 'lucide-react';
+import { searchByFace } from '../../../../src/services/api';
+import Webcam from "react-webcam";
 
 
 // --- Zero-Dependency Lucide-Style SVG Icons ---
@@ -15,6 +18,8 @@ const FolderIcon = ({ size = 18, className = "" }) => (
     <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z" />
   </svg>
 );
+
+
 
 const FolderOpenIcon = ({ size = 18, className = "" }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
@@ -122,9 +127,38 @@ const Gallery = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedForEdit, setSelectedForEdit] = useState(null);
   const [previewMedia, setPreviewMedia] = useState(null);
-
+const [isWebcamOpen, setIsWebcamOpen] = useState(false);
+  const webcamRef = useRef(null);
   const clickTimeoutRef = useRef(null);
 
+  const openCamera = () => {
+    setIsWebcamOpen(true);
+  };
+
+  const dataURLtoFile = (dataurl, filename) => {
+    let arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+    bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+    while(n--){
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new File([u8arr], filename, {type:mime});
+  };
+
+
+  const captureSelfie = useCallback(() => {
+    const imageSrc = webcamRef.current.getScreenshot();
+    if (imageSrc) {
+      const file = dataURLtoFile(imageSrc, "selfie.jpg");
+      setIsWebcamOpen(false); // કેમેરા બંધ કરો
+      handleFaceSearchFromHeader(file); // તમારા એક્ઝિસ્ટિંગ ફંક્શનને ફોટો મોકલો
+    }
+  }, [webcamRef]);
+  // const handleCameraCapture = (e) => {
+  //   const file = e.target.files[0];
+  //   if (file) {
+  //     handleFaceSearchFromHeader(file); // Tamaru banavelu function j API call karse
+  //   }
+  // };
   const handleSingleClick = (item, mediaUrl, isPhoto) => {
     if (clickTimeoutRef.current) {
       clearTimeout(clickTimeoutRef.current);
@@ -151,6 +185,33 @@ const Gallery = () => {
   const [filterType, setFilterType] = useState('ALL');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedIds, setSelectedIds] = useState([]);
+  const [faceSearching, setFaceSearching] = useState(false);
+
+  const handleFaceSearchFromHeader = async (file) => {
+    if (!file) return;
+
+    try {
+      setFaceSearching(true);
+      const formData = new FormData();
+      formData.append('face', file);
+
+      const res = await searchByFace(formData);
+      const matched = res.data?.data || res.data || [];
+
+      // સુધારા: Gallery.jsx માં state ના નામ અલગ છે
+      setItems(matched);
+      setSelectedFolder('All');
+      setSelectedSubFolder('All');
+      setFilterType('Photos'); // ઓટોમેટિક Photos ટેબ પર સેટ કરવા
+
+    } catch (err) {
+      console.error('Face recognition search error:', err);
+      alert('ચહેરો ઓળખવામાં સમસ્યા આવી છે અથવા કોઈ મેળ ખાતો ફોટો મળ્યો નથી.');
+    } finally {
+      setFaceSearching(false);
+    }
+  };
+
 
   const loadGallery = useCallback(async () => {
     try {
@@ -272,7 +333,7 @@ const Gallery = () => {
   //     // NOTE: You must add this endpoint to your services/api.js:
   //     // export const searchByFace = (formData) => API.post('/gallery/face-search', formData);
   //     const res = await searchByFace(formData); 
-      
+
   //     if (res.data?.success) {
   //       // Replace current items with matched items
   //       setItems(res.data.data || []);
@@ -284,39 +345,63 @@ const Gallery = () => {
   //     setLoading(false);
   //   }
   // };
-
-  return (
+return (
     <div
       className="w-100 d-flex flex-column flex-grow-1"
       style={{
         backgroundColor: '#fdf9f1',
         height: '100%',
         maxHeight: '100%',
-        padding: '16px',          // ચોમેર ૧૬px સરખી જગ્યા આપશે
+        padding: '16px',          
         boxSizing: 'border-box',
         overflow: 'hidden'
       }}
     >
+      {/* --- WEBCAM OVERLAY --- */}
+      {isWebcamOpen && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', 
+          backgroundColor: '#000', zIndex: 9999, display: 'flex', flexDirection: 'column'
+        }}>
+          {/* Close button */}
+          <button 
+            onClick={() => setIsWebcamOpen(false)} 
+            style={{ position: 'absolute', top: 20, right: 20, background: 'transparent', border: 'none', color: 'white', zIndex: 10000 }}
+          >
+            <X size={32} />
+          </button>
+
+          {/* Camera view */}
+          <Webcam
+            audio={false}
+            ref={webcamRef}
+            screenshotFormat="image/jpeg"
+            videoConstraints={{ facingMode: "user" }}
+            style={{ width: '100%', height: '80%', objectFit: 'cover' }}
+          />
+
+          {/* Capture button */}
+          <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', background: '#000' }}>
+            <button 
+              onClick={captureSelfie}
+              style={{
+                width: '70px', height: '70px', borderRadius: '50%', backgroundColor: 'white', 
+                border: '5px solid #ea580c', cursor: 'pointer'
+              }}
+            />
+          </div>
+        </div>
+      )}
+
       <style>{`
         @keyframes zoomIn {
-          from {
-            opacity: 0;
-            transform: scale(0.5);
-          }
-          to {
-            opacity: 1;
-            transform: scale(1);
-          }
+          from { opacity: 0; transform: scale(0.5); }
+          to { opacity: 1; transform: scale(1); }
         }
-        
-        .modal-zoom-anim {
-          animation: zoomIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-        }
-
+        .modal-zoom-anim { animation: zoomIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
         .theme-orange-gradient { 
           background: linear-gradient(135deg, #f97316 0%, #ea580c 100%) !important; 
-          color: white !important; border: none !important;
-          transition: all 0.3s ease;
+          color: white !important; border: none !important; transition: all 0.3s ease;
         }
         .theme-orange-gradient:hover {
           box-shadow: 0 4px 12px rgba(234, 88, 12, 0.3) !important;
@@ -324,40 +409,19 @@ const Gallery = () => {
         }
         .theme-orange-text { color: #ea580c !important; }
         .premium-card {
-          background-color: white;
-          border-radius: 12px;
-          border: 1px solid rgba(0,0,0,0.04);
+          background-color: white; border-radius: 12px; border: 1px solid rgba(0,0,0,0.04);
           box-shadow: 0 4px 18px rgba(0,0,0,0.03);
         }
-        
         .gallery-layout { 
-          display: flex; 
-          gap: 1.5rem; 
-          height: 100%;             /* 100vh ની જગ્યાએ 100% */
-          max-height: 100%;
-          width: 100%;              /* માર્જિન વગર પૂર્ણ પહોળાઈ */
-          margin: 0;
-          align-items: stretch; 
-          overflow: hidden; 
-          box-sizing: border-box;
+          display: flex; gap: 1.5rem; height: 100%; max-height: 100%; width: 100%; margin: 0;
+          align-items: stretch; overflow: hidden; box-sizing: border-box;
         }
-
         .gallery-inner-sidebar { 
-          width: 280px; 
-          flex-shrink: 0;
-          overflow-y: auto; 
-          padding: 1.5rem; 
+          width: 280px; flex-shrink: 0; overflow-y: auto; padding: 1.5rem; 
         }
-        
         .gallery-main-area { 
-          flex: 1; 
-          display: flex;
-          flex-direction: column;
-          gap: 1.5rem; 
-          min-width: 0; 
-          overflow: hidden; 
+          flex: 1; display: flex; flex-direction: column; gap: 1.5rem; min-width: 0; overflow: hidden; 
         }
-
         .folder-btn { 
           display: flex; align-items: center; justify-content: space-between;
           width: 100%; padding: 0.75rem 1rem; margin-bottom: 0.25rem;
@@ -366,7 +430,6 @@ const Gallery = () => {
         }
         .folder-btn:hover { background: #f8fafc; color: #ea580c; }
         .folder-btn.active { background: #fff7ed; color: #ea580c; border-left: 4px solid #ea580c; }
-        
         .subfolder-list { padding-left: 1.5rem; margin-bottom: 0.5rem; }
         .subfolder-btn {
           display: flex; align-items: center; width: 100%; padding: 0.5rem 0.75rem;
@@ -375,44 +438,19 @@ const Gallery = () => {
         }
         .subfolder-btn:hover { color: #ea580c; background: #f8fafc; }
         .subfolder-btn.active { color: #ea580c; font-weight: bold; }
-
-        .search-wrapper {
-          flex: 1;
-          max-width: 500px;
-          min-width: 260px;
-          position: relative;
-        }
+        .search-wrapper { flex: 1; max-width: 400px; min-width: 200px; position: relative; }
         .search-input {
-          width: 100%;
-          border: 1px solid #e2e8f0;
-          border-radius: 8px;
-          padding: 0.6rem 2.5rem;
-          outline: none;
-          transition: all 0.2s;
-          font-size: 0.95rem;
-          background-color: #f8fafc;
-          color: #334155;
+          width: 100%; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.6rem 2.5rem;
+          outline: none; transition: all 0.2s; font-size: 0.95rem; background-color: #f8fafc; color: #334155;
         }
         .search-input:focus { 
-          background-color: #fff;
-          border-color: #f97316; 
-          box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1); 
+          background-color: #fff; border-color: #f97316; box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1); 
         }
         .search-icon-left {
-          position: absolute;
-          left: 0.8rem;
-          top: 50%;
-          transform: translateY(-50%);
-          color: #94a3b8;
-          display: flex;
-          align-items: center;
+          position: absolute; left: 0.8rem; top: 50%; transform: translateY(-50%);
+          color: #94a3b8; display: flex; align-items: center;
         }
-
-        .grid-10 {
-          display: grid;
-          grid-template-columns: repeat(10, 1fr);
-          gap: 0.75rem;
-        }
+        .grid-10 { display: grid; grid-template-columns: repeat(10, 1fr); gap: 0.75rem; }
         @media (max-width: 1600px) { .grid-10 { grid-template-columns: repeat(8, 1fr); } }
         @media (max-width: 1200px) { .grid-10 { grid-template-columns: repeat(6, 1fr); } }
         @media (max-width: 992px) { 
@@ -422,16 +460,13 @@ const Gallery = () => {
           .search-wrapper { max-width: 100%; } 
         }
         @media (max-width: 576px) { .grid-10 { grid-template-columns: repeat(3, 1fr); } }
-
         .media-card {
-          position: relative; aspect-ratio: 1; 
-          border-radius: 0.5rem; overflow: hidden; background: #f1f5f9; cursor: pointer;
+          position: relative; aspect-ratio: 1; border-radius: 0.5rem; overflow: hidden; background: #f1f5f9; cursor: pointer;
           border: 2px solid transparent; transition: all 0.2s;
         }
         .media-card.selected { border-color: #ea580c; }
         .media-card:hover { transform: scale(1.03); z-index: 10; box-shadow: 0 6px 16px rgba(0,0,0,0.15); }
         .media-card img, .media-card video { width: 100%; height: 100%; object-fit: cover; }
-        
         .media-overlay {
           position: absolute; top: 0; left: 0; right: 0; bottom: 0;
           background: rgba(0,0,0,0.4); opacity: 0; transition: opacity 0.2s;
@@ -439,28 +474,11 @@ const Gallery = () => {
         .media-card:hover .media-overlay { opacity: 1; }
         .media-checkbox { position: absolute; top: 0.5rem; left: 0.5rem; z-index: 2; width: 1.1rem; height: 1.1rem; }
         .media-delete-btn { position: absolute; top: 0.5rem; right: 0.5rem; z-index: 2; }
-
-        /* Scrollbar styles */
-        ::-webkit-scrollbar {
-          width: 8px;
-          height: 8px;
-        }
-        ::-webkit-scrollbar-track {
-          background: #fff7ed;
-          border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb {
-          background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
-          border-radius: 10px;
-          border: 2px solid #fff7ed;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-          background: #c2410c;
-        }
-        .gallery-inner-sidebar, .overflow-auto {
-          scrollbar-width: thin;
-          scrollbar-color: #ea580c #fff7ed;
-        }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #fff7ed; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); border-radius: 10px; border: 2px solid #fff7ed; }
+        ::-webkit-scrollbar-thumb:hover { background: #c2410c; }
+        .gallery-inner-sidebar, .overflow-auto { scrollbar-width: thin; scrollbar-color: #ea580c #fff7ed; }
       `}</style>
 
       <div className="gallery-layout">
@@ -545,37 +563,42 @@ const Gallery = () => {
               <span className="text-secondary small fw-medium">{filteredItems.length} items found</span>
             </div>
 
-            <div className="search-wrapper mx-auto">
-              <span className="search-icon-left">
-                <SearchIcon size={18} />
-              </span>
-              <input
-                type="text"
-                className="search-input shadow-sm"
-                placeholder="Search folders or events..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-              {searchTerm && (
-                <button
-                  className="btn btn-sm position-absolute end-0 top-50 translate-middle-y text-muted border-0 bg-transparent"
-                  onClick={() => setSearchTerm('')}
-                  title="Clear search"
-                >
-                  <XIcon size={16} />
-                </button>
-              )}
+            <div className="d-flex align-items-center gap-3 mx-auto flex-grow-1" style={{ maxWidth: '600px' }}>
+              <div className="search-wrapper flex-grow-1">
+                <span className="search-icon-left">
+                  <SearchIcon size={18} />
+                </span>
+                <input
+                  type="text"
+                  className="search-input shadow-sm"
+                  placeholder="Search folders or events..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                {searchTerm && (
+                  <button
+                    className="btn btn-sm position-absolute end-0 top-50 translate-middle-y text-muted border-0 bg-transparent"
+                    onClick={() => setSearchTerm('')}
+                    title="Clear search"
+                  >
+                    <XIcon size={16} />
+                  </button>
+                )}
+              </div>
 
-              {/* NEW FACE SEARCH BUTTON */}
-            {/* <button
-              className="btn btn-light border bg-white d-flex align-items-center gap-2 shadow-sm rounded-3"
-              style={{ padding: '0.55rem 1rem', color: '#ea580c', fontWeight: '600' }}
-              onClick={() => setIsFaceSearchOpen(true)}
-              title="Search by Face"
-            >
-              <FaceIcon size={18} />
-              <span className="d-none d-sm-inline">Face Search</span>
-            </button> */}
+              {/* FACE SEARCH BUTTON - હવે સર્ચ બારની બરાબર બાજુમાં! */}
+              <button
+                className="btn btn-light border bg-white d-flex align-items-center gap-2 shadow-sm rounded-3 flex-shrink-0"
+                style={{ padding: '0.6rem 1rem', color: '#ea580c', fontWeight: '600' }}
+                onClick={openCamera}
+                title="Search by Face"
+                disabled={faceSearching}
+              >
+                <Camera size={18} />
+                <span className="d-none d-sm-inline">
+                  {faceSearching ? 'Searching...' : 'Face Search'}
+                </span>
+              </button>
             </div>
 
             <div className="d-flex flex-wrap gap-2 align-items-center ms-auto">
@@ -599,7 +622,7 @@ const Gallery = () => {
                     className="btn btn-warning btn-sm fw-bold px-3 py-1 rounded-3 shadow-sm d-flex align-items-center gap-2 text-dark"
                     onClick={() => {
                       const itemsToMove = filteredItems.filter(i => selectedIds.includes(i.id));
-                      setSelectedForEdit(itemsToMove); 
+                      setSelectedForEdit(itemsToMove);
                       setIsModalOpen(true);
                     }}
                   >
@@ -667,7 +690,7 @@ const Gallery = () => {
                           checked={isSelected}
                           onChange={(e) => toggleSelectId(e, item.id)}
                           onClick={(e) => e.stopPropagation()}
-                          style={{ width: '1.25rem', height: '1.25rem' }} 
+                          style={{ width: '1.25rem', height: '1.25rem' }}
                         />
 
                         {!isSelected && selectedIds.length === 0 && (
@@ -767,12 +790,6 @@ const Gallery = () => {
         }}
         initialData={selectedForEdit}
       />
-
-      {/* <FaceSearchModal 
-        isOpen={isFaceSearchOpen} 
-        onClose={() => setIsFaceSearchOpen(false)} 
-        onSearch={handleFaceSearch} 
-      /> */}
     </div>
   );
 };

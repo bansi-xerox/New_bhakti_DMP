@@ -21,7 +21,7 @@ const gallerySchema = new mongoose.Schema({
     type: String,
     default: null
   },
-  // face_descriptors: { type: [[Number]], default: [] }
+  face_descriptors: { type: [[Number]], default: [] }
 }, {
   // Automatically handles the created_at timestamp requirement
   timestamps: { createdAt: 'created_at', updatedAt: false } 

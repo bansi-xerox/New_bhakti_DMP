@@ -306,135 +306,207 @@ exports.uploadMedia = async (req, res) => {
   }
 };
 
+// Face Recognition Search Logic
+exports.searchByFace = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'Please capture a selfie.' });
+    }
 
+    // 1. Selfie mathi face detect karo
+    const img = await canvas.loadImage(req.file.buffer);
+    const detections = await faceapi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor();
 
-// exports.uploadMedia = async (req, res) => {
-//   try {
-//     const { main_folder_name, sub_folder_name, media_type, event_date } = req.body;
-//     const files = req.files;
+    if (!detections) {
+      return res.status(400).json({ success: false, message: 'Selfie ma koi chahero (face) malyo nathi. Fari try karo.' });
+    }
 
-//     if (!main_folder_name || !sub_folder_name || !media_type) {
-//       return res.status(400).json({
-//         success: false,
-//         message: 'Main folder name, sub folder name, and media type are required.'
-//       });
-//     }
+    const queryDescriptor = detections.descriptor;
 
-//     if (!files || files.length === 0) {
-//       return res.status(400).json({
-//         success: false,
-//         message: 'Please upload at least one file.'
-//       });
-//     }
+    // 2. Database mathi badha photos laavo jema face hoy
+    const galleries = await Gallery.find({ 
+      photo_path: { $ne: null }, 
+      face_descriptors: { $not: { $size: 0 } } 
+    });
 
-//     const typeLower = media_type.toLowerCase();
-//     if (typeLower !== 'photos' && typeLower !== 'videos') {
-//       return res.status(400).json({
-//         success: false,
-//         message: 'Media type must be either "Photos" or "Videos".'
-//       });
-//     }
+    const matchedPhotos = [];
+    const THRESHOLD = 0.55; // 0.55 thi 0.60 vacche rakhi shakay (ochho number = vadhu strict matching)
 
-//     const safeMain = sanitizeName(main_folder_name);
-//     const safeSub = sanitizeName(sub_folder_name);
-//     const typeFolder = typeLower === 'photos' ? 'photos' : 'videos';
+    // 3. Selfie na face ne badha photos sathe match karo
+    for (const item of galleries) {
+      let isMatch = false;
+      for (const dbDesc of item.face_descriptors) {
+        const dbDescriptorArray = new Float32Array(dbDesc);
+        const distance = faceapi.euclideanDistance(queryDescriptor, dbDescriptorArray);
+        
+        if (distance <= THRESHOLD) {
+          isMatch = true;
+          break; // Ek var match thay jay etle aagal check karvani jarur nathi
+        }
+      }
+      if (isMatch) {
+        matchedPhotos.push(item);
+      }
+    }
 
-//     const photoExts = ['.jpg', '.jpeg', '.png'];
-//     const videoExts = ['.mp4'];
+    return res.status(200).json({ success: true, data: matchedPhotos });
 
-//     for (const file of files) {
-//       const ext = path.extname(file.originalname).toLowerCase();
-//       if (typeFolder === 'photos' && !photoExts.includes(ext)) {
-//         return res.status(400).json({
-//           success: false,
-//           message: `Invalid format in ${file.originalname}. Photos must be .jpg, .jpeg, or .png.`
-//         });
-//       }
-//       if (typeFolder === 'videos' && !videoExts.includes(ext)) {
-//         return res.status(400).json({
-//           success: false,
-//           message: `Invalid format in ${file.originalname}. Videos must be .mp4.`
-//         });
-//       }
-//     }
+  } catch (error) {
+    console.error('Face search error:', error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+exports.uploadMedia = async (req, res) => {
+  try {
+    const {
+      main_folder_name,
+      sub_folder_name,
+      media_type,
+      event_date
+    } = req.body;
 
-//     let existingRecords;
-//     if (typeFolder === 'photos') {
-//       existingRecords = await Gallery.find({
-//         main_folder_name: safeMain,
-//         sub_folder_name: safeSub,
-//         photo_path: { $ne: null }
-//       }).select('photo_path');
-//     } else {
-//       existingRecords = await Gallery.find({
-//         main_folder_name: safeMain,
-//         sub_folder_name: safeSub,
-//         video_path: { $ne: null }
-//       }).select('video_path');
-//     }
+    const files = req.files;
 
-//     const existingPaths = existingRecords.map(record => {
-//       return typeFolder === 'photos' ? record.photo_path : record.video_path;
-//     });
+    if (!main_folder_name || !sub_folder_name || !media_type) {
+      return res.status(400).json({
+        success: false,
+        message: 'Main folder name, sub folder name, and media type are required.'
+      });
+    }
 
-//     const savedRecords = [];
+    if (!files || files.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please upload at least one file.'
+      });
+    }
 
-//     for (const file of files) {
-//       const seqNumber = getNextSequenceNumber(existingPaths, safeMain, safeSub);
-//       const fileName = `${safeMain}-${safeSub}-${seqNumber}`;
-//       const resourceType = typeFolder === 'videos' ? 'video' : 'image';
+    const typeLower = media_type.toLowerCase();
 
-//       // 1. Upload to Cloudinary
-//       const result = await uploadToCloudinary(file.buffer, {
-//         folder: `bhakti-dmp/${safeMain}/${safeSub}/${typeFolder}`,
-//         public_id: fileName,
-//         resource_type: resourceType
-//       });
+    if (typeLower !== 'photos' && typeLower !== 'videos') {
+      return res.status(400).json({
+        success: false,
+        message: 'Media type must be either "Photos" or "Videos".'
+      });
+    }
 
-//       const cloudinaryUrl = result.secure_url;
+    const safeMain = sanitizeName(main_folder_name);
+    const safeSub = sanitizeName(sub_folder_name);
 
-//       // 2. Extract Face Descriptors for Photos
-//       let descriptors = [];
-//       if (typeFolder === 'photos') {
-//         try {
-//           const img = await canvas.loadImage(file.buffer);
-//           const detections = await faceapi.detectAllFaces(img).withFaceLandmarks().withFaceDescriptors();
-//           descriptors = detections.map(d => Array.from(d.descriptor));
-//         } catch (faceErr) {
-//           console.error(`Face extraction failed for ${fileName}:`, faceErr.message);
-//         }
-//       }
+    const typeFolder = typeLower === 'photos' ? 'photos' : 'videos';
 
-//       // 3. Save to DB
-//       const newRecord = new Gallery({
-//         main_folder_name: safeMain,
-//         sub_folder_name: safeSub,
-//         photo_path: typeFolder === 'photos' ? cloudinaryUrl : null,
-//         video_path: typeFolder === 'videos' ? cloudinaryUrl : null,
-//         event_date: event_date ? new Date(event_date) : new Date(),
-//         face_descriptors: descriptors // Stores AI face embeddings
-//       });
+    const photoExts = ['.jpg', '.jpeg', '.png'];
+    const videoExts = ['.mp4'];
 
-//       const savedDoc = await newRecord.save();
-//       savedRecords.push({ id: savedDoc._id, relativePath: cloudinaryUrl });
-//       existingPaths.push(cloudinaryUrl);
-//     }
+    // 1. ફાઈલ ફોર્મેટ ચેક કરો
+    for (const file of files) {
+      const ext = path.extname(file.originalname).toLowerCase();
 
-//     const count = savedRecords.length;
-//     const itemLabel = typeFolder === 'photos' 
-//       ? (count === 1 ? 'photo' : 'photos') 
-//       : (count === 1 ? 'video' : 'videos');
+      if (typeFolder === 'photos' && !photoExts.includes(ext)) {
+        return res.status(400).json({
+          success: false,
+          message: `Invalid format in ${file.originalname}. Photos must be .jpg, .jpeg, or .png.`
+        });
+      }
 
-//     return res.status(200).json({
-//       success: true,
-//       message: `${count} ${itemLabel} added successfully`,
-//       data: savedRecords
-//     });
-//   } catch (error) {
-//     console.error('Cloudinary upload error:', error);
-//     return res.status(500).json({ success: false, message: error.message });
-//   }
-// };
+      if (typeFolder === 'videos' && !videoExts.includes(ext)) {
+        return res.status(400).json({
+          success: false,
+          message: `Invalid format in ${file.originalname}. Videos must be .mp4.`
+        });
+      }
+    }
+
+    // 2. ડેટાબેઝમાંથી જૂના રેકોર્ડ્સ લાવો
+    let existingRecords;
+
+    if (typeFolder === 'photos') {
+      existingRecords = await Gallery.find({
+        main_folder_name: safeMain,
+        sub_folder_name: safeSub,
+        photo_path: { $ne: null }
+      }).select('photo_path');
+    } else {
+      existingRecords = await Gallery.find({
+        main_folder_name: safeMain,
+        sub_folder_name: safeSub,
+        video_path: { $ne: null }
+      }).select('video_path');
+    }
+
+    const existingPaths = existingRecords.map(record => {
+      return typeFolder === 'photos' ? record.photo_path : record.video_path;
+    });
+
+    const savedRecords = [];
+
+    // 3. દરેક ફાઈલ અપલોડ કરો અને ડેટાબેઝમાં સેવ કરો
+    for (const file of files) {
+      const seqNumber = getNextSequenceNumber(existingPaths, safeMain, safeSub);
+      const fileName = `${safeMain}-${safeSub}-${seqNumber}`;
+      const resourceType = typeFolder === 'videos' ? 'video' : 'image';
+
+      // 3.1 Cloudinary માં અપલોડ
+      const result = await uploadToCloudinary(file.buffer, {
+        folder: `bhakti-dmp/${safeMain}/${safeSub}/${typeFolder}`,
+        public_id: fileName,
+        resource_type: resourceType
+      });
+
+      const cloudinaryUrl = result.secure_url;
+
+      // 3.2 Face Descriptors Extract કરો (માત્ર ફોટો માટે જ)
+      let descriptors = [];
+      if (typeFolder === 'photos') {
+        try {
+          // કેનવાસ ઈમેજ લોડ કરીને તેમાંથી ફેસ સ્કેન કરશે
+          const img = await canvas.loadImage(file.buffer);
+          const detections = await faceapi.detectAllFaces(img).withFaceLandmarks().withFaceDescriptors();
+          descriptors = detections.map(d => Array.from(d.descriptor));
+        } catch (faceErr) {
+          console.error(`Face extraction failed for ${fileName}:`, faceErr.message);
+        }
+      }
+
+      // 3.3 ડેટાબેઝમાં રેકોર્ડ સેવ કરો
+      const newRecord = new Gallery({
+        main_folder_name: safeMain,
+        sub_folder_name: safeSub,
+        photo_path: typeFolder === 'photos' ? cloudinaryUrl : null,
+        video_path: typeFolder === 'videos' ? cloudinaryUrl : null,
+        event_date: event_date ? new Date(event_date) : new Date(),
+        face_descriptors: descriptors // અહી ચહેરાનો ડેટા સેવ થશે
+      });
+
+      const savedDoc = await newRecord.save();
+
+      savedRecords.push({
+        id: savedDoc._id,
+        relativePath: cloudinaryUrl
+      });
+
+      existingPaths.push(cloudinaryUrl);
+    }
+
+    const count = savedRecords.length;
+
+    const itemLabel = typeFolder === 'photos'
+      ? count === 1 ? 'photo' : 'photos'
+      : count === 1 ? 'video' : 'videos';
+
+    return res.status(200).json({
+      success: true,
+      message: `${count} ${itemLabel} added successfully`,
+      data: savedRecords
+    });
+  } catch (error) {
+    console.error('Cloudinary upload error:', error);
+    return res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
 
 
 exports.getGalleryItems = async (req, res) => {
