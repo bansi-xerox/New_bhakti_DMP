@@ -57,10 +57,10 @@ const HeadingBhajansPage = () => {
 
       <main className="main-desktop-container">
         {/* Reusable Universal Sticky Search Bar */}
-        <UniversalSearchBar
+        {/* <UniversalSearchBar
           placeholder={`${headingName} માં ભજન શોધો...`}
           onSearchChangeExternal={setPageFilterText}
-        />
+        /> */}
 
         {/* Bhajans Grid */}
         <div className="content-stage-centered">

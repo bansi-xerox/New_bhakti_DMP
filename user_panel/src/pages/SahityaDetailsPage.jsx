@@ -79,10 +79,10 @@ const SahityaDetailsPage = () => {
 
       <main className="main-desktop-container">
         {/* Reusable Universal Sticky Search Bar */}
-        <UniversalSearchBar
+        {/* <UniversalSearchBar
           placeholder={`${sahityaName} માં શીર્ષક અથવા ભજન શોધો...`}
           onSearchChangeExternal={setPageFilterText}
-        />
+        /> */}
 
         {/* Content Centered Container */}
         <div className="content-stage-centered">
