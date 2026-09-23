@@ -55,7 +55,7 @@ const HomePage = () => {
 
       <main className="main-desktop-container">
         {/* Reusable Universal Sticky Search Bar */}
-        <UniversalSearchBar onSearchChangeExternal={setPageFilterText} />
+       {/* <UniversalSearchBar onSearchChangeExternal={setPageFilterText} />*/}
 
         {/* Categories Grid */}
         <div id="sahitya-section" className="content-stage-centered">
