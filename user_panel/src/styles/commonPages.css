@@ -1,93 +1,11 @@
-/* ================= Universal Perfectly Centered Sticky Search Bar (All Pages) ================= */
-.standalone-search-container,
-.bhajan-detail-search-container {
-  width: 100%;
-  max-width: 1000px !important;
-  margin: 0 auto 16px auto !important;
-  display: flex !important;
-  justify-content: center !important;
-  align-items: center !important;
-  flex-shrink: 0;
 
-  /* Sticky Positioning */
-  position: sticky !important;
-  top: 0px !important; 
-  z-index: 80 !important;
-
-  /* Solid Background with Padding to prevent card bleed */
-  background: var(--bg-cream, #faf5ed) !important;
-  padding: 12px 0 14px 0 !important;
-
-  /* Mask shadow to hide cards passing from the sides */
-  box-shadow: 0 0 0 100vmax var(--bg-cream, #faf5ed) !important;
-  clip-path: inset(0 -100vmax -20px -100vmax) !important;
-}
-
-
-.royal-header {
-  position: sticky !important;
-  top: 0 !important;
-  z-index: 100 !important; /* Header must stay above the search bar */
-  background: linear-gradient(180deg, #ffffff 0%, #fffbf6 100%) !important;
-}
-
-/* Ensure the Search input stays cleanly rounded */
-.wide-search-wrapper {
-  width: 100% !important;
-  max-width: 1000px !important;
-  position: relative;
-  z-index: 2;
-}
-
-.wide-search-input {
-  width: 100%;
-  padding: 13px 80px 13px 48px !important;
-  font-size: 15px !important;
-  background: #ffffff !important;
-  border: 1.5px solid var(--border-gold) !important;
-  border-radius: 50px !important;
-  box-shadow: 0 3px 12px rgba(160, 64, 0, 0.08) !important;
-  transition: all 0.25s ease !important;
-}
-
-.wide-search-input:focus {
-  border-color: var(--primary-saffron) !important;
-  box-shadow: 0 4px 20px rgba(216, 67, 21, 0.2) !important;
-  background: #ffffff !important;
-}
-
-.wide-search-wrapper .search-icon {
-  position: absolute;
-  left: 18px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--primary-saffron);
-}
-
-.search-clear-btn {
-  position: absolute;
-  right: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: #fff3e0;
-  border: none;
-  border-radius: 50%;
-  width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #bf360c;
-  cursor: pointer;
-  padding: 0;
-}
 
 /* ================= Cards Container: Perfectly Centered (1000px) ================= */
 #sahitya-section,
 .content-stage-centered {
   width: 100%;
   max-width: 1000px !important; 
-  margin: 0 auto !important;
+  margin: 10px auto 0 auto !important;
 }
 
 .desktop-grid {
@@ -176,99 +94,24 @@
   font-size: 16px;
 }
 
-/* Pulse animation for active voice search mic */
-@keyframes pulseMic {
-  0% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.25); opacity: 0.7; }
-  100% { transform: scale(1); opacity: 1; }
+/* ================= Sticky Top Header ================= */
+.royal-header {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 100 !important;
+  background: linear-gradient(180deg, #ffffff 0%, #fffbf6 100%) !important;
+  border-bottom: 2px solid var(--border-gold);
+  box-shadow: 0 4px 20px rgba(160, 64, 0, 0.06);
+  width: 100%;
 }
 
-.mic-active {
-  color: #dc3545 !important;
-  animation: pulseMic 1.4s infinite ease-in-out;
-}
-
-/* Action Icons inside Search Input */
-.search-actions {
-  position: absolute;
-  right: 16px;
-  top: 50%;
-  transform: translateY(-50%);
+.royal-header-inner {
+  max-width: 1000px !important;
+  margin: 0 auto !important;
+  padding: 10px 0 !important;
   display: flex;
   align-items: center;
-  gap: 12px;
-  z-index: 10;
-}
-
-.search-input-box {
-  padding-right: 80px !important;
-}
-
-/* Live Search Dropdown Box */
-.live-search-dropdown {
-  position: absolute;
-  top: calc(100% + 6px);
-  left: 0;
-  right: 0;
-  background: #ffffff;
-  border: 1.5px solid var(--border-gold);
-  border-radius: 14px;
-  box-shadow: 0 10px 30px rgba(160, 64, 0, 0.12);
-  max-height: 380px;
-  overflow-y: auto;
-  z-index: 150;
-  padding: 6px 0;
-}
-
-.live-search-item {
-  padding: 10px 18px;
-  cursor: pointer;
-  border-bottom: 1px solid #faeee0;
-  transition: background 0.18s ease;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.live-search-item:last-child {
-  border-bottom: none;
-}
-
-.live-search-item:hover {
-  background: #fff8f0;
-}
-
-.live-item-title {
-  font-size: 15px;
-  font-weight: 700;
-  color: #2c1810;
-}
-
-.live-item-meta {
-  font-size: 12.5px;
-  color: #795548;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.live-item-tag {
-  color: #bf360c;
-  font-weight: 600;
-}
-
-.no-results-item {
-  padding: 18px;
-  text-align: center;
-  color: #8d6e63;
-  font-size: 14px;
-}
-
-/* Responsive adjustment for Mobile */
-@media (max-width: 768px) {
-  .standalone-search-container,
-  .bhajan-detail-search-container {
-    padding: 10px 16px 12px 16px !important;
-    margin-bottom: 12px !important;
-  }
+  justify-content: space-between;
+  width: 100%;
+  box-sizing: border-box;
 }
