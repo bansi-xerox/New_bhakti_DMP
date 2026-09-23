@@ -1,0 +1,166 @@
+/* ================= Universal Sticky Search Bar Styles ================= */
+.sticky-search-outer-shell {
+  position: sticky !important;
+  top: 65px !important; /* Header ni ekdam niche fix */
+  z-index: 85 !important;
+  width: 100% !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  flex-shrink: 0;
+
+  /* Solid background jethi cards pachhal chupai jay */
+  background-color: var(--bg-cream, #faf5ed) !important;
+  padding: 12px 20px 14px 20px !important;
+  box-sizing: border-box !important;
+  
+  /* Clean subtle bottom border divider instead of heavy clips */
+  border-bottom: 1.5px solid var(--border-gold) !important;
+  box-shadow: 0 4px 12px rgba(160, 64, 0, 0.03) !important;
+}
+
+.sticky-search-outer-shell .wide-search-wrapper {
+  width: 100% !important;
+  max-width: 1000px !important;
+  position: relative !important;
+  z-index: 2 !important;
+  margin: 0 auto !important;
+}
+
+.wide-search-input {
+  width: 100% !important;
+  padding: 13px 80px 13px 48px !important;
+  font-size: 15px !important;
+  background: #ffffff !important;
+  border: 1.5px solid var(--border-gold) !important;
+  border-radius: 50px !important;
+  box-shadow: 0 3px 12px rgba(160, 64, 0, 0.08) !important;
+  color: #2c1810 !important;
+  outline: none !important;
+  transition: all 0.25s ease !important;
+  box-sizing: border-box !important;
+}
+
+.wide-search-input:focus {
+  border-color: var(--primary-saffron) !important;
+  box-shadow: 0 4px 20px rgba(216, 67, 21, 0.2) !important;
+}
+
+.wide-search-wrapper .search-icon {
+  position: absolute !important;
+  left: 18px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  color: var(--primary-saffron) !important;
+  pointer-events: none !important;
+}
+
+.search-actions {
+  position: absolute !important;
+  right: 16px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  z-index: 10 !important;
+}
+
+.search-clear-btn {
+  background: #fff3e0 !important;
+  border: none !important;
+  border-radius: 50% !important;
+  width: 24px !important;
+  height: 24px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: #bf360c !important;
+  cursor: pointer !important;
+  padding: 0 !important;
+  transition: background 0.2s ease !important;
+}
+
+.search-clear-btn:hover {
+  background: #ffe0b2 !important;
+}
+
+/* Mic Animation */
+@keyframes pulseMicAnim {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.25); opacity: 0.7; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.mic-active {
+  color: #dc3545 !important;
+  animation: pulseMicAnim 1.4s infinite ease-in-out !important;
+}
+
+/* Live Search Dropdown Suggestions */
+.live-search-dropdown {
+  position: absolute !important;
+  top: calc(100% + 8px) !important;
+  left: 0 !important;
+  right: 0 !important;
+  background: #ffffff !important;
+  border: 1.5px solid var(--border-gold) !important;
+  border-radius: 14px !important;
+  box-shadow: 0 12px 36px rgba(160, 64, 0, 0.16) !important;
+  max-height: 380px !important;
+  overflow-y: auto !important;
+  z-index: 150 !important;
+  padding: 6px 0 !important;
+}
+
+.live-search-item {
+  padding: 10px 18px !important;
+  cursor: pointer !important;
+  border-bottom: 1px solid #faeee0 !important;
+  transition: background 0.18s ease !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 2px !important;
+  text-align: left !important;
+}
+
+.live-search-item:last-child {
+  border-bottom: none !important;
+}
+
+.live-search-item:hover {
+  background: #fff8f0 !important;
+}
+
+.live-item-title {
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  color: #2c1810 !important;
+}
+
+.live-item-meta {
+  font-size: 12.5px !important;
+  color: #795548 !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+}
+
+.live-item-tag {
+  color: #bf360c !important;
+  font-weight: 600 !important;
+}
+
+.no-results-item {
+  padding: 18px !important;
+  text-align: center !important;
+  color: #8d6e63 !important;
+  font-size: 14px !important;
+}
+
+@media (max-width: 768px) {
+  .sticky-search-outer-shell {
+    top: 56px !important;
+    padding: 8px 12px 10px 12px !important;
+  }
+}

@@ -1,10 +1,10 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Search, X, Mic } from 'lucide-react';
 import { getAllBhajans } from '../services/api';
 import Header from '../components/common/Header';
 import Footer from '../components/common/Footer';
 import Loader from '../components/common/Loader';
+import UniversalSearchBar from '../components/common/UniversalSearchBar';
 import '../assets/userTheme.css';
 import SearchBar from '../components/common/SearchBar';
 
@@ -12,37 +12,18 @@ const HeadingBhajansPage = () => {
   const { sahityaName, headingName } = useParams();
   const [bhajans, setBhajans] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  // Search & Dropdown states
-  const [allBhajansList, setAllBhajansList] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [isListening, setIsListening] = useState(false);
-  const searchRef = useRef(null);
-
+  const [pageFilterText, setPageFilterText] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchBhajans();
   }, [sahityaName, headingName]);
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (searchRef.current && !searchRef.current.contains(event.target)) {
-        setShowDropdown(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
   const fetchBhajans = async () => {
     try {
       setLoading(true);
       const res = await getAllBhajans();
       const allItems = res.data.data || res.data || [];
-      setAllBhajansList(allItems);
 
       const matched = allItems.filter(
         (item) =>
@@ -62,71 +43,12 @@ const HeadingBhajansPage = () => {
     return str.replace(/[\s.,:;_'"+=\-!@#$%^&*()]+/g, '').toLowerCase();
   };
 
-  const handleSearchChange = (value) => {
-    setSearchTerm(value);
-    const cleanQuery = cleanString(value);
-
-    if (!cleanQuery) {
-      setSearchResults([]);
-      setShowDropdown(false);
-      return;
-    }
-
-    const matched = allBhajansList.filter((item) => {
-      return (
-        cleanString(item.sahitya_name).includes(cleanQuery) ||
-        cleanString(item.heading_name).includes(cleanQuery) ||
-        cleanString(item.bhajan_name).includes(cleanQuery) ||
-        cleanString(item.bhajan_kadi).includes(cleanQuery) ||
-        cleanString(item.bhajan_rag).includes(cleanQuery)
-      );
-    });
-
-    setSearchResults(matched.slice(0, 15));
-    setShowDropdown(true);
-  };
-
-  const handleVoiceSearch = () => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-    if (!SpeechRecognition) {
-      alert('તમારું બ્રાઉઝર વોઇસ સર્ચને સપોર્ટ કરતું નથી.');
-      return;
-    }
-
-    const recognition = new SpeechRecognition();
-    recognition.lang = 'gu-IN';
-    recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
-
-    recognition.onstart = () => setIsListening(true);
-    recognition.onresult = (event) => {
-      const transcript = event.results[0][0].transcript;
-      handleSearchChange(transcript);
-    };
-    recognition.onerror = (event) => {
-      console.error('Speech recognition error:', event.error);
-      setIsListening(false);
-    };
-    recognition.onend = () => setIsListening(false);
-
-    recognition.start();
-  };
-
-  const handleSelectBhajan = (bhajanId) => {
-    setSearchTerm('');
-    setSearchResults([]);
-    setShowDropdown(false);
-    navigate(`/bhajan/${bhajanId}`);
-  };
-
-  const cleanSearchTerm = cleanString(searchTerm);
-
+  const cleanQuery = cleanString(pageFilterText);
   const filteredBhajans = bhajans.filter((b) => {
-    if (!cleanSearchTerm || showDropdown) return true;
+    if (!cleanQuery) return true;
     return (
-      cleanString(b.bhajan_name).includes(cleanSearchTerm) ||
-      cleanString(b.bhajan_rag).includes(cleanSearchTerm)
+      cleanString(b.bhajan_name).includes(cleanQuery) ||
+      cleanString(b.bhajan_rag).includes(cleanQuery)
     );
   });
 
@@ -135,6 +57,7 @@ const HeadingBhajansPage = () => {
       <Header />
 
       <main className="main-desktop-container">
+<<<<<<< HEAD
       <SearchBar 
     searchTerm={searchTerm} 
     setSearchTerm={setSearchTerm} 
@@ -143,24 +66,21 @@ const HeadingBhajansPage = () => {
 
         {/* Bhajans Grid (Centered: 1000px) */}
         <div className="content-stage-centered" style={{ paddingTop: '5px' }}>
+=======
+        {/* Reusable Universal Sticky Search Bar */}
+        <UniversalSearchBar
+          placeholder={`${headingName} માં ભજન શોધો...`}
+          onSearchChangeExternal={setPageFilterText}
+        />
+
+        {/* Bhajans Grid */}
+        <div className="content-stage-centered">
+>>>>>>> 8909c8b (-commited)
           {loading ? (
             <Loader />
-          ) : !showDropdown && filteredBhajans.length === 0 ? (
+          ) : filteredBhajans.length === 0 ? (
             <div className="empty-search-state">
               <p>કોઈ મેળ ખાતા ભજન મળ્યા નથી.</p>
-              {searchTerm && (
-                <button
-                  type="button"
-                  className="font-btn"
-                  onClick={() => {
-                    setSearchTerm('');
-                    setSearchResults([]);
-                    setShowDropdown(false);
-                  }}
-                >
-                  તમામ ભજનો દર્શાવો
-                </button>
-              )}
             </div>
           ) : (
             <div className="desktop-grid">
