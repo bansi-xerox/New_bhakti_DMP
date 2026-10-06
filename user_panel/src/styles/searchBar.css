@@ -1,7 +1,7 @@
 /* ================= Universal Sticky Search Bar Styles ================= */
 .sticky-search-outer-shell {
   position: sticky !important;
-  top: 75px !important; /* Fixes position right below the main header */
+  top: 75px !important;
   z-index: 85 !important;
   width: 100% !important;
   display: flex !important;
