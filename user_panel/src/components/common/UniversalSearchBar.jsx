@@ -16,10 +16,12 @@ const UniversalSearchBar = ({
   const searchRef = useRef(null);
   const navigate = useNavigate();
 
+  // Fetch all bhajans list on component mount
   useEffect(() => {
     fetchBhajansList();
   }, []);
 
+  // Handle click outside to close dropdown suggestions
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (searchRef.current && !searchRef.current.contains(event.target)) {
@@ -40,6 +42,7 @@ const UniversalSearchBar = ({
     }
   };
 
+  // Helper function to clean strings for robust searching
   const cleanString = (str) => {
     if (!str) return '';
     return str.replace(/[\s.,:;_'"+=\-!@#$%^&*()]+/g, '').toLowerCase();
@@ -72,6 +75,7 @@ const UniversalSearchBar = ({
     setShowDropdown(true);
   };
 
+  // Handle voice search functionality using Web Speech API
   const handleVoiceSearch = () => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
@@ -194,3 +198,4 @@ const UniversalSearchBar = ({
 };
 
 export default UniversalSearchBar;
+

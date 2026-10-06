@@ -55,13 +55,15 @@ const HeadingBhajansPage = () => {
     <div className="user-app-layout">
       <Header />
 
-      <main className="main-desktop-container">
-        {/* Reusable Universal Sticky Search Bar */}
-        {/* <UniversalSearchBar
+     {/* Reusable Universal Sticky Search Bar */}
+        { <UniversalSearchBar
           placeholder={`${headingName} માં ભજન શોધો...`}
           onSearchChangeExternal={setPageFilterText}
-        /> */}
+        /> }
 
+
+      <main className="main-desktop-container">
+       
         {/* Bhajans Grid */}
         <div className="content-stage-centered">
           {loading ? (

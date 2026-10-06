@@ -1,7 +1,7 @@
 /* ================= Universal Sticky Search Bar Styles ================= */
 .sticky-search-outer-shell {
   position: sticky !important;
-  top: 65px !important; /* Header ni ekdam niche fix */
+  top: 75px !important; /* Fixes position right below the main header */
   z-index: 85 !important;
   width: 100% !important;
   display: flex !important;
@@ -9,14 +9,14 @@
   align-items: center !important;
   flex-shrink: 0;
 
-  /* Solid background jethi cards pachhal chupai jay */
+  /* Solid background with comfortable side spacing and no bottom line */
   background-color: var(--bg-cream, #faf5ed) !important;
-  padding: 12px 20px 14px 20px !important;
+  padding: 14px 28px !important; 
   box-sizing: border-box !important;
   
-  /* Clean subtle bottom border divider instead of heavy clips */
-  border-bottom: 1.5px solid var(--border-gold) !important;
-  box-shadow: 0 4px 12px rgba(160, 64, 0, 0.03) !important;
+  /* Removed bottom border line and kept a clean soft shadow */
+  border-bottom: none !important;
+  box-shadow: 0 4px 16px rgba(160, 64, 0, 0.02) !important;
 }
 
 .sticky-search-outer-shell .wide-search-wrapper {
@@ -161,6 +161,6 @@
 @media (max-width: 768px) {
   .sticky-search-outer-shell {
     top: 56px !important;
-    padding: 8px 12px 10px 12px !important;
+    padding: 10px 16px !important;
   }
 }

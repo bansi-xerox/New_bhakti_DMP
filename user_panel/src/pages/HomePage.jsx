@@ -52,10 +52,9 @@ const HomePage = () => {
   return (
     <div className="user-app-layout">
       <Header />
-
+      <UniversalSearchBar onSearchChangeExternal={setPageFilterText} />
+      
       <main className="main-desktop-container">
-        {/* Reusable Universal Sticky Search Bar */}
-       {/* <UniversalSearchBar onSearchChangeExternal={setPageFilterText} />*/}
 
         {/* Categories Grid */}
         <div id="sahitya-section" className="content-stage-centered">

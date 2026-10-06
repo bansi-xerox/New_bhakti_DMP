@@ -63,9 +63,11 @@ const BhajanDetailPage = () => {
     <div className="user-app-layout">
       <Header />
 
+     {/* Reusable Universal Sticky Search Bar */}
+        <UniversalSearchBar />
+
       <main className="main-desktop-container">
-        {/* Reusable Universal Sticky Search Bar */}
-        {/* <UniversalSearchBar /> */}
+       
 
         {/* Bhajan Detail Stage */}
         {loading ? (
