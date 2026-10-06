@@ -95,7 +95,7 @@
 }
 
 /* ================= Sticky Top Header ================= */
-.royal-header {
+/* .royal-header {
   position: sticky !important;
   top: 0 !important;
   z-index: 100 !important;
@@ -114,4 +114,4 @@
   justify-content: space-between;
   width: 100%;
   box-sizing: border-box;
-}
+} */

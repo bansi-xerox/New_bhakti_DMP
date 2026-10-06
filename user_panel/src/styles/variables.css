@@ -37,7 +37,7 @@ html, body {
 
 .user-app-layout {
   height: 100%;
-  height: 100dvh;
+  height: 100dvh; 
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -49,7 +49,7 @@ html, body {
   width: 100%;
   max-width: 1240px;
   margin: 0 auto;
-  padding: 16px 20px;
+  padding: 14px 20px;
   overflow-y: auto;
   box-sizing: border-box;
   display: flex;

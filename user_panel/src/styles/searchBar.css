@@ -164,3 +164,24 @@
     padding: 10px 16px !important;
   }
 }
+
+
+/* ================= Live Search Dropdown Custom Scrollbar ================= */
+.live-search-dropdown::-webkit-scrollbar {
+  width: 7px;
+}
+
+.live-search-dropdown::-webkit-scrollbar-track {
+  background: #fdf5ec;
+  border-radius: 8px;
+}
+
+.live-search-dropdown::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #f57c00 0%, #e65100 100%) !important;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(230, 81, 0, 0.35);
+}
+
+.live-search-dropdown::-webkit-scrollbar-thumb:hover {
+  background: #bf360c !important;
+}
