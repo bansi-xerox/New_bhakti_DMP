@@ -94,24 +94,3 @@
   font-size: 16px;
 }
 
-/* ================= Sticky Top Header ================= */
-/* .royal-header {
-  position: sticky !important;
-  top: 0 !important;
-  z-index: 100 !important;
-  background: linear-gradient(180deg, #ffffff 0%, #fffbf6 100%) !important;
-  border-bottom: 2px solid var(--border-gold);
-  box-shadow: 0 4px 20px rgba(160, 64, 0, 0.06);
-  width: 100%;
-}
-
-.royal-header-inner {
-  max-width: 1000px !important;
-  margin: 0 auto !important;
-  padding: 10px 0 !important;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  box-sizing: border-box;
-} */

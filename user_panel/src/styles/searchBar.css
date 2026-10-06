@@ -9,9 +9,9 @@
   align-items: center !important;
   flex-shrink: 0;
 
-  /* Solid background with comfortable side spacing and no bottom line */
+  /* Solid background with side padding and bottom spacing matching card gap (16px) */
   background-color: var(--bg-cream, #faf5ed) !important;
-  padding: 14px 28px !important; 
+  padding: 14px 28px 16px 28px !important; 
   box-sizing: border-box !important;
   
   /* Removed bottom border line and kept a clean soft shadow */
@@ -161,10 +161,9 @@
 @media (max-width: 768px) {
   .sticky-search-outer-shell {
     top: 56px !important;
-    padding: 10px 16px !important;
+    padding: 10px 16px 16px 16px !important; /* Maintains 16px bottom gap on mobile screens */
   }
 }
-
 
 /* ================= Live Search Dropdown Custom Scrollbar ================= */
 .live-search-dropdown::-webkit-scrollbar {
