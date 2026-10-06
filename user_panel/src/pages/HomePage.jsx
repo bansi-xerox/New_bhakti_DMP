@@ -53,7 +53,7 @@ const HomePage = () => {
     <div className="user-app-layout">
       <Header />
       <UniversalSearchBar onSearchChangeExternal={setPageFilterText} />
-      
+
       <main className="main-desktop-container">
 
         {/* Categories Grid */}
@@ -62,7 +62,6 @@ const HomePage = () => {
             <Loader />
           ) : filteredCategories.length === 0 ? (
             <div className="empty-search-state">
-              <p>કોઈ મેળ ખાતું સાહિત્ય મળ્યું નથી.</p>
             </div>
           ) : (
             <div className="desktop-grid">

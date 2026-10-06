@@ -49,7 +49,7 @@ html, body {
   width: 100%;
   max-width: 1240px;
   margin: 0 auto;
-  padding: 14px 20px;
+  padding: 6px 20px;
   overflow-y: auto;
   box-sizing: border-box;
   display: flex;

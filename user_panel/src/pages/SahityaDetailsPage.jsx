@@ -91,7 +91,6 @@ const SahityaDetailsPage = () => {
             <Loader />
           ) : filteredItems.length === 0 ? (
             <div className="empty-search-state">
-              <p>કોઈ મેળ ખાતી વિગતો મળી નથી.</p>
             </div>
           ) : (
             <div className="desktop-grid">

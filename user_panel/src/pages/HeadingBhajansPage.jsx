@@ -70,7 +70,6 @@ const HeadingBhajansPage = () => {
             <Loader />
           ) : filteredBhajans.length === 0 ? (
             <div className="empty-search-state">
-              <p>કોઈ મેળ ખાતા ભજન મળ્યા નથી.</p>
             </div>
           ) : (
             <div className="desktop-grid">
