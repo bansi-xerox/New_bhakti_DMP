@@ -160,8 +160,8 @@
 
 @media (max-width: 768px) {
   .sticky-search-outer-shell {
-    top: 56px !important;
-    padding: 10px 16px 16px 16px !important; /* Maintains 16px bottom gap on mobile screens */
+    top: 60px !important;
+    padding: 10px 14px 14px 14px !important; /* Maintains 16px bottom gap on mobile screens */
   }
 }
 
