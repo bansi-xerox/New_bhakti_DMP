@@ -302,17 +302,6 @@ return (
             videoConstraints={{ facingMode: "user" }}
             style={{ width: '100%', height: '80%', objectFit: 'cover' }}
           />
-
-          {/* Capture button */}
-          <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', background: '#000' }}>
-            <button 
-              onClick={captureSelfie}
-              style={{
-                width: '70px', height: '70px', borderRadius: '50%', backgroundColor: 'white', 
-                border: '5px solid #ea580c', cursor: 'pointer'
-              }}
-            />
-          </div>
         </div>
       )}
 
