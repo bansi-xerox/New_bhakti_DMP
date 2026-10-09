@@ -1,5 +1,90 @@
 const path = require('path');
 const Gallery = require('../models/galleryModel');
+const {
+  sanitizeName, getNextSequenceNumber
+} = require('../utils/fileHelper');
+const cloudinary = require('../config/cloudinary');
+
+// ==========================================
+// Face-API Setup
+// ==========================================
+const faceapi = require('face-api.js');
+const canvas = require('canvas');
+const { Canvas, Image, ImageData } = canvas;
+faceapi.env.monkeyPatch({ Canvas, Image, ImageData });
+
+// Load models when the server starts
+const loadModels = async () => {
+  try {
+    const MODEL_URL = path.join(__dirname, '../face-models'); 
+    await faceapi.nets.tinyFaceDetector.loadFromDisk(MODEL_URL);
+    await faceapi.nets.faceLandmark68Net.loadFromDisk(MODEL_URL);
+    await faceapi.nets.faceRecognitionNet.loadFromDisk(MODEL_URL);
+    console.log('Face Recognition Models Loaded Successfully');
+  } catch (error) {
+    console.error('Failed to load Face-API models:', error);
+  }
+};
+loadModels();
+
+const uploadToCloudinary = (buffer, options) => {
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      options,
+      (error, result) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(result);
+        }
+      }
+    );
+    stream.end(buffer);
+  });
+};
+
+const deleteFromCloudinary = async (url, resourceType) => {
+  if (!url) return;
+
+  try {
+    if (!url.includes('res.cloudinary.com')) {
+      return;
+    }
+
+    const parts = url.split('/');
+    const uploadIndex = parts.indexOf('upload');
+
+    if (uploadIndex === -1) {
+      return;
+    }
+
+    let publicIdParts = parts.slice(uploadIndex + 1);
+
+    if (
+      publicIdParts.length > 0 &&
+      /^v\d+$/.test(publicIdParts[0])
+    ) {
+      publicIdParts.shift();
+    }
+
+    let publicId = publicIdParts.join('/');
+
+    publicId = publicId.replace(/\.[^/.]+$/, '');
+
+    await cloudinary.uploader.destroy(
+      publicId,
+      {
+        resource_type: resourceType,
+        type: 'upload'
+      }
+    );
+  } catch (error) {
+    console.error(
+      'Cloudinary delete error:',
+      error.message
+    );
+  }
+};
 
 exports.uploadMedia = async (req, res) => {
   try {
@@ -162,6 +247,19 @@ exports.uploadMedia = async (req, res) => {
 //     } = req.body;
 
 //     const files = req.files;
+// ==========================================
+// UPLOAD MEDIA (માત્ર સિમ્પલ અપલોડ, ફેસ ચેક વગર)
+// ==========================================
+exports.uploadMedia = async (req, res) => {
+  try {
+    const {
+      main_folder_name,
+      sub_folder_name,
+      media_type,
+      event_date
+    } = req.body;
+
+    const files = req.files;
 
 //     if (!main_folder_name || !sub_folder_name || !media_type) {
 //       return res.status(400).json({
@@ -197,6 +295,9 @@ exports.uploadMedia = async (req, res) => {
 //     // 1. ફાઈલ ફોર્મેટ ચેક કરો
 //     for (const file of files) {
 //       const ext = path.extname(file.originalname).toLowerCase();
+    // 1. Validate file formats
+    for (const file of files) {
+      const ext = path.extname(file.originalname).toLowerCase();
 
 //       if (typeFolder === 'photos' && !photoExts.includes(ext)) {
 //         return res.status(400).json({
@@ -215,6 +316,8 @@ exports.uploadMedia = async (req, res) => {
 
 //     // 2. ડેટાબેઝમાંથી જૂના રેકોર્ડ્સ લાવો
 //     let existingRecords;
+    // 2. Fetch existing records to handle sequence naming
+    let existingRecords;
 
 //     if (typeFolder === 'photos') {
 //       existingRecords = await Gallery.find({
@@ -241,6 +344,11 @@ exports.uploadMedia = async (req, res) => {
 //       const seqNumber = getNextSequenceNumber(existingPaths, safeMain, safeSub);
 //       const fileName = `${safeMain}-${safeSub}-${seqNumber}`;
 //       const resourceType = typeFolder === 'videos' ? 'video' : 'image';
+    // 3. Upload each file to Cloudinary and save directly to DB (NO Face Recognition)
+    for (const file of files) {
+      const seqNumber = getNextSequenceNumber(existingPaths, safeMain, safeSub);
+      const fileName = `${safeMain}-${safeSub}-${seqNumber}`;
+      const resourceType = typeFolder === 'videos' ? 'video' : 'image';
 
 //       // 3.1 Cloudinary માં અપલોડ
 //       const result = await uploadToCloudinary(file.buffer, {
@@ -248,6 +356,12 @@ exports.uploadMedia = async (req, res) => {
 //         public_id: fileName,
 //         resource_type: resourceType
 //       });
+      // 3.1 Upload to Cloudinary
+      const result = await uploadToCloudinary(file.buffer, {
+        folder: `bhakti-dmp/${safeMain}/${safeSub}/${typeFolder}`,
+        public_id: fileName,
+        resource_type: resourceType
+      });
 
 //       const cloudinaryUrl = result.secure_url;
 
@@ -273,6 +387,15 @@ exports.uploadMedia = async (req, res) => {
 //         event_date: event_date ? new Date(event_date) : new Date(),
 //         face_descriptors: descriptors // અહી ચહેરાનો ડેટા સેવ થશે
 //       });
+      // 3.2 Save directly to Database without face extraction
+      const newRecord = new Gallery({
+        main_folder_name: safeMain,
+        sub_folder_name: safeSub,
+        photo_path: typeFolder === 'photos' ? cloudinaryUrl : null,
+        video_path: typeFolder === 'videos' ? cloudinaryUrl : null,
+        event_date: event_date ? new Date(event_date) : new Date(),
+        face_descriptors: [] 
+      });
 
 //       const savedDoc = await newRecord.save();
 
@@ -289,6 +412,10 @@ exports.uploadMedia = async (req, res) => {
 //     const itemLabel = typeFolder === 'photos'
 //       ? count === 1 ? 'photo' : 'photos'
 //       : count === 1 ? 'video' : 'videos';
+    const count = savedRecords.length;
+    const itemLabel = typeFolder === 'photos'
+      ? count === 1 ? 'photo' : 'photos'
+      : count === 1 ? 'video' : 'videos';
 
 //     return res.status(200).json({
 //       success: true,
@@ -303,8 +430,81 @@ exports.uploadMedia = async (req, res) => {
 //     });
 //   }
 // };
+    return res.status(200).json({
+      success: true,
+      message: `${count} ${itemLabel} added successfully`,
+      data: savedRecords
+    });
 
+  } catch (error) {
+    console.error('Cloudinary upload error:', error);
+    return res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
 
+// ==========================================
+// FACE RECOGNITION SEARCH LOGIC (User Panel માટે)
+// ==========================================
+exports.searchByFace = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'Please capture a selfie.' });
+    }
+
+    // 1. Selfie ma thi face detect karo (TinyFaceDetectorOptions sathe)
+    const img = await canvas.loadImage(req.file.buffer);
+    const detections = await faceapi
+      .detectSingleFace(img, new faceapi.TinyFaceDetectorOptions())
+      .withFaceLandmarks()
+      .withFaceDescriptor();
+
+    if (!detections) {
+      return res.status(400).json({ success: false, message: 'Selfie ma koi chahero (face) malyo nathi. Fari try karo.' });
+    }
+
+    const queryDescriptor = detections.descriptor;
+
+    // 2. Database mathi badha photos laavo jema photo path hoy
+    const galleries = await Gallery.find({ 
+      photo_path: { $ne: null }
+    });
+
+    const matchedPhotos = [];
+    const THRESHOLD = 0.55; 
+
+    // 3. Selfie na face ne badha photos sathe match karo
+    for (const item of galleries) {
+      if (!item.face_descriptors || item.face_descriptors.length === 0) continue;
+
+      let isMatch = false;
+      for (const dbDesc of item.face_descriptors) {
+        const dbDescriptorArray = new Float32Array(dbDesc);
+        const distance = faceapi.euclideanDistance(queryDescriptor, dbDescriptorArray);
+        
+        if (distance <= THRESHOLD) {
+          isMatch = true;
+          break; 
+        }
+      }
+      if (isMatch) {
+        matchedPhotos.push(item);
+      }
+    }
+
+    return res.status(200).json({ success: true, data: matchedPhotos });
+
+  } catch (error) {
+    console.error('Face search error:', error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// ==========================================
+// GET GALLERY ITEMS (As it is)
+// ==========================================
 exports.getGalleryItems = async (req, res) => {
   try {
     const {
@@ -319,192 +519,117 @@ exports.getGalleryItems = async (req, res) => {
     const query = {};
 
     if (main_folder_name) {
-      query.main_folder_name =
-        main_folder_name;
+      query.main_folder_name = main_folder_name;
     }
 
     if (sub_folder_name) {
-      query.sub_folder_name =
-        sub_folder_name;
+      query.sub_folder_name = sub_folder_name;
     }
 
     if (media_type) {
-      if (
-        media_type.toLowerCase() ===
-        'photos'
-      ) {
-        query.photo_path = {
-          $ne: null
-        };
-      } else if (
-        media_type.toLowerCase() ===
-        'videos'
-      ) {
-        query.video_path = {
-          $ne: null
-        };
+      if (media_type.toLowerCase() === 'photos') {
+        query.photo_path = { $ne: null };
+      } else if (media_type.toLowerCase() === 'videos') {
+        query.video_path = { $ne: null };
       }
     }
 
-    if (
-      search &&
-      search.trim() !== ''
-    ) {
-      const searchRegex =
-        new RegExp(
-          search.trim(),
-          'i'
-        );
+    if (search && search.trim() !== '') {
+      const searchRegex = new RegExp(search.trim(), 'i');
 
       query.$or = [
-        {
-          main_folder_name:
-            searchRegex
-        },
-        {
-          sub_folder_name:
-            searchRegex
-        },
-        {
-          photo_path:
-            searchRegex
-        },
-        {
-          video_path:
-            searchRegex
-        }
+        { main_folder_name: searchRegex },
+        { sub_folder_name: searchRegex },
+        { photo_path: searchRegex },
+        { video_path: searchRegex }
       ];
     }
 
     if (page && limit) {
-      const pageNumber =
-        parseInt(page, 10) || 1;
+      const pageNumber = parseInt(page, 10) || 1;
+      const pageSize = parseInt(limit, 10) || 10;
+      const skip = (pageNumber - 1) * pageSize;
 
-      const pageSize =
-        parseInt(limit, 10) || 10;
+      const totalItems = await Gallery.countDocuments(query);
 
-      const skip =
-        (pageNumber - 1) *
-        pageSize;
+      const items = await Gallery.find(query)
+        .sort({ created_at: -1 })
+        .skip(skip)
+        .limit(pageSize);
 
-      const totalItems =
-        await Gallery.countDocuments(
-          query
-        );
+      const formattedItems = items.map(item => ({
+        id: item._id,
+        main_folder_name: item.main_folder_name,
+        sub_folder_name: item.sub_folder_name,
+        event_date: item.event_date,
+        photo_path: item.photo_path,
+        video_path: item.video_path,
+        created_at: item.created_at
+      }));
 
-      const items =
-        await Gallery.find(query)
-          .sort({ created_at: -1 })
-          .skip(skip)
-          .limit(pageSize);
-
-      const formattedItems =
-        items.map(item => ({
-          id: item._id,
-          main_folder_name:
-            item.main_folder_name,
-          sub_folder_name:
-            item.sub_folder_name,
-          event_date:
-            item.event_date,
-          photo_path:
-            item.photo_path,
-          video_path:
-            item.video_path,
-          created_at:
-            item.created_at
-        }));
-
-      const totalPages =
-        Math.ceil(
-          totalItems / pageSize
-        );
+      const totalPages = Math.ceil(totalItems / pageSize);
 
       return res.status(200).json({
         success: true,
-        data:
-          formattedItems,
+        data: formattedItems,
         pagination: {
           totalItems,
           totalPages,
-          currentPage:
-            pageNumber,
+          currentPage: pageNumber,
           pageSize,
-          hasNextPage:
-            pageNumber < totalPages,
-          hasPrevPage:
-            pageNumber > 1
+          hasNextPage: pageNumber < totalPages,
+          hasPrevPage: pageNumber > 1
         }
       });
     }
 
-    const items =
-      await Gallery.find(query)
-        .sort({
-          created_at: -1
-        });
+    const items = await Gallery.find(query).sort({ created_at: -1 });
 
-    const formattedItems =
-      items.map(item => ({
-        id: item._id,
-        main_folder_name:
-          item.main_folder_name,
-        sub_folder_name:
-          item.sub_folder_name,
-        event_date:
-          item.event_date,
-        photo_path:
-          item.photo_path,
-        video_path:
-          item.video_path,
-        created_at:
-          item.created_at
-      }));
+    const formattedItems = items.map(item => ({
+      id: item._id,
+      main_folder_name: item.main_folder_name,
+      sub_folder_name: item.sub_folder_name,
+      event_date: item.event_date,
+      photo_path: item.photo_path,
+      video_path: item.video_path,
+      created_at: item.created_at
+    }));
 
     return res.status(200).json({
       success: true,
-      data:
-        formattedItems,
-      totalCount:
-        formattedItems.length
+      data: formattedItems,
+      totalCount: formattedItems.length
     });
   } catch (error) {
     return res.status(500).json({
       success: false,
-      message:
-        error.message
+      message: error.message
     });
   }
 };
 
+// ==========================================
+// DELETE MEDIA (As it is)
+// ==========================================
 exports.deleteMedia = async (req, res) => {
   try {
     const { ids } = req.body;
 
-    if (
-      !ids ||
-      !Array.isArray(ids) ||
-      ids.length === 0
-    ) {
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
       return res.status(400).json({
         success: false,
-        message:
-          'Please provide an array of IDs to delete.'
+        message: 'Please provide an array of IDs to delete.'
       });
     }
 
-    const records =
-      await Gallery.find({
-        _id: {
-          $in: ids
-        }
-      });
+    const records = await Gallery.find({
+      _id: { $in: ids }
+    });
 
     if (records.length === 0) {
       return res.status(404).json({
         success: false,
-        message:
-          'No matching records found.'
+        message: 'No matching records found.'
       });
     }
 
@@ -513,448 +638,239 @@ exports.deleteMedia = async (req, res) => {
 
     for (const record of records) {
       if (record.photo_path) {
-        await deleteFromCloudinary(
-          record.photo_path,
-          'image'
-        );
-
+        await deleteFromCloudinary(record.photo_path, 'image');
         deletedPhotosCount++;
       }
 
       if (record.video_path) {
-        await deleteFromCloudinary(
-          record.video_path,
-          'video'
-        );
-
+        await deleteFromCloudinary(record.video_path, 'video');
         deletedVideosCount++;
       }
     }
 
     await Gallery.deleteMany({
-      _id: {
-        $in: ids
-      }
+      _id: { $in: ids }
     });
 
-    const total =
-      deletedPhotosCount +
-      deletedVideosCount;
-
+    const total = deletedPhotosCount + deletedVideosCount;
     let mediaTypeLabel;
 
-    if (
-      deletedPhotosCount > 0 &&
-      deletedVideosCount === 0
-    ) {
-      mediaTypeLabel =
-        total === 1
-          ? 'photo'
-          : 'photos';
-    } else if (
-      deletedVideosCount > 0 &&
-      deletedPhotosCount === 0
-    ) {
-      mediaTypeLabel =
-        total === 1
-          ? 'video'
-          : 'videos';
+    if (deletedPhotosCount > 0 && deletedVideosCount === 0) {
+      mediaTypeLabel = total === 1 ? 'photo' : 'photos';
+    } else if (deletedVideosCount > 0 && deletedPhotosCount === 0) {
+      mediaTypeLabel = total === 1 ? 'video' : 'videos';
     } else {
-      mediaTypeLabel =
-        'media';
+      mediaTypeLabel = 'media';
     }
 
     return res.status(200).json({
       success: true,
-      message:
-        `${total} ${mediaTypeLabel} deleted successfully`
+      message: `${total} ${mediaTypeLabel} deleted successfully`
     });
   } catch (error) {
-    console.error(
-      'Delete media error:',
-      error
-    );
-
+    console.error('Delete media error:', error);
     return res.status(500).json({
       success: false,
-      message:
-        error.message
+      message: error.message
     });
   }
 };
 
+// ==========================================
+// UPDATE MEDIA (As it is)
+// ==========================================
 exports.updateMedia = async (req, res) => {
   try {
-    const { id } =
-      req.params;
-
-    const item =
-      await Gallery.findById(id);
+    const { id } = req.params;
+    const item = await Gallery.findById(id);
 
     if (!item) {
       return res.status(404).json({
         success: false,
-        message:
-          'File not found.'
+        message: 'File not found.'
       });
     }
 
-    const mainFolder =
-      req.body.main_folder_name ||
-      req.body.new_main_folder_name;
+    const mainFolder = req.body.main_folder_name || req.body.new_main_folder_name;
+    const subFolder = req.body.sub_folder_name || req.body.new_sub_folder_name;
 
-    const subFolder =
-      req.body.sub_folder_name ||
-      req.body.new_sub_folder_name;
-
-    if (
-      !mainFolder ||
-      !subFolder
-    ) {
+    if (!mainFolder || !subFolder) {
       return res.status(400).json({
         success: false,
-        message:
-          'Main folder and sub folder are required.'
+        message: 'Main folder and sub folder are required.'
       });
     }
 
-    const safeNewMain =
-      sanitizeName(mainFolder);
+    const safeNewMain = sanitizeName(mainFolder);
+    const safeNewSub = sanitizeName(subFolder);
 
-    const safeNewSub =
-      sanitizeName(subFolder);
+    const isPhoto = Boolean(item.photo_path);
+    const typeFolder = isPhoto ? 'photos' : 'videos';
+    const resourceType = isPhoto ? 'image' : 'video';
+    const oldUrl = isPhoto ? item.photo_path : item.video_path;
 
-    const isPhoto =
-      Boolean(item.photo_path);
-
-    const typeFolder =
-      isPhoto
-        ? 'photos'
-        : 'videos';
-
-    const resourceType =
-      isPhoto
-        ? 'image'
-        : 'video';
-
-    const oldUrl =
-      isPhoto
-        ? item.photo_path
-        : item.video_path;
-
-    if (
-      req.body.event_date !== undefined
-    ) {
-      item.event_date =
-        req.body.event_date
-          ? new Date(req.body.event_date)
-          : new Date();
+    if (req.body.event_date !== undefined) {
+      item.event_date = req.body.event_date ? new Date(req.body.event_date) : new Date();
     }
 
-    if (
-      req.files &&
-      req.files.length > 0
-    ) {
-      const uploadedFile =
-        req.files[0];
-
+    if (req.files && req.files.length > 0) {
+      const uploadedFile = req.files[0];
       let existingRecords;
 
       if (isPhoto) {
-        existingRecords =
-          await Gallery.find({
-            main_folder_name:
-              safeNewMain,
-            sub_folder_name:
-              safeNewSub,
-            photo_path: {
-              $ne: null
-            }
-          }).select('photo_path');
+        existingRecords = await Gallery.find({
+          main_folder_name: safeNewMain,
+          sub_folder_name: safeNewSub,
+          photo_path: { $ne: null }
+        }).select('photo_path');
       } else {
-        existingRecords =
-          await Gallery.find({
-            main_folder_name:
-              safeNewMain,
-            sub_folder_name:
-              safeNewSub,
-            video_path: {
-              $ne: null
-            }
-          }).select('video_path');
+        existingRecords = await Gallery.find({
+          main_folder_name: safeNewMain,
+          sub_folder_name: safeNewSub,
+          video_path: { $ne: null }
+        }).select('video_path');
       }
 
-      const existingPaths =
-        existingRecords.map(record =>
-          isPhoto
-            ? record.photo_path
-            : record.video_path
-        );
-
-      const seqNumber =
-        getNextSequenceNumber(
-          existingPaths,
-          safeNewMain,
-          safeNewSub
-        );
-
-      const fileName =
-        `${safeNewMain}-${safeNewSub}-${seqNumber}`;
-
-      const result =
-        await uploadToCloudinary(
-          uploadedFile.buffer,
-          {
-            folder:
-              `bhakti-dmp/${safeNewMain}/${safeNewSub}/${typeFolder}`,
-            public_id:
-              fileName,
-            resource_type:
-              resourceType
-          }
-        );
-
-      const newUrl =
-        result.secure_url;
-
-      await deleteFromCloudinary(
-        oldUrl,
-        resourceType
+      const existingPaths = existingRecords.map(record =>
+        isPhoto ? record.photo_path : record.video_path
       );
 
-      item.main_folder_name =
-        safeNewMain;
+      const seqNumber = getNextSequenceNumber(existingPaths, safeNewMain, safeNewSub);
+      const fileName = `${safeNewMain}-${safeNewSub}-${seqNumber}`;
 
-      item.sub_folder_name =
-        safeNewSub;
+      const result = await uploadToCloudinary(uploadedFile.buffer, {
+        folder: `bhakti-dmp/${safeNewMain}/${safeNewSub}/${typeFolder}`,
+        public_id: fileName,
+        resource_type: resourceType
+      });
+
+      const newUrl = result.secure_url;
+
+      await deleteFromCloudinary(oldUrl, resourceType);
+
+      item.main_folder_name = safeNewMain;
+      item.sub_folder_name = safeNewSub;
 
       if (isPhoto) {
-        item.photo_path =
-          newUrl;
+        item.photo_path = newUrl;
       } else {
-        item.video_path =
-          newUrl;
+        item.video_path = newUrl;
       }
     } else {
-      if (
-        oldUrl &&
-        oldUrl.includes(
-          'res.cloudinary.com'
-        )
-      ) {
-        const parts =
-          oldUrl.split('/');
-
-        const uploadIndex =
-          parts.indexOf('upload');
+      if (oldUrl && oldUrl.includes('res.cloudinary.com')) {
+        const parts = oldUrl.split('/');
+        const uploadIndex = parts.indexOf('upload');
 
         if (uploadIndex !== -1) {
-          let publicIdParts =
-            parts.slice(
-              uploadIndex + 1
-            );
+          let publicIdParts = parts.slice(uploadIndex + 1);
 
-          if (
-            publicIdParts.length > 0 &&
-            /^v\d+$/.test(
-              publicIdParts[0]
-            )
-          ) {
+          if (publicIdParts.length > 0 && /^v\d+$/.test(publicIdParts[0])) {
             publicIdParts.shift();
           }
 
-          const oldPublicId =
-            publicIdParts
-              .join('/')
-              .replace(
-                /\.[^/.]+$/,
-                ''
-              );
+          const oldPublicId = publicIdParts.join('/').replace(/\.[^/.]+$/, '');
+          const fileName = oldPublicId.split('/').pop();
+          const match = fileName.match(/-(\d+)$/);
+          const seqNumber = match ? parseInt(match[1], 10) : 1;
 
-          const fileName =
-            oldPublicId
-              .split('/')
-              .pop();
+          const newPublicId = `bhakti-dmp/${safeNewMain}/${safeNewSub}/${typeFolder}/${safeNewMain}-${safeNewSub}-${seqNumber}`;
 
-          const match =
-            fileName.match(
-              /-(\d+)$/
-            );
+          await cloudinary.uploader.rename(oldPublicId, newPublicId, {
+            resource_type: resourceType
+          });
 
-          const seqNumber =
-            match
-              ? parseInt(
-                match[1],
-                10
-              )
-              : 1;
-
-          const newPublicId =
-            `bhakti-dmp/${safeNewMain}/${safeNewSub}/${typeFolder}/${safeNewMain}-${safeNewSub}-${seqNumber}`;
-
-          await cloudinary.uploader.rename(
-            oldPublicId,
-            newPublicId,
-            {
-              resource_type:
-                resourceType
-            }
-          );
-
-          const newUrl =
-            cloudinary.url(
-              newPublicId,
-              {
-                secure: true,
-                resource_type:
-                  resourceType
-              }
-            );
+          const newUrl = cloudinary.url(newPublicId, {
+            secure: true,
+            resource_type: resourceType
+          });
 
           if (isPhoto) {
-            item.photo_path =
-              newUrl;
+            item.photo_path = newUrl;
           } else {
-            item.video_path =
-              newUrl;
+            item.video_path = newUrl;
           }
         }
       }
 
-      item.main_folder_name =
-        safeNewMain;
-
-      item.sub_folder_name =
-        safeNewSub;
+      item.main_folder_name = safeNewMain;
+      item.sub_folder_name = safeNewSub;
     }
 
     await item.save();
 
     return res.status(200).json({
       success: true,
-      message:
-        'File updated successfully.',
-      data:
-        item
+      message: 'File updated successfully.',
+      data: item
     });
   } catch (error) {
-    console.error(
-      'Update media error:',
-      error
-    );
-
+    console.error('Update media error:', error);
     return res.status(500).json({
       success: false,
-      message:
-        error.message
+      message: error.message
     });
   }
 };
 
+// ==========================================
+// SEARCH MEDIA (As it is)
+// ==========================================
 exports.searchMedia = async (req, res) => {
   try {
-    const {
-      q,
-      page = 1,
-      limit = 10
-    } = req.query;
+    const { q, page = 1, limit = 10 } = req.query;
 
-    if (
-      !q ||
-      q.trim() === ''
-    ) {
+    if (!q || q.trim() === '') {
       return res.status(400).json({
         success: false,
-        message:
-          'Search query parameter (q) is required.'
+        message: 'Search query parameter (q) is required.'
       });
     }
 
-    const searchRegex =
-      new RegExp(
-        q.trim(),
-        'i'
-      );
+    const searchRegex = new RegExp(q.trim(), 'i');
 
     const query = {
       $or: [
-        {
-          main_folder_name:
-            searchRegex
-        },
-        {
-          sub_folder_name:
-            searchRegex
-        },
-        {
-          photo_path:
-            searchRegex
-        },
-        {
-          video_path:
-            searchRegex
-        }
+        { main_folder_name: searchRegex },
+        { sub_folder_name: searchRegex },
+        { photo_path: searchRegex },
+        { video_path: searchRegex }
       ]
     };
 
-    const pageNumber =
-      parseInt(page, 10);
+    const pageNumber = parseInt(page, 10);
+    const pageSize = parseInt(limit, 10);
+    const skip = (pageNumber - 1) * pageSize;
 
-    const pageSize =
-      parseInt(limit, 10);
+    const totalItems = await Gallery.countDocuments(query);
 
-    const skip =
-      (pageNumber - 1) *
-      pageSize;
+    const items = await Gallery.find(query)
+      .sort({ created_at: -1 })
+      .skip(skip)
+      .limit(pageSize);
 
-    const totalItems =
-      await Gallery.countDocuments(
-        query
-      );
-
-    const items =
-      await Gallery.find(query)
-        .sort({
-          created_at: -1
-        })
-        .skip(skip)
-        .limit(pageSize);
-
-    const formattedItems =
-      items.map(item => ({
-        id: item._id,
-        main_folder_name:
-          item.main_folder_name,
-        sub_folder_name:
-          item.sub_folder_name,
-        photo_path:
-          item.photo_path,
-        video_path:
-          item.video_path,
-        created_at:
-          item.created_at
-      }));
+    const formattedItems = items.map(item => ({
+      id: item._id,
+      main_folder_name: item.main_folder_name,
+      sub_folder_name: item.sub_folder_name,
+      photo_path: item.photo_path,
+      video_path: item.video_path,
+      created_at: item.created_at
+    }));
 
     return res.status(200).json({
       success: true,
-      data:
-        formattedItems,
+      data: formattedItems,
       pagination: {
         totalItems,
-        totalPages:
-          Math.ceil(
-            totalItems / pageSize
-          ),
-        currentPage:
-          pageNumber,
+        totalPages: Math.ceil(totalItems / pageSize),
+        currentPage: pageNumber,
         pageSize
       }
     });
   } catch (error) {
     return res.status(500).json({
       success: false,
-      message:
-        error.message
+      message: error.message
     });
   }
 };
