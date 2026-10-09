@@ -1,90 +1,5 @@
 const path = require('path');
 const Gallery = require('../models/galleryModel');
-const {
-  sanitizeName, getNextSequenceNumber
-} = require('../utils/fileHelper');
-const cloudinary = require('../config/cloudinary');
-
-// ==========================================
-// NEW: Face-API Setup
-// ==========================================
-const faceapi = require('face-api.js');
-const canvas = require('canvas');
-const { Canvas, Image, ImageData } = canvas;
-faceapi.env.monkeyPatch({ Canvas, Image, ImageData });
-
-// Load models when the server starts
-const loadModels = async () => {
-  try {
-    const MODEL_URL = path.join(__dirname, '../models'); // Ensure this points to your downloaded models folder
-    await faceapi.nets.ssdMobilenetv1.loadFromDisk(MODEL_URL);
-    await faceapi.nets.faceLandmark68Net.loadFromDisk(MODEL_URL);
-    await faceapi.nets.faceRecognitionNet.loadFromDisk(MODEL_URL);
-    console.log('Face Recognition Models Loaded Successfully');
-  } catch (error) {
-    console.error('Failed to load Face-API models:', error);
-  }
-};
-loadModels();
-
-const uploadToCloudinary = (buffer, options) => {
-  return new Promise((resolve, reject) => {
-    const stream = cloudinary.uploader.upload_stream(
-      options,
-      (error, result) => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve(result);
-        }
-      }
-    );
-    stream.end(buffer);
-  });
-};
-
-const deleteFromCloudinary = async (url, resourceType) => {
-  if (!url) return;
-
-  try {
-    if (!url.includes('res.cloudinary.com')) {
-      return;
-    }
-
-    const parts = url.split('/');
-    const uploadIndex = parts.indexOf('upload');
-
-    if (uploadIndex === -1) {
-      return;
-    }
-
-    let publicIdParts = parts.slice(uploadIndex + 1);
-
-    if (
-      publicIdParts.length > 0 &&
-      /^v\d+$/.test(publicIdParts[0])
-    ) {
-      publicIdParts.shift();
-    }
-
-    let publicId = publicIdParts.join('/');
-
-    publicId = publicId.replace(/\.[^/.]+$/, '');
-
-    await cloudinary.uploader.destroy(
-      publicId,
-      {
-        resource_type: resourceType,
-        type: 'upload'
-      }
-    );
-  } catch (error) {
-    console.error(
-      'Cloudinary delete error:',
-      error.message
-    );
-  }
-};
 
 exports.uploadMedia = async (req, res) => {
   try {
@@ -207,75 +122,6 @@ exports.uploadMedia = async (req, res) => {
 
     const savedRecords = [];
 
-    for (const file of files) {
-      const seqNumber =
-        getNextSequenceNumber(
-          existingPaths,
-          safeMain,
-          safeSub
-        );
-
-      const fileName =
-        `${safeMain}-${safeSub}-${seqNumber}`;
-
-      const resourceType =
-        typeFolder === 'videos'
-          ? 'video'
-          : 'image';
-
-      const result =
-        await uploadToCloudinary(
-          file.buffer,
-          {
-            folder:
-              `bhakti-dmp/${safeMain}/${safeSub}/${typeFolder}`,
-            public_id:
-              fileName,
-            resource_type:
-              resourceType
-          }
-        );
-
-      const cloudinaryUrl =
-        result.secure_url;
-
-      const newRecord =
-        new Gallery({
-          main_folder_name:
-            safeMain,
-          sub_folder_name:
-            safeSub,
-          photo_path:
-            typeFolder === 'photos'
-              ? cloudinaryUrl
-              : null,
-          video_path:
-            typeFolder === 'videos'
-              ? cloudinaryUrl
-              : null,
-          event_date:
-            event_date
-              ? new Date(event_date)
-              : new Date()
-        });
-
-      const savedDoc =
-        await newRecord.save();
-
-      savedRecords.push({
-        id: savedDoc._id,
-        relativePath:
-          cloudinaryUrl
-      });
-
-      existingPaths.push(
-        cloudinaryUrl
-      );
-    }
-
-    const count =
-      savedRecords.length;
-
     const itemLabel =
       typeFolder === 'photos'
         ? count === 1
@@ -306,207 +152,157 @@ exports.uploadMedia = async (req, res) => {
   }
 };
 
-// Face Recognition Search Logic
-exports.searchByFace = async (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({ success: false, message: 'Please capture a selfie.' });
-    }
+// exports.uploadMedia = async (req, res) => {
+//   try {
+//     const {
+//       main_folder_name,
+//       sub_folder_name,
+//       media_type,
+//       event_date
+//     } = req.body;
 
-    // 1. Selfie mathi face detect karo
-    const img = await canvas.loadImage(req.file.buffer);
-    const detections = await faceapi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor();
+//     const files = req.files;
 
-    if (!detections) {
-      return res.status(400).json({ success: false, message: 'Selfie ma koi chahero (face) malyo nathi. Fari try karo.' });
-    }
+//     if (!main_folder_name || !sub_folder_name || !media_type) {
+//       return res.status(400).json({
+//         success: false,
+//         message: 'Main folder name, sub folder name, and media type are required.'
+//       });
+//     }
 
-    const queryDescriptor = detections.descriptor;
+//     if (!files || files.length === 0) {
+//       return res.status(400).json({
+//         success: false,
+//         message: 'Please upload at least one file.'
+//       });
+//     }
 
-    // 2. Database mathi badha photos laavo jema face hoy
-    const galleries = await Gallery.find({ 
-      photo_path: { $ne: null }, 
-      face_descriptors: { $not: { $size: 0 } } 
-    });
+//     const typeLower = media_type.toLowerCase();
 
-    const matchedPhotos = [];
-    const THRESHOLD = 0.55; // 0.55 thi 0.60 vacche rakhi shakay (ochho number = vadhu strict matching)
+//     if (typeLower !== 'photos' && typeLower !== 'videos') {
+//       return res.status(400).json({
+//         success: false,
+//         message: 'Media type must be either "Photos" or "Videos".'
+//       });
+//     }
 
-    // 3. Selfie na face ne badha photos sathe match karo
-    for (const item of galleries) {
-      let isMatch = false;
-      for (const dbDesc of item.face_descriptors) {
-        const dbDescriptorArray = new Float32Array(dbDesc);
-        const distance = faceapi.euclideanDistance(queryDescriptor, dbDescriptorArray);
-        
-        if (distance <= THRESHOLD) {
-          isMatch = true;
-          break; // Ek var match thay jay etle aagal check karvani jarur nathi
-        }
-      }
-      if (isMatch) {
-        matchedPhotos.push(item);
-      }
-    }
+//     const safeMain = sanitizeName(main_folder_name);
+//     const safeSub = sanitizeName(sub_folder_name);
 
-    return res.status(200).json({ success: true, data: matchedPhotos });
+//     const typeFolder = typeLower === 'photos' ? 'photos' : 'videos';
 
-  } catch (error) {
-    console.error('Face search error:', error);
-    return res.status(500).json({ success: false, message: error.message });
-  }
-};
-exports.uploadMedia = async (req, res) => {
-  try {
-    const {
-      main_folder_name,
-      sub_folder_name,
-      media_type,
-      event_date
-    } = req.body;
+//     const photoExts = ['.jpg', '.jpeg', '.png'];
+//     const videoExts = ['.mp4'];
 
-    const files = req.files;
+//     // 1. ફાઈલ ફોર્મેટ ચેક કરો
+//     for (const file of files) {
+//       const ext = path.extname(file.originalname).toLowerCase();
 
-    if (!main_folder_name || !sub_folder_name || !media_type) {
-      return res.status(400).json({
-        success: false,
-        message: 'Main folder name, sub folder name, and media type are required.'
-      });
-    }
+//       if (typeFolder === 'photos' && !photoExts.includes(ext)) {
+//         return res.status(400).json({
+//           success: false,
+//           message: `Invalid format in ${file.originalname}. Photos must be .jpg, .jpeg, or .png.`
+//         });
+//       }
 
-    if (!files || files.length === 0) {
-      return res.status(400).json({
-        success: false,
-        message: 'Please upload at least one file.'
-      });
-    }
+//       if (typeFolder === 'videos' && !videoExts.includes(ext)) {
+//         return res.status(400).json({
+//           success: false,
+//           message: `Invalid format in ${file.originalname}. Videos must be .mp4.`
+//         });
+//       }
+//     }
 
-    const typeLower = media_type.toLowerCase();
+//     // 2. ડેટાબેઝમાંથી જૂના રેકોર્ડ્સ લાવો
+//     let existingRecords;
 
-    if (typeLower !== 'photos' && typeLower !== 'videos') {
-      return res.status(400).json({
-        success: false,
-        message: 'Media type must be either "Photos" or "Videos".'
-      });
-    }
+//     if (typeFolder === 'photos') {
+//       existingRecords = await Gallery.find({
+//         main_folder_name: safeMain,
+//         sub_folder_name: safeSub,
+//         photo_path: { $ne: null }
+//       }).select('photo_path');
+//     } else {
+//       existingRecords = await Gallery.find({
+//         main_folder_name: safeMain,
+//         sub_folder_name: safeSub,
+//         video_path: { $ne: null }
+//       }).select('video_path');
+//     }
 
-    const safeMain = sanitizeName(main_folder_name);
-    const safeSub = sanitizeName(sub_folder_name);
+//     const existingPaths = existingRecords.map(record => {
+//       return typeFolder === 'photos' ? record.photo_path : record.video_path;
+//     });
 
-    const typeFolder = typeLower === 'photos' ? 'photos' : 'videos';
+//     const savedRecords = [];
 
-    const photoExts = ['.jpg', '.jpeg', '.png'];
-    const videoExts = ['.mp4'];
+//     // 3. દરેક ફાઈલ અપલોડ કરો અને ડેટાબેઝમાં સેવ કરો
+//     for (const file of files) {
+//       const seqNumber = getNextSequenceNumber(existingPaths, safeMain, safeSub);
+//       const fileName = `${safeMain}-${safeSub}-${seqNumber}`;
+//       const resourceType = typeFolder === 'videos' ? 'video' : 'image';
 
-    // 1. ફાઈલ ફોર્મેટ ચેક કરો
-    for (const file of files) {
-      const ext = path.extname(file.originalname).toLowerCase();
+//       // 3.1 Cloudinary માં અપલોડ
+//       const result = await uploadToCloudinary(file.buffer, {
+//         folder: `bhakti-dmp/${safeMain}/${safeSub}/${typeFolder}`,
+//         public_id: fileName,
+//         resource_type: resourceType
+//       });
 
-      if (typeFolder === 'photos' && !photoExts.includes(ext)) {
-        return res.status(400).json({
-          success: false,
-          message: `Invalid format in ${file.originalname}. Photos must be .jpg, .jpeg, or .png.`
-        });
-      }
+//       const cloudinaryUrl = result.secure_url;
 
-      if (typeFolder === 'videos' && !videoExts.includes(ext)) {
-        return res.status(400).json({
-          success: false,
-          message: `Invalid format in ${file.originalname}. Videos must be .mp4.`
-        });
-      }
-    }
+//       // 3.2 Face Descriptors Extract કરો (માત્ર ફોટો માટે જ)
+//       let descriptors = [];
+//       if (typeFolder === 'photos') {
+//         try {
+//           // કેનવાસ ઈમેજ લોડ કરીને તેમાંથી ફેસ સ્કેન કરશે
+//           const img = await canvas.loadImage(file.buffer);
+//           const detections = await faceapi.detectAllFaces(img).withFaceLandmarks().withFaceDescriptors();
+//           descriptors = detections.map(d => Array.from(d.descriptor));
+//         } catch (faceErr) {
+//           console.error(`Face extraction failed for ${fileName}:`, faceErr.message);
+//         }
+//       }
 
-    // 2. ડેટાબેઝમાંથી જૂના રેકોર્ડ્સ લાવો
-    let existingRecords;
+//       // 3.3 ડેટાબેઝમાં રેકોર્ડ સેવ કરો
+//       const newRecord = new Gallery({
+//         main_folder_name: safeMain,
+//         sub_folder_name: safeSub,
+//         photo_path: typeFolder === 'photos' ? cloudinaryUrl : null,
+//         video_path: typeFolder === 'videos' ? cloudinaryUrl : null,
+//         event_date: event_date ? new Date(event_date) : new Date(),
+//         face_descriptors: descriptors // અહી ચહેરાનો ડેટા સેવ થશે
+//       });
 
-    if (typeFolder === 'photos') {
-      existingRecords = await Gallery.find({
-        main_folder_name: safeMain,
-        sub_folder_name: safeSub,
-        photo_path: { $ne: null }
-      }).select('photo_path');
-    } else {
-      existingRecords = await Gallery.find({
-        main_folder_name: safeMain,
-        sub_folder_name: safeSub,
-        video_path: { $ne: null }
-      }).select('video_path');
-    }
+//       const savedDoc = await newRecord.save();
 
-    const existingPaths = existingRecords.map(record => {
-      return typeFolder === 'photos' ? record.photo_path : record.video_path;
-    });
+//       savedRecords.push({
+//         id: savedDoc._id,
+//         relativePath: cloudinaryUrl
+//       });
 
-    const savedRecords = [];
+//       existingPaths.push(cloudinaryUrl);
+//     }
 
-    // 3. દરેક ફાઈલ અપલોડ કરો અને ડેટાબેઝમાં સેવ કરો
-    for (const file of files) {
-      const seqNumber = getNextSequenceNumber(existingPaths, safeMain, safeSub);
-      const fileName = `${safeMain}-${safeSub}-${seqNumber}`;
-      const resourceType = typeFolder === 'videos' ? 'video' : 'image';
+//     const count = savedRecords.length;
 
-      // 3.1 Cloudinary માં અપલોડ
-      const result = await uploadToCloudinary(file.buffer, {
-        folder: `bhakti-dmp/${safeMain}/${safeSub}/${typeFolder}`,
-        public_id: fileName,
-        resource_type: resourceType
-      });
+//     const itemLabel = typeFolder === 'photos'
+//       ? count === 1 ? 'photo' : 'photos'
+//       : count === 1 ? 'video' : 'videos';
 
-      const cloudinaryUrl = result.secure_url;
-
-      // 3.2 Face Descriptors Extract કરો (માત્ર ફોટો માટે જ)
-      let descriptors = [];
-      if (typeFolder === 'photos') {
-        try {
-          // કેનવાસ ઈમેજ લોડ કરીને તેમાંથી ફેસ સ્કેન કરશે
-          const img = await canvas.loadImage(file.buffer);
-          const detections = await faceapi.detectAllFaces(img).withFaceLandmarks().withFaceDescriptors();
-          descriptors = detections.map(d => Array.from(d.descriptor));
-        } catch (faceErr) {
-          console.error(`Face extraction failed for ${fileName}:`, faceErr.message);
-        }
-      }
-
-      // 3.3 ડેટાબેઝમાં રેકોર્ડ સેવ કરો
-      const newRecord = new Gallery({
-        main_folder_name: safeMain,
-        sub_folder_name: safeSub,
-        photo_path: typeFolder === 'photos' ? cloudinaryUrl : null,
-        video_path: typeFolder === 'videos' ? cloudinaryUrl : null,
-        event_date: event_date ? new Date(event_date) : new Date(),
-        face_descriptors: descriptors // અહી ચહેરાનો ડેટા સેવ થશે
-      });
-
-      const savedDoc = await newRecord.save();
-
-      savedRecords.push({
-        id: savedDoc._id,
-        relativePath: cloudinaryUrl
-      });
-
-      existingPaths.push(cloudinaryUrl);
-    }
-
-    const count = savedRecords.length;
-
-    const itemLabel = typeFolder === 'photos'
-      ? count === 1 ? 'photo' : 'photos'
-      : count === 1 ? 'video' : 'videos';
-
-    return res.status(200).json({
-      success: true,
-      message: `${count} ${itemLabel} added successfully`,
-      data: savedRecords
-    });
-  } catch (error) {
-    console.error('Cloudinary upload error:', error);
-    return res.status(500).json({
-      success: false,
-      message: error.message
-    });
-  }
-};
+//     return res.status(200).json({
+//       success: true,
+//       message: `${count} ${itemLabel} added successfully`,
+//       data: savedRecords
+//     });
+//   } catch (error) {
+//     console.error('Cloudinary upload error:', error);
+//     return res.status(500).json({
+//       success: false,
+//       message: error.message
+//     });
+//   }
+// };
 
 
 exports.getGalleryItems = async (req, res) => {

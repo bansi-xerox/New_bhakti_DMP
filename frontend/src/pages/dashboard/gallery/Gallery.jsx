@@ -7,7 +7,7 @@ import {
 } from "../../../components/common/Alert";
 import GalleryModal from "./GalleryModal";
 // import FaceSearchModal from "./FaceSearchModal";
-import {Camera, X } from 'lucide-react';
+import {X } from 'lucide-react';
 import { searchByFace } from '../../../../src/services/api';
 import Webcam from "react-webcam";
 
