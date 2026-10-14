@@ -6,9 +6,7 @@ import {
   confirmMediaDelete,
 } from "../../../components/common/Alert";
 import GalleryModal from "./GalleryModal";
-// import FaceSearchModal from "./FaceSearchModal";
-import {Camera, X } from 'lucide-react';
-import { searchByFace } from '../../../../src/services/api';
+import {X } from 'lucide-react';
 import Webcam from "react-webcam";
 
 
@@ -85,19 +83,6 @@ const Trash2Icon = ({ size = 16, className = "" }) => (
   </svg>
 );
 
-// Add this SVG icon definition with your others
-// const FaceIcon = ({ size = 18, className = "" }) => (
-//   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-//     <path d="M3 7V5a2 2 0 0 1 2-2h2" />
-//     <path d="M17 3h2a2 2 0 0 1 2 2v2" />
-//     <path d="M21 17v2a2 2 0 0 1-2 2h-2" />
-//     <path d="M7 21H5a2 2 0 0 1-2-2v-2" />
-//     <circle cx="12" cy="12" r="3" />
-//     <path d="M12 9v-1" />
-//     <path d="M12 16v1" />
-//   </svg>
-// );
-
 const PlayIcon = ({ size = 20, fill = "currentColor", className = "" }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill={fill} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
     <polygon points="6 3 20 12 6 21 6 3" />
@@ -131,9 +116,6 @@ const [isWebcamOpen, setIsWebcamOpen] = useState(false);
   const webcamRef = useRef(null);
   const clickTimeoutRef = useRef(null);
 
-  const openCamera = () => {
-    setIsWebcamOpen(true);
-  };
 
   const dataURLtoFile = (dataurl, filename) => {
     let arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
@@ -145,20 +127,6 @@ const [isWebcamOpen, setIsWebcamOpen] = useState(false);
   };
 
 
-  const captureSelfie = useCallback(() => {
-    const imageSrc = webcamRef.current.getScreenshot();
-    if (imageSrc) {
-      const file = dataURLtoFile(imageSrc, "selfie.jpg");
-      setIsWebcamOpen(false); // કેમેરા બંધ કરો
-      handleFaceSearchFromHeader(file); // તમારા એક્ઝિસ્ટિંગ ફંક્શનને ફોટો મોકલો
-    }
-  }, [webcamRef]);
-  // const handleCameraCapture = (e) => {
-  //   const file = e.target.files[0];
-  //   if (file) {
-  //     handleFaceSearchFromHeader(file); // Tamaru banavelu function j API call karse
-  //   }
-  // };
   const handleSingleClick = (item, mediaUrl, isPhoto) => {
     if (clickTimeoutRef.current) {
       clearTimeout(clickTimeoutRef.current);
@@ -185,32 +153,6 @@ const [isWebcamOpen, setIsWebcamOpen] = useState(false);
   const [filterType, setFilterType] = useState('ALL');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedIds, setSelectedIds] = useState([]);
-  const [faceSearching, setFaceSearching] = useState(false);
-
-  const handleFaceSearchFromHeader = async (file) => {
-    if (!file) return;
-
-    try {
-      setFaceSearching(true);
-      const formData = new FormData();
-      formData.append('face', file);
-
-      const res = await searchByFace(formData);
-      const matched = res.data?.data || res.data || [];
-
-      // સુધારા: Gallery.jsx માં state ના નામ અલગ છે
-      setItems(matched);
-      setSelectedFolder('All');
-      setSelectedSubFolder('All');
-      setFilterType('Photos'); // ઓટોમેટિક Photos ટેબ પર સેટ કરવા
-
-    } catch (err) {
-      console.error('Face recognition search error:', err);
-      alert('ચહેરો ઓળખવામાં સમસ્યા આવી છે અથવા કોઈ મેળ ખાતો ફોટો મળ્યો નથી.');
-    } finally {
-      setFaceSearching(false);
-    }
-  };
 
 
   const loadGallery = useCallback(async () => {
@@ -326,25 +268,6 @@ const [isWebcamOpen, setIsWebcamOpen] = useState(false);
     );
   };
 
-  // New function to handle the API call
-  // const handleFaceSearch = async (formData) => {
-  //   try {
-  //     setLoading(true);
-  //     // NOTE: You must add this endpoint to your services/api.js:
-  //     // export const searchByFace = (formData) => API.post('/gallery/face-search', formData);
-  //     const res = await searchByFace(formData); 
-
-  //     if (res.data?.success) {
-  //       // Replace current items with matched items
-  //       setItems(res.data.data || []);
-  //       setFilterType('Photos'); // Switch to photos tab since videos usually aren't scanned
-  //     }
-  //   } catch (err) {
-  //     showErrorAlert("Face Search Failed", "Could not find matches or process the image.");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
 return (
     <div
       className="w-100 d-flex flex-column flex-grow-1"
@@ -379,17 +302,6 @@ return (
             videoConstraints={{ facingMode: "user" }}
             style={{ width: '100%', height: '80%', objectFit: 'cover' }}
           />
-
-          {/* Capture button */}
-          <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', background: '#000' }}>
-            <button 
-              onClick={captureSelfie}
-              style={{
-                width: '70px', height: '70px', borderRadius: '50%', backgroundColor: 'white', 
-                border: '5px solid #ea580c', cursor: 'pointer'
-              }}
-            />
-          </div>
         </div>
       )}
 
@@ -586,19 +498,7 @@ return (
                 )}
               </div>
 
-              {/* FACE SEARCH BUTTON - હવે સર્ચ બારની બરાબર બાજુમાં! */}
-              <button
-                className="btn btn-light border bg-white d-flex align-items-center gap-2 shadow-sm rounded-3 flex-shrink-0"
-                style={{ padding: '0.6rem 1rem', color: '#ea580c', fontWeight: '600' }}
-                onClick={openCamera}
-                title="Search by Face"
-                disabled={faceSearching}
-              >
-                <Camera size={18} />
-                <span className="d-none d-sm-inline">
-                  {faceSearching ? 'Searching...' : 'Face Search'}
-                </span>
-              </button>
+            
             </div>
 
             <div className="d-flex flex-wrap gap-2 align-items-center ms-auto">
