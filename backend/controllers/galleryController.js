@@ -1,12 +1,13 @@
 const path = require('path');
 const Gallery = require('../models/galleryModel');
 const {
-  sanitizeName, getNextSequenceNumber
+  sanitizeName,
+  getNextSequenceNumber
 } = require('../utils/fileHelper');
 const cloudinary = require('../config/cloudinary');
-//hello
+
 // ==========================================
-// NEW: Face-API Setup
+// Face-API Setup
 // ==========================================
 const faceapi = require('face-api.js');
 const canvas = require('canvas');
@@ -16,7 +17,7 @@ faceapi.env.monkeyPatch({ Canvas, Image, ImageData });
 // Load models when the server starts
 const loadModels = async () => {
   try {
-    const MODEL_URL = path.join(__dirname, '../face-models'); 
+    const MODEL_URL = path.join(__dirname, '../face-models');
     await faceapi.nets.tinyFaceDetector.loadFromDisk(MODEL_URL);
     await faceapi.nets.faceLandmark68Net.loadFromDisk(MODEL_URL);
     await faceapi.nets.faceRecognitionNet.loadFromDisk(MODEL_URL);
@@ -25,6 +26,7 @@ const loadModels = async () => {
     console.error('Failed to load Face-API models:', error);
   }
 };
+
 loadModels();
 
 const uploadToCloudinary = (buffer, options) => {
@@ -68,7 +70,6 @@ const deleteFromCloudinary = async (url, resourceType) => {
     }
 
     let publicId = publicIdParts.join('/');
-
     publicId = publicId.replace(/\.[^/.]+$/, '');
 
     await cloudinary.uploader.destroy(
@@ -79,286 +80,13 @@ const deleteFromCloudinary = async (url, resourceType) => {
       }
     );
   } catch (error) {
-    console.error(
-      'Cloudinary delete error:',
-      error.message
-    );
+    console.error('Cloudinary delete error:', error.message);
   }
 };
 
-exports.uploadMedia = async (req, res) => {
-  try {
-    const {
-      main_folder_name,
-      sub_folder_name,
-      media_type,
-      event_date
-    } = req.body;
-
-    const files = req.files;
-
-    if (
-      !main_folder_name ||
-      !sub_folder_name ||
-      !media_type
-    ) {
-      return res.status(400).json({
-        success: false,
-        message:
-          'Main folder name, sub folder name, and media type are required.'
-      });
-    }
-
-    if (!files || files.length === 0) {
-      return res.status(400).json({
-        success: false,
-        message:
-          'Please upload at least one file.'
-      });
-    }
-
-    const typeLower =
-      media_type.toLowerCase();
-
-    if (
-      typeLower !== 'photos' &&
-      typeLower !== 'videos'
-    ) {
-      return res.status(400).json({
-        success: false,
-        message:
-          'Media type must be either "Photos" or "Videos".'
-      });
-    }
-
-    const safeMain =
-      sanitizeName(main_folder_name);
-
-    const safeSub =
-      sanitizeName(sub_folder_name);
-
-    const typeFolder =
-      typeLower === 'photos'
-        ? 'photos'
-        : 'videos';
-
-    const photoExts =
-      ['.jpg', '.jpeg', '.png'];
-
-    const videoExts =
-      ['.mp4'];
-
-    for (const file of files) {
-      const ext =
-        path.extname(
-          file.originalname
-        ).toLowerCase();
-
-      if (
-        typeFolder === 'photos' &&
-        !photoExts.includes(ext)
-      ) {
-        return res.status(400).json({
-          success: false,
-          message:
-            `Invalid format in ${file.originalname}. Photos must be .jpg, .jpeg, or .png.`
-        });
-      }
-
-      if (
-        typeFolder === 'videos' &&
-        !videoExts.includes(ext)
-      ) {
-        return res.status(400).json({
-          success: false,
-          message:
-            `Invalid format in ${file.originalname}. Videos must be .mp4.`
-        });
-      }
-
-
-
-    }
-
-    let existingRecords;
-
-    if (typeFolder === 'photos') {
-      existingRecords =
-        await Gallery.find({
-          main_folder_name: safeMain,
-          sub_folder_name: safeSub,
-          photo_path: { $ne: null }
-        }).select('photo_path');
-    } else {
-      existingRecords =
-        await Gallery.find({
-          main_folder_name: safeMain,
-          sub_folder_name: safeSub,
-          video_path: { $ne: null }
-        }).select('video_path');
-    }
-
-    const existingPaths =
-      existingRecords.map(record => {
-        return typeFolder === 'photos'
-          ? record.photo_path
-          : record.video_path;
-      });
-
-    const savedRecords = [];
-
-    const itemLabel =
-      typeFolder === 'photos'
-        ? count === 1
-          ? 'photo'
-          : 'photos'
-        : count === 1
-          ? 'video'
-          : 'image';
-
-      const result =
-        await uploadToCloudinary(
-          file.buffer,
-          {
-            folder:
-              `bhakti-dmp/${safeMain}/${safeSub}/${typeFolder}`,
-            public_id:
-              fileName,
-            resource_type:
-              resourceType
-          }
-        );
-
-      const cloudinaryUrl =
-        result.secure_url;
-
-      const newRecord =
-        new Gallery({
-          main_folder_name:
-            safeMain,
-          sub_folder_name:
-            safeSub,
-          photo_path:
-            typeFolder === 'photos'
-              ? cloudinaryUrl
-              : null,
-          video_path:
-            typeFolder === 'videos'
-              ? cloudinaryUrl
-              : null,
-          event_date:
-            event_date
-              ? new Date(event_date)
-              : new Date()
-        });
-
-     const savedDoc = await newRecord.save();
-
-    savedRecords.push(savedDoc);
-
-    (async () => {
-      try {
-        const img = await canvas.loadImage(file.buffer);
-
-        const detections = await faceapi
-          .detectAllFaces(img)
-          .withFaceLandmarks()
-          .withFaceDescriptors();
-
-        const descriptors = detections.map(
-          d => Array.from(d.descriptor)
-        );
-
-        if (descriptors.length > 0) {
-          await Gallery.findByIdAndUpdate(
-            savedDoc._id,
-            {
-              face_descriptors: descriptors
-            }
-          );
-
-          console.log(
-            "Face descriptors saved in background for:",
-            savedDoc._id
-          );
-        }
-      } catch (err) {
-        console.error(
-          'Background face detection error:',
-          err.message
-        );
-      }
-    })();
-
-  } 
-
-  return res.status(200).json({
-    success: true,
-    message: "Media uploaded successfully!",
-    data: savedRecords
-  });
-
-} catch (error) {  // ⭐ ADD: closes try
-  console.error(error);
-
-  return res.status(500).json({
-    success: false,
-    message: error.message
-  });
-}
-
-}; 
-
-// Face Recognition Search Logic
-exports.searchByFace = async (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({ success: false, message: 'Please capture a selfie.' });
-    }
-
-    // 1. Selfie mathi face detect karo
-    const img = await canvas.loadImage(req.file.buffer);
-    const detections = await faceapi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor();
-
-    if (!detections) {
-      return res.status(400).json({ success: false, message: 'Selfie ma koi chahero (face) malyo nathi. Fari try karo.' });
-    }
-
-    const queryDescriptor = detections.descriptor;
-
-    // 2. Database mathi badha photos laavo jema face hoy
-    const galleries = await Gallery.find({ 
-      photo_path: { $ne: null }, 
-      face_descriptors: { $not: { $size: 0 } } 
-    });
-
-    const matchedPhotos = [];
-    const THRESHOLD = 0.55; // 0.55 thi 0.60 vacche rakhi shakay (ochho number = vadhu strict matching)
-
-    // 3. Selfie na face ne badha photos sathe match karo
-    for (const item of galleries) {
-      let isMatch = false;
-      for (const dbDesc of item.face_descriptors) {
-        const dbDescriptorArray = new Float32Array(dbDesc);
-        const distance = faceapi.euclideanDistance(queryDescriptor, dbDescriptorArray);
-        
-        if (distance <= THRESHOLD) {
-          isMatch = true;
-          break; // Ek var match thay jay etle aagal check karvani jarur nathi
-        }
-      }
-      if (isMatch) {
-        matchedPhotos.push(item);
-      }
-    }
-
-    return res.status(200).json({ success: true, data: matchedPhotos });
-
-  } catch (error) {
-    console.error('Face search error:', error);
-    return res.status(500).json({ success: false, message: error.message });
-  }
-};
+// ==========================================
+// UPLOAD MEDIA
+// ==========================================
 exports.uploadMedia = async (req, res) => {
   try {
     const {
@@ -395,13 +123,12 @@ exports.uploadMedia = async (req, res) => {
 
     const safeMain = sanitizeName(main_folder_name);
     const safeSub = sanitizeName(sub_folder_name);
-
     const typeFolder = typeLower === 'photos' ? 'photos' : 'videos';
 
     const photoExts = ['.jpg', '.jpeg', '.png'];
     const videoExts = ['.mp4'];
 
-    // 1. ફાઈલ ફોર્મેટ ચેક કરો
+    // 1. Validate file extensions
     for (const file of files) {
       const ext = path.extname(file.originalname).toLowerCase();
 
@@ -420,9 +147,8 @@ exports.uploadMedia = async (req, res) => {
       }
     }
 
-    // 2. ડેટાબેઝમાંથી જૂના રેકોર્ડ્સ લાવો
+    // 2. Fetch existing records to maintain sequence numbers
     let existingRecords;
-
     if (typeFolder === 'photos') {
       existingRecords = await Gallery.find({
         main_folder_name: safeMain,
@@ -443,13 +169,13 @@ exports.uploadMedia = async (req, res) => {
 
     const savedRecords = [];
 
-    // 3. દરેક ફાઈલ અપલોડ કરો અને ડેટાબેઝમાં સેવ કરો
+    // 3. Process each file upload
     for (const file of files) {
       const seqNumber = getNextSequenceNumber(existingPaths, safeMain, safeSub);
       const fileName = `${safeMain}-${safeSub}-${seqNumber}`;
       const resourceType = typeFolder === 'videos' ? 'video' : 'image';
 
-      // 3.1 Cloudinary માં અપલોડ
+      // 3.1 Upload to Cloudinary
       const result = await uploadToCloudinary(file.buffer, {
         folder: `bhakti-dmp/${safeMain}/${safeSub}/${typeFolder}`,
         public_id: fileName,
@@ -458,27 +184,29 @@ exports.uploadMedia = async (req, res) => {
 
       const cloudinaryUrl = result.secure_url;
 
-      // 3.2 Face Descriptors Extract કરો (માત્ર ફોટો માટે જ)
+      // 3.2 Extract Face Descriptors (Photos only)
       let descriptors = [];
       if (typeFolder === 'photos') {
         try {
-          // કેનવાસ ઈમેજ લોડ કરીને તેમાંથી ફેસ સ્કેન કરશે
           const img = await canvas.loadImage(file.buffer);
-          const detections = await faceapi.detectAllFaces(img).withFaceLandmarks().withFaceDescriptors();
+          const detections = await faceapi
+            .detectAllFaces(img)
+            .withFaceLandmarks()
+            .withFaceDescriptors();
           descriptors = detections.map(d => Array.from(d.descriptor));
         } catch (faceErr) {
           console.error(`Face extraction failed for ${fileName}:`, faceErr.message);
         }
       }
 
-      // 3.3 ડેટાબેઝમાં રેકોર્ડ સેવ કરો
+      // 3.3 Save record to Database
       const newRecord = new Gallery({
         main_folder_name: safeMain,
         sub_folder_name: safeSub,
         photo_path: typeFolder === 'photos' ? cloudinaryUrl : null,
         video_path: typeFolder === 'videos' ? cloudinaryUrl : null,
         event_date: event_date ? new Date(event_date) : new Date(),
-        face_descriptors: descriptors // અહી ચહેરાનો ડેટા સેવ થશે
+        face_descriptors: descriptors
       });
 
       const savedDoc = await newRecord.save();
@@ -492,10 +220,10 @@ exports.uploadMedia = async (req, res) => {
     }
 
     const count = savedRecords.length;
-
-    const itemLabel = typeFolder === 'photos'
-      ? count === 1 ? 'photo' : 'photos'
-      : count === 1 ? 'video' : 'videos';
+    const itemLabel =
+      typeFolder === 'photos'
+        ? count === 1 ? 'photo' : 'photos'
+        : count === 1 ? 'video' : 'videos';
 
     return res.status(200).json({
       success: true,
@@ -506,15 +234,68 @@ exports.uploadMedia = async (req, res) => {
     console.error('Cloudinary upload error:', error);
     return res.status(500).json({
       success: false,
-      message:
-        error.message
+      message: error.message
     });
   }
 };
 
+// ==========================================
+// FACE RECOGNITION SEARCH LOGIC
+// ==========================================
+exports.searchByFace = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'Please capture a selfie.' });
+    }
+
+    const img = await canvas.loadImage(req.file.buffer);
+    const detections = await faceapi
+      .detectSingleFace(img)
+      .withFaceLandmarks()
+      .withFaceDescriptor();
+
+    if (!detections) {
+      return res.status(400).json({
+        success: false,
+        message: 'Selfie ma koi chahero (face) malyo nathi. Fari try karo.'
+      });
+    }
+
+    const queryDescriptor = detections.descriptor;
+
+    const galleries = await Gallery.find({
+      photo_path: { $ne: null },
+      face_descriptors: { $not: { $size: 0 } }
+    });
+
+    const matchedPhotos = [];
+    const THRESHOLD = 0.55;
+
+    for (const item of galleries) {
+      let isMatch = false;
+      for (const dbDesc of item.face_descriptors) {
+        const dbDescriptorArray = new Float32Array(dbDesc);
+        const distance = faceapi.euclideanDistance(queryDescriptor, dbDescriptorArray);
+
+        if (distance <= THRESHOLD) {
+          isMatch = true;
+          break;
+        }
+      }
+      if (isMatch) {
+        matchedPhotos.push(item);
+      }
+    }
+
+    return res.status(200).json({ success: true, data: matchedPhotos });
+  } catch (error) {
+    console.error('Face search error:', error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
 
 // ==========================================
-// GET GALLERY ITEMS (As it is)
+// GET GALLERY ITEMS
 // ==========================================
 exports.getGalleryItems = async (req, res) => {
   try {
@@ -547,7 +328,6 @@ exports.getGalleryItems = async (req, res) => {
 
     if (search && search.trim() !== '') {
       const searchRegex = new RegExp(search.trim(), 'i');
-
       query.$or = [
         { main_folder_name: searchRegex },
         { sub_folder_name: searchRegex },
@@ -562,7 +342,6 @@ exports.getGalleryItems = async (req, res) => {
       const skip = (pageNumber - 1) * pageSize;
 
       const totalItems = await Gallery.countDocuments(query);
-
       const items = await Gallery.find(query)
         .sort({ created_at: -1 })
         .skip(skip)
@@ -620,7 +399,7 @@ exports.getGalleryItems = async (req, res) => {
 };
 
 // ==========================================
-// DELETE MEDIA (As it is)
+// DELETE MEDIA
 // ==========================================
 exports.deleteMedia = async (req, res) => {
   try {
@@ -688,7 +467,7 @@ exports.deleteMedia = async (req, res) => {
 };
 
 // ==========================================
-// UPDATE MEDIA (As it is)
+// UPDATE MEDIA
 // ==========================================
 exports.updateMedia = async (req, res) => {
   try {
@@ -756,7 +535,6 @@ exports.updateMedia = async (req, res) => {
       });
 
       const newUrl = result.secure_url;
-
       await deleteFromCloudinary(oldUrl, resourceType);
 
       item.main_folder_name = safeNewMain;
@@ -824,7 +602,7 @@ exports.updateMedia = async (req, res) => {
 };
 
 // ==========================================
-// SEARCH MEDIA (As it is)
+// SEARCH MEDIA
 // ==========================================
 exports.searchMedia = async (req, res) => {
   try {
@@ -853,7 +631,6 @@ exports.searchMedia = async (req, res) => {
     const skip = (pageNumber - 1) * pageSize;
 
     const totalItems = await Gallery.countDocuments(query);
-
     const items = await Gallery.find(query)
       .sort({ created_at: -1 })
       .skip(skip)
